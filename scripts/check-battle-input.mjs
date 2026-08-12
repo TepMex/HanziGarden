@@ -38,9 +38,11 @@ page.on('pageerror', (err) => errors.push(err.message))
 
 await page.goto(index, { waitUntil: 'domcontentloaded' })
 await page.getByRole('button', { name: /Войти в сад/i }).click()
-await page.locator('[data-plot-id="plot-001"]').click()
+await page.waitForSelector('.world-map-world.is-ready')
+const firstPlot = page.locator('[data-plot-id="plot-001"]')
+await firstPlot.click()
 await page.waitForTimeout(450)
-await page.locator('[data-plot-id="plot-001"]').click()
+if (!await page.locator('.battle-screen').count()) await firstPlot.click()
 await page.waitForSelector('.battle-screen .writing-circle svg')
 // Allow XHR char data to load
 await page.waitForTimeout(800)
@@ -85,6 +87,7 @@ if (afterHint.pathCount < 1) {
 // Fresh battle character may advance after hint-only — reload battle for draw test
 await page.locator('.back-button').click()
 await page.waitForSelector('.map-screen')
+await page.waitForSelector('.world-map-world.is-ready')
 await page.locator('[data-plot-id="plot-001"]').click()
 await page.waitForSelector('.writing-circle svg')
 await page.waitForTimeout(800)

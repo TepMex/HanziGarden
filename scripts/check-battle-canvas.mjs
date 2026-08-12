@@ -27,10 +27,12 @@ page.on('requestfailed', (request) => failed.push(request.url()))
 
 await page.goto(`${baseUrl}/`, { waitUntil: 'networkidle' })
 await page.getByRole('button', { name: /Войти в сад/i }).click()
+await page.waitForSelector('.world-map-world.is-ready')
 // V2: the first tap focuses a distant plot; the second enters its battle.
-await page.locator('[data-plot-id="plot-001"]').click()
+const firstPlot = page.locator('[data-plot-id="plot-001"]')
+await firstPlot.click()
 await page.waitForTimeout(450)
-await page.locator('[data-plot-id="plot-001"]').click()
+if (!await page.locator('.battle-screen').count()) await firstPlot.click()
 await page.waitForSelector('.battle-screen .writing-circle')
 await page.waitForTimeout(400)
 

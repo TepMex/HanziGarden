@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { LockKeyhole } from 'lucide-react'
+import { Leaf, LockKeyhole } from 'lucide-react'
 import { assetUrl } from '../assetUrl'
 import { plots, type PlotDefinition } from '../data/model'
 import { cellRect, plotBounds, WORLD_HEIGHT, WORLD_WIDTH } from '../data/mapLayout'
@@ -25,9 +25,31 @@ type WorldMapProps = {
 
 type Drag = { pointerId: number; point: Point; camera: CameraState }
 type Pinch = { distance: number; worldPoint: Point; camera: CameraState }
+type MapLoadState = 'loading' | 'ready' | 'error'
 
 const debugMap = new URLSearchParams(window.location.search).get('debugMap') === '1'
 const DRAG_THRESHOLD = 12
+
+async function loadAndDecodeImage(url: string): Promise<void> {
+  const image = new Image()
+  image.src = url
+
+  await new Promise<void>((resolve, reject) => {
+    image.onload = () => resolve()
+    image.onerror = () => reject(new Error(`Could not load ${url}`))
+    // Cached browser images can already be complete before the handlers above
+    // run.  A zero natural width still means a failed resource.
+    if (image.complete) {
+      if (image.naturalWidth > 0) resolve()
+      else reject(new Error(`Could not load ${url}`))
+    }
+  })
+
+  // decode() waits for pixels, rather than merely the network response.  This
+  // is what prevents the clean map from being painted before the SVG weed
+  // layer catches up on a cold WebView cache.
+  if ('decode' in image) await image.decode()
+}
 
 function distance(left: Point, right: Point): number {
   return Math.hypot(left.x - right.x, left.y - right.y)
@@ -134,6 +156,10 @@ export function WorldMap({ save, camera, onCameraChange, onEnterPlot }: WorldMap
   const movedRef = useRef(false)
   const wheelCommitRef = useRef<number | null>(null)
   const [lockedPulseId, setLockedPulseId] = useState<string | null>(null)
+  const [loadState, setLoadState] = useState<MapLoadState>('loading')
+  const [loadAttempt, setLoadAttempt] = useState(0)
+  const cleanMapUrl = assetUrl(`assets/garden-map.webp${loadAttempt ? `?map-load-attempt=${loadAttempt}` : ''}`)
+  const negativeMapUrl = assetUrl(`assets/garden-map_negative.webp${loadAttempt ? `?map-load-attempt=${loadAttempt}` : ''}`)
 
   const getViewport = useCallback((): Viewport | null => {
     const rect = viewportRef.current?.getBoundingClientRect()
@@ -171,6 +197,34 @@ export function WorldMap({ save, camera, onCameraChange, onEnterPlot }: WorldMap
   useEffect(() => () => {
     if (wheelCommitRef.current) window.clearTimeout(wheelCommitRef.current)
   }, [])
+
+  useEffect(() => {
+    let cancelled = false
+    let firstFrame: number | null = null
+    let secondFrame: number | null = null
+
+    setLoadState('loading')
+    Promise.all([loadAndDecodeImage(cleanMapUrl), loadAndDecodeImage(negativeMapUrl)])
+      .then(() => {
+        // Leave the fully assembled, but hidden, map in the DOM for two paint
+        // frames.  SVG image compositing otherwise lags the HTML image on some
+        // Android WebViews even after decode() has resolved.
+        firstFrame = window.requestAnimationFrame(() => {
+          secondFrame = window.requestAnimationFrame(() => {
+            if (!cancelled) setLoadState('ready')
+          })
+        })
+      })
+      .catch(() => {
+        if (!cancelled) setLoadState('error')
+      })
+
+    return () => {
+      cancelled = true
+      if (firstFrame !== null) window.cancelAnimationFrame(firstFrame)
+      if (secondFrame !== null) window.cancelAnimationFrame(secondFrame)
+    }
+  }, [cleanMapUrl, negativeMapUrl])
 
   const startPinch = () => {
     const viewport = getViewport()
@@ -281,8 +335,8 @@ export function WorldMap({ save, camera, onCameraChange, onEnterPlot }: WorldMap
       onPointerCancel={finishPointer}
       onWheel={onWheel}
     >
-      <div className="world-map-world" ref={worldRef}>
-        <img className="world-map-clean" src={assetUrl('assets/garden-map.webp')} alt="" draggable={false} />
+      <div className={`world-map-world ${loadState === 'ready' ? 'is-ready' : ''}`} ref={worldRef} aria-hidden={loadState !== 'ready'}>
+        <img className="world-map-clean" src={cleanMapUrl} alt="" draggable={false} />
         <svg className="world-map-weed" viewBox={`0 0 ${WORLD_WIDTH} ${WORLD_HEIGHT}`} aria-hidden="true">
           <defs>
             <radialGradient id="world-weed-reveal" cx="50%" cy="50%" r="50%">
@@ -311,7 +365,7 @@ export function WorldMap({ save, camera, onCameraChange, onEnterPlot }: WorldMap
               </g>
             </mask>
           </defs>
-          <image href={assetUrl('assets/garden-map_negative.webp')} width={WORLD_WIDTH} height={WORLD_HEIGHT} preserveAspectRatio="none" mask="url(#world-weed-mask)" />
+          <image href={negativeMapUrl} width={WORLD_WIDTH} height={WORLD_HEIGHT} preserveAspectRatio="none" mask="url(#world-weed-mask)" />
         </svg>
         <div className="world-map-hotspots">
           {plots.map((plot) => {
@@ -336,6 +390,25 @@ export function WorldMap({ save, camera, onCameraChange, onEnterPlot }: WorldMap
         </div>
         {debugMap && <MapDebugOverlay />}
       </div>
+      {loadState !== 'ready' && (
+        <div className={`map-loading-screen ${loadState === 'error' ? 'has-error' : ''}`} role={loadState === 'error' ? 'alert' : 'status'}>
+          <Leaf size={30} aria-hidden="true" />
+          {loadState === 'loading' ? (
+            <span>Сад пробуждается…</span>
+          ) : (
+            <>
+              <span>Не удалось проявить карту</span>
+              <button
+                type="button"
+                onPointerDown={(event) => event.stopPropagation()}
+                onClick={() => setLoadAttempt((attempt) => attempt + 1)}
+              >
+                Повторить
+              </button>
+            </>
+          )}
+        </div>
+      )}
     </section>
   )
 }

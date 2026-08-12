@@ -511,7 +511,18 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
 }
 
 .prompt-scroll span { font-size: .76rem; letter-spacing: .1em; opacity: .72; }
-.prompt-scroll strong { font-size: clamp(1.65rem, 3vw, 2.3rem); font-weight: 600; line-height: 1.05; letter-spacing: .035em; }
+.prompt-scroll strong {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  font-size: clamp(1.65rem, 3vw, 2.3rem);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: .035em;
+  overflow-wrap: anywhere;
+  text-align: center;
+  text-wrap: balance;
+}
 .writing-circle {
   position: absolute;
   z-index: 10;
@@ -649,7 +660,7 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
   .field-panel .primary-button { min-height: 39px; }
   .map-hint { display: none; }
   .welcome-card { padding: 58px 28px 40px; }
-  .prompt-scroll { top: max(10px, env(safe-area-inset-top, 0px)); width: min(68vw, calc(100% - 96px)); min-height: 72px; }
+  .prompt-scroll { top: max(10px, env(safe-area-inset-top, 0px)); width: min(68vw, calc(100% - 96px)); min-height: 72px; padding: 10px 16px; }
   .back-button { top: max(15px, env(safe-area-inset-top, 0px)); left: 14px; width: 45px; height: 45px; }
   /* Keep the writer inside the chrome-free middle band on tall phones / WebView. */
   .writing-circle { top: 46%; width: min(78vw, 46vh, calc(100% - 56px)); }
@@ -707,6 +718,24 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
   }
 }
 
+/* Landscape has no vertical room for a three-line prompt above the writer.
+   Put the scroll in the unused left column without changing the writing area. */
+@media (max-height: 650px) and (min-aspect-ratio: 4 / 3) {
+  .prompt-scroll {
+    top: max(70px, calc(env(safe-area-inset-top, 0px) + 60px));
+    left: max(12px, env(safe-area-inset-left, 0px));
+    width: min(260px, calc(50% - 110px));
+    min-height: 0;
+    padding: 8px 12px;
+    transform: none;
+  }
+  .field-cleanliness {
+    top: max(15px, env(safe-area-inset-top, 0px));
+    bottom: auto;
+    left: 80px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
@@ -741,6 +770,29 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
   cursor: grab;
   background: #12231f;
 }
+.map-loading-screen {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 12px;
+  color: #efe5c9;
+  background: radial-gradient(circle, #34473d, #18201d 68%);
+  font-size: 1.25rem;
+  letter-spacing: .04em;
+}
+.map-loading-screen.has-error { gap: 18px; }
+.map-loading-screen button {
+  min-height: 42px;
+  padding: 0 20px;
+  color: #f2e5c5;
+  border: 1px solid #b99c62;
+  background: linear-gradient(#40574b, #273a31);
+  box-shadow: inset 0 0 0 2px rgba(231, 208, 158, .08), 0 7px 20px rgba(19, 25, 21, .28);
+  cursor: pointer;
+}
 .world-map-viewport:active { cursor: grabbing; }
 .world-map-world {
   position: absolute;
@@ -750,7 +802,9 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
   height: 1200px;
   transform-origin: 0 0;
   will-change: transform;
+  visibility: hidden;
 }
+.world-map-world.is-ready { visibility: visible; }
 .world-map-clean,
 .world-map-weed,
 .world-map-hotspots,

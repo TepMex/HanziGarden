@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import HanziWriter from 'hanzi-writer'
 import { ArrowLeft, BarChart3, Flower2, HelpCircle, Leaf, Sparkles } from 'lucide-react'
 import { plots, type CharacterDefinition, type PlotDefinition } from './data/model'
@@ -124,6 +124,7 @@ function BattleScreen({
   const [activeCharacterId, setActiveCharacterId] = useState<string | null>(dueCharacters[0]?.id ?? null)
   const activeCharacter = plot.characters.find((character) => character.id === activeCharacterId) ?? null
   const writerTarget = useRef<HTMLDivElement>(null)
+  const promptTextRef = useRef<HTMLElement>(null)
   const writerRef = useRef<HanziWriter | null>(null)
   const saveRef = useRef(save)
   const mistakesRef = useRef(0)
@@ -139,6 +140,47 @@ function BattleScreen({
   const [hitPulse, setHitPulse] = useState(0)
   const [feedback, setFeedback] = useState('Проведите первый штрих')
   const [destroyed, setDestroyed] = useState(false)
+
+  useLayoutEffect(() => {
+    const prompt = promptTextRef.current
+    if (!prompt) return
+    const scroll = prompt.closest('.prompt-scroll')
+    const writer = document.querySelector('.writing-circle')
+
+    const fit = () => {
+      // Start from the responsive CSS maximum on every run.  The prior inline
+      // size may have been selected for a narrower viewport or another word.
+      prompt.style.fontSize = ''
+      const maximum = Number.parseFloat(getComputedStyle(prompt).fontSize)
+      const minimum = 16
+      let chosen = minimum
+
+      for (let size = maximum; size >= minimum; size -= 0.5) {
+        prompt.style.fontSize = `${size}px`
+        const style = getComputedStyle(prompt)
+        const lineHeight = Number.parseFloat(style.lineHeight)
+        const lines = Math.ceil(prompt.getBoundingClientRect().height / lineHeight - 0.01)
+        const scrollRect = scroll?.getBoundingClientRect()
+        const writerRect = writer?.getBoundingClientRect()
+        const overlapsWriter = Boolean(scrollRect && writerRect && !(
+          scrollRect.right <= writerRect.left || scrollRect.left >= writerRect.right ||
+          scrollRect.bottom <= writerRect.top || scrollRect.top >= writerRect.bottom
+        ))
+        if (lines <= 3 && prompt.scrollWidth <= prompt.clientWidth + 0.5 && !overlapsWriter) {
+          chosen = size
+          break
+        }
+      }
+      prompt.style.fontSize = `${chosen}px`
+    }
+
+    const frame = window.requestAnimationFrame(fit)
+    window.addEventListener('resize', fit)
+    return () => {
+      window.cancelAnimationFrame(frame)
+      window.removeEventListener('resize', fit)
+    }
+  }, [activeCharacter?.id])
 
   useEffect(() => { saveRef.current = save }, [save])
 
@@ -358,7 +400,7 @@ function BattleScreen({
 
       <header className="prompt-scroll">
         <span>Целевое значение</span>
-        <strong>{activeCharacter?.keyword.ru.toLocaleUpperCase('ru') ?? 'ПОЛЕ ОЧИЩЕНО'}</strong>
+        <strong ref={promptTextRef}>{activeCharacter?.keyword.ru.toLocaleUpperCase('ru') ?? 'ПОЛЕ ОЧИЩЕНО'}</strong>
       </header>
 
       {activeCharacter ? (

@@ -49,7 +49,11 @@ done
 
 # GitHub rejects single blobs over 100MB on push; fail fast before assembleRelease.
 max_bytes=$((95 * 1024 * 1024))
-www_bytes="$(du -sb "$OUT" | awk '{print $1}')"
+www_bytes=0
+while IFS= read -r -d '' asset; do
+  asset_bytes="$(wc -c < "$asset")"
+  www_bytes=$((www_bytes + asset_bytes))
+done < <(find "$OUT" -type f -print0)
 if (( www_bytes > max_bytes )); then
   echo "sync failed: bundled www is ${www_bytes} bytes (limit ${max_bytes}) — compress art further" >&2
   exit 1
