@@ -1,8 +1,19 @@
-# Сад памяти
+# Сад памяти / Memory Garden
 
-Игровой MVP по `GAME_SPEC.md` и `GAME_CONCEPT.md`: значение → самостоятельное написание иероглифа → каждый правильный штрих повреждает сорняк → завершённый знак обновляет FSRS и здоровье поля.
+Игровой MVP по `GAME_SPEC.md`, `GAME_CONCEPT.md` и `V2_SPEC.md`: значение → самостоятельное написание иероглифа → каждый правильный штрих повреждает сорняк → завершённый знак обновляет FSRS и здоровье участка.
 
-## Запуск
+Этот репозиторий содержит **только** Memory Garden:
+
+| Путь | Содержимое |
+| ---- | ---------- |
+| `/` (корень) | Веб-игра (React + Vite + TypeScript) |
+| `android/` | Sideload Android APK — тонкая Kotlin/WebView-оболочка с бандлом той же веб-сборки |
+
+Это не монорепозиторий с другими проектами: веб и Android живут рядом в одном репо.
+
+Спеки: [`GAME_SPEC.md`](./GAME_SPEC.md), [`GAME_CONCEPT.md`](./GAME_CONCEPT.md), [`V2_SPEC.md`](./V2_SPEC.md), [`android/SPEC.md`](./android/SPEC.md).
+
+## Запуск (веб)
 
 ```bash
 bun install
@@ -15,19 +26,32 @@ Production-сборка:
 bun run build
 ```
 
-## GitHub Pages (this monorepo)
+## Android
 
-The root workflow [`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml) builds this app and copies `dist/` to `deploy/rth-agriculture/` on the `gh-pages` branch. After a push to `master`, the game is available at:
+Сборка APK из корня репозитория (скрипт берёт веб из `..` относительно `android/` — то есть этот же корень):
 
-`https://<user-or-org>.github.io/<repository>/rth-agriculture/`
+```bash
+cd android
+./scripts/sync-web-assets.sh
+./gradlew assembleRelease
+```
 
-CI sets `GH_PAGES_PUBLIC_PATH` so Vite emits correct asset URLs under that prefix. For local/`file://` (and the Android wrapper), unset that variable so `base` stays `./`.
+Подробности: [`android/README.md`](./android/README.md).
 
-Background images are assigned via absolute URLs from `document.baseURI` (`src/assetUrl.ts`) so CSS `url(var(--bg-*))` does not re-resolve `./assets/...` against the hashed stylesheet path (which would 404 as `assets/assets/...` in the Android WebView).
+## GitHub Pages
 
-Map and battle art ship as **WebP** (one backdrop set per garden field) so the Android APK stays under GitHub’s 100 MB push limit while remaining fully offline.
+Workflow [`.github/workflows/deploy.yml`](./.github/workflows/deploy.yml) (когда подключён) собирает веб и при необходимости Android из **этого** репозитория.
 
-Hanzi stroke JSON is loaded with **XHR** (`src/hanziData.ts`), not `fetch` — Chromium/Android WebView reject Fetch against `file://`, which left quiz/hint dead in the APK.
+- Веб-игра: `https://<user-or-org>.github.io/<repository>/`
+- Android landing + APK: `https://<user-or-org>.github.io/<repository>/android/` → `rth-agriculture-android.apk`
+
+CI может задать `GH_PAGES_PUBLIC_PATH` (например `/<repository>/`), чтобы Vite выставил корректные абсолютные URL ассетов. Для локальной/`file://` сборки и Android-обёртки переменную не задают — `base` остаётся `./`.
+
+Фоновые изображения задаются абсолютными URL из `document.baseURI` (`src/assetUrl.ts`), чтобы CSS `url(var(--bg-*))` не пересчитывал `./assets/...` относительно хешированного CSS (иначе в Android WebView получается `assets/assets/...` и 404).
+
+Карта и battle-арт идут как **WebP** (отдельный набор backdrop’ов на каждый из 15 садов), чтобы APK оставался под лимитом GitHub 100 MB и полностью офлайн.
+
+Stroke JSON для Hanzi грузится через **XHR** (`src/hanziData.ts`), не через `fetch` — Chromium/Android WebView отклоняют Fetch на `file://`, из‑за чего quiz/подсказки в APK не работали.
 
 ## Tests
 
@@ -57,6 +81,7 @@ bun run test:battle-input
 - IndexedDB-сохранение через Dexie с без потерь миграцией v1 полей в две v2-половины;
 - отдельная статистика: плотная стена всех иероглифов и цветовая проекция SRS-стадий;
 - мышь, touch и pen Pointer Events через Hanzi Writer;
-- адаптивные desktop/mobile интерфейсы.
+- адаптивные desktop/mobile интерфейсы;
+- Android WebView APK с офлайн-бандлом той же сборки (`android/`).
 
 Сгенерированные проектные фоны находятся в `public/assets/`. Исходные референсы сохранены в `concept-art/`.

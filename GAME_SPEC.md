@@ -4,6 +4,8 @@
 
 **Working title:** Memory Garden / Сад памяти
 
+**Repository:** single-product repo — web game at the repository root, Android WebView sideload APK under `android/`. Not a multi-project monorepo.
+
 Memory Garden is a single-player educational game for learning to **produce Chinese characters from meaning**.
 
 The core tested skill is:
@@ -758,29 +760,15 @@ Use explicit adapters between systems.
 |---|---|
 | Language | TypeScript |
 | Build | Vite |
-| Game rendering | Phaser |
+| UI / map / battle | React + DOM/CSS (current implementation) |
 | Handwriting MVP | Hanzi Writer |
 | Stroke data | hanzi-writer-data / Make Me a Hanzi |
 | Spaced repetition | ts-fsrs |
 | Local database | IndexedDB |
 | IndexedDB wrapper | Dexie |
-| UI | Minimal HTML/CSS or React outside the game renderer |
-| Mobile packaging later | Capacitor |
+| Android packaging | Thin Kotlin WebView shell in `android/` (bundled `assets/www/`) |
 
-### Why Phaser
-
-Use the game renderer for:
-
-- world map;
-- garden animation;
-- weed animation;
-- particles;
-- camera;
-- transitions;
-- input effects;
-- scene management.
-
-React/DOM can still be used for settings, developer tools, account UI, and accessibility.
+Web and Android ship from the same repository: sync the production Vite build into the APK; do not treat the Android app as a separate product checkout.
 
 ## 30. Offline-First Design
 
@@ -1069,16 +1057,17 @@ Correctness remains device-independent.
 
 Map:
 
-- 110 fields across a zoomable world;
-- avoid 110 independent full-resolution animated scenes;
-- use atlases, tile layers, and batching where practical;
-- animate only visible/near-visible plots.
+- zoomable estate with 220 gameplay plots (V2) on a continuous map;
+- avoid independent full-resolution animated scenes per plot;
+- use atlases, layered map art, and batching where practical;
+- animate only visible/near-visible work during battle.
 
 Battle:
 
 - target 60 FPS on typical modern mobile hardware;
 - handwriting input remains responsive under effects;
-- matcher runs after `pointerup`, not continuously every frame.
+- matcher runs after `pointerup`, not continuously every frame;
+- same battle path must remain viable inside the Android WebView APK (`file://` assets).
 
 ## 44. Licensing Checklist
 

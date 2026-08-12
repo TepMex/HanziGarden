@@ -1,7 +1,8 @@
 GOAL: Memory Garden v2 — zoomable world map, 220 half-RTH plots, 15 garden cultures, SRS statistics
 
 Repository:
-rth-agriculture/
+This single-product repo (web game at repository root; Android WebView wrapper in `android/`).
+Not a multi-project monorepo — there is no sibling `rth-agriculture` checkout.
 
 Implement the next version of the existing Memory Garden MVP.
 
@@ -982,8 +983,8 @@ Do not regress:
 - battle animation;
 - local character data;
 - IndexedDB persistence;
-- GitHub Pages relative asset paths;
-- Android/file:// compatibility.
+- GitHub Pages asset paths for this repository;
+- Android/file:// compatibility via `android/` bundling.
 
 Do not introduce CDN requirements.
 
@@ -1006,7 +1007,7 @@ Examples include:
 - current FieldDefinition generation;
 - field-selected side panel logic.
 
-Search the entire rth-agriculture project for these assumptions.
+Search the entire repository (web root + shared assets; keep `android/` in sync via the asset sync script) for these assumptions.
 
 Do not leave two competing world models alive.
 
@@ -1025,7 +1026,7 @@ Update GAME_SPEC.md to describe:
 - no intermediate garden selection screen;
 - statistics/SRS stage projection.
 
-Update README.md "Что реализовано".
+Update root README.md "Что реализовано" and keep Android docs under `android/` aligned with the same-repo layout (web at root, APK shell in `android/`).
 
 ============================================================
 24. DEFINITION OF DONE
