@@ -2,9 +2,10 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Leaf, LockKeyhole } from 'lucide-react'
 import { assetUrl } from '../assetUrl'
 import { plots, type PlotDefinition } from '../data/model'
-import { cellRect, plotBounds, WORLD_HEIGHT, WORLD_WIDTH } from '../data/mapLayout'
+import { cellRect, gardenRegions, plotBounds, WORLD_HEIGHT, WORLD_WIDTH } from '../data/mapLayout'
 import type { SaveGame } from '../db'
 import { plotInfection } from '../garden'
+import { cornerGardenExteriorRevealRects, type CornerGarden } from './cornerGardenReveal'
 import {
   baseMapScale,
   cameraForWorldPoint,
@@ -80,6 +81,25 @@ type RevealEllipse = {
   radiusX: number
   radiusY: number
   rotation: number
+}
+
+const cornerGardens: Array<{ regionIndex: number; corner: CornerGarden }> = [
+  { regionIndex: 0, corner: 'top-left' },
+  { regionIndex: 4, corner: 'top-right' },
+  { regionIndex: 10, corner: 'bottom-left' },
+  { regionIndex: 14, corner: 'bottom-right' },
+]
+
+function cornerExteriorRevealRects(save: SaveGame) {
+  return cornerGardens.flatMap(({ regionIndex, corner }) => {
+    const region = gardenRegions[regionIndex]!
+    const regionPlots = plots.filter((plot) => plot.gardenId === region.id)
+    const cleared = regionPlots.reduce((sum, plot) => {
+      const infection = save.unlockedPlotIds.includes(plot.id) ? plotInfection(plot, save.cards) : 1
+      return sum + (1 - infection)
+    }, 0) / regionPlots.length
+    return cornerGardenExteriorRevealRects(region, corner, cleared).map(rectToWorld)
+  })
 }
 
 /**
@@ -348,6 +368,9 @@ export function WorldMap({ save, camera, onCameraChange, onEnterPlot }: WorldMap
             <mask id="world-weed-mask" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse">
               <rect width={WORLD_WIDTH} height={WORLD_HEIGHT} fill="white" />
               <g style={{ mixBlendMode: 'multiply' }}>
+                {cornerExteriorRevealRects(save).map((rect, index) => (
+                  <rect key={`corner-exterior:${index}`} {...rect} fill="black" />
+                ))}
                 {plots.flatMap((plot) => {
                   const infection = save.unlockedPlotIds.includes(plot.id) ? plotInfection(plot, save.cards) : 1
                   return revealEllipses(plot, infection).map((ellipse, index) => (
