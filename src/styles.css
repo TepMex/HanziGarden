@@ -53,6 +53,11 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
 .welcome-screen {
   display: grid;
   place-items: center;
+  padding:
+    max(28px, env(safe-area-inset-top, 0px))
+    max(16px, env(safe-area-inset-right, 0px))
+    max(24px, env(safe-area-inset-bottom, 0px))
+    max(16px, env(safe-area-inset-left, 0px));
   background: var(--bg-garden-map) center / cover;
 }
 
@@ -74,15 +79,18 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
 
 .welcome-card {
   position: relative;
-  width: min(560px, calc(100% - 36px));
-  padding: 68px 62px 54px;
+  width: min(560px, 100%);
+  max-width: 100%;
+  margin-top: 36px;
+  padding: 56px 48px 48px;
   text-align: center;
   color: #3a3027;
   background:
     linear-gradient(rgba(228, 214, 179, .9), rgba(210, 193, 153, .94)),
     repeating-linear-gradient(4deg, transparent 0 4px, rgba(68, 58, 42, .05) 5px 6px);
   border: 1px solid rgba(238, 218, 168, .7);
-  clip-path: polygon(4% 0, 96% 0, 100% 7%, 100% 93%, 96% 100%, 4% 100%, 0 93%, 0 7%);
+  /* Softer side cuts keep long Cyrillic titles inside the parchment. */
+  clip-path: polygon(2% 0, 98% 0, 100% 6%, 100% 94%, 98% 100%, 2% 100%, 0 94%, 0 6%);
   box-shadow: 0 30px 100px #09100d, inset 0 0 45px rgba(107, 78, 37, .24);
 }
 
@@ -96,24 +104,31 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
 }
 
 .seal {
-  width: 74px;
-  height: 74px;
+  width: 68px;
+  height: 68px;
   display: grid;
   place-items: center;
-  margin: -104px auto 32px;
+  margin: -72px auto 22px;
   color: #ead9b5;
   background: #7d302b;
   border: 2px solid #b8785b;
   transform: rotate(-3deg);
   box-shadow: 0 8px 22px rgba(44, 18, 16, .5);
-  font: 700 2.15rem 'Songti SC', 'STSong', serif;
+  font: 700 2rem 'Songti SC', 'STSong', serif;
 }
 
 .seal span { transform: rotate(3deg); }
 .eyebrow { margin: 0 0 6px; font-size: .72rem; letter-spacing: .2em; text-transform: uppercase; opacity: .7; }
-.welcome-card h1 { margin: 0; font-size: clamp(3.2rem, 7vw, 5.2rem); font-weight: 600; line-height: .95; }
-.welcome-card > p:not(.eyebrow) { max-width: 420px; margin: 26px auto; font-size: 1.24rem; line-height: 1.42; }
-.welcome-rule { display: flex; align-items: center; gap: 12px; margin: 28px 0; font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; }
+.welcome-card h1 {
+  margin: 0 auto;
+  max-width: 100%;
+  font-size: clamp(2.35rem, 8.4vw, 4.4rem);
+  font-weight: 600;
+  line-height: 1.05;
+  overflow-wrap: anywhere;
+}
+.welcome-card > p:not(.eyebrow) { max-width: 420px; margin: 22px auto; font-size: 1.18rem; line-height: 1.42; }
+.welcome-rule { display: flex; align-items: center; gap: 12px; margin: 24px 0; font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; }
 .welcome-rule span { flex: 1; height: 1px; background: rgba(74, 58, 38, .35); }
 
 .primary-button {
@@ -712,7 +727,10 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
   .field-panel .health-line, .field-panel .field-meta { display: none; }
   .field-panel .primary-button { min-height: 39px; }
   .map-hint { display: none; }
-  .welcome-card { padding: 58px 28px 40px; }
+  .welcome-card { margin-top: 28px; padding: 48px 22px 34px; }
+  .welcome-card h1 { font-size: clamp(2.05rem, 9.2vw, 3.1rem); }
+  .welcome-card > p:not(.eyebrow) { margin: 18px auto; font-size: 1.05rem; }
+  .seal { width: 58px; height: 58px; margin: -58px auto 16px; font-size: 1.7rem; }
   .prompt-scroll { top: max(10px, env(safe-area-inset-top, 0px)); width: min(68vw, calc(100% - 96px)); min-height: 72px; padding: 10px 16px; }
   .back-button { top: max(15px, env(safe-area-inset-top, 0px)); left: 14px; width: 45px; height: 45px; }
   .composition-button { top: max(15px, env(safe-area-inset-top, 0px)); right: 14px; width: 45px; min-height: 45px; padding: 0; justify-content: center; border-radius: 50%; }
@@ -863,6 +881,7 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
   transform-origin: 0 0;
   will-change: transform;
   visibility: hidden;
+  overflow: hidden;
 }
 .world-map-world.is-ready { visibility: visible; }
 .world-map-clean,
@@ -874,8 +893,19 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
   width: 100%;
   height: 100%;
 }
-.world-map-clean { display: block; pointer-events: none; }
-.world-map-weed { pointer-events: none; }
+.world-map-clean {
+  display: block;
+  pointer-events: none;
+  /* Keep the clean plate a hair inside the weed mask on Android DPR rounding. */
+  clip-path: inset(1px);
+}
+.world-map-weed {
+  pointer-events: none;
+  /* Overscan hides 1px clean/weed seams that appear as bright edge strips. */
+  inset: -2px;
+  width: calc(100% + 4px);
+  height: calc(100% + 4px);
+}
 .world-map-hotspots { z-index: 2; }
 .plot-hotspot {
   position: absolute;
@@ -902,6 +932,7 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
 .plot-hotspot.is-locked-pulse { animation: locked-pulse .5s ease; }
 @keyframes locked-pulse { 50% { background: rgba(164, 92, 112, .38); border-color: #e9b1a2; } }
 .map-debug-overlay { z-index: 5; pointer-events: none; overflow: visible; font: 16px ui-monospace, monospace; fill: #fff; paint-order: stroke; stroke: #17221f; stroke-width: 3px; }
+.debug-region { fill: rgba(120, 255, 160, .05); stroke: #7dff9a; stroke-width: 2.5px; }
 .debug-cell { fill: rgba(72, 204, 249, .1); stroke: #41d6ef; stroke-width: 1.5px; }
 .debug-plot { fill: none; stroke: #f3d458; stroke-width: 3px; }
 

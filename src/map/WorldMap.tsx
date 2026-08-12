@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Leaf, LockKeyhole } from 'lucide-react'
 import { assetUrl } from '../assetUrl'
 import { plots, type PlotDefinition } from '../data/model'
-import { cellRect, gardenRegions, plotBounds, WORLD_HEIGHT, WORLD_WIDTH } from '../data/mapLayout'
+import { cellRect, gardenRegions, plotBounds, WORLD_HEIGHT, WORLD_WIDTH, type NormalizedQuad } from '../data/mapLayout'
 import type { SaveGame } from '../db'
 import { plotInfection } from '../garden'
 import { cornerGardenExteriorRevealRects, type CornerGarden } from './cornerGardenReveal'
@@ -145,9 +145,18 @@ function revealEllipses(plot: PlotDefinition, infection: number): RevealEllipse[
   ]
 }
 
+function quadPoints(quad: NormalizedQuad): string {
+  return [
+    quad.tl, quad.tr, quad.br, quad.bl,
+  ].map((point) => `${point.x * WORLD_WIDTH},${point.y * WORLD_HEIGHT}`).join(' ')
+}
+
 function MapDebugOverlay() {
   return (
     <svg className="map-debug-overlay" viewBox={`0 0 ${WORLD_WIDTH} ${WORLD_HEIGHT}`} aria-hidden="true">
+      {gardenRegions.map((region) => (
+        <polygon key={region.id} points={quadPoints(region.mapQuad)} className="debug-region" />
+      ))}
       {plots.flatMap((plot) => plot.cells.map((cell) => {
         const rect = rectToWorld(cellRect(cell))
         return <rect key={`${plot.id}:${cell.x}:${cell.y}`} {...rect} className="debug-cell" />
@@ -367,10 +376,12 @@ export function WorldMap({ save, camera, onCameraChange, onEnterPlot }: WorldMap
             </radialGradient>
             <mask id="world-weed-mask" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse">
               <rect width={WORLD_WIDTH} height={WORLD_HEIGHT} fill="white" />
+              {cornerExteriorRevealRects(save).map((rect, index) => (
+                <rect key={`corner-exterior:${index}`} {...rect} fill="black" />
+              ))}
+              {/* Multiply keeps soft overlapping plot lobes from punching holes in each other.
+                  Exterior rects stay outside this group so Android cannot turn them into edge seams. */}
               <g style={{ mixBlendMode: 'multiply' }}>
-                {cornerExteriorRevealRects(save).map((rect, index) => (
-                  <rect key={`corner-exterior:${index}`} {...rect} fill="black" />
-                ))}
                 {plots.flatMap((plot) => {
                   const infection = save.unlockedPlotIds.includes(plot.id) ? plotInfection(plot, save.cards) : 1
                   return revealEllipses(plot, infection).map((ellipse, index) => (
