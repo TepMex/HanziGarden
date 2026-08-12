@@ -46,10 +46,51 @@ async function loadAndDecodeImage(url: string): Promise<void> {
     }
   })
 
-  // decode() waits for pixels, rather than merely the network response.  This
-  // is what prevents the clean map from being painted before the SVG weed
-  // layer catches up on a cold WebView cache.
+  // decode() waits for pixels, rather than merely the network response.
   if ('decode' in image) await image.decode()
+}
+
+/** Resolve after `count` animation frames so the covered map can composite. */
+function waitPaintFrames(count: number): Promise<void> {
+  return new Promise((resolve) => {
+    const step = (left: number) => {
+      if (left <= 0) {
+        resolve()
+        return
+      }
+      window.requestAnimationFrame(() => step(left - 1))
+    }
+    step(count)
+  })
+}
+
+/**
+ * Wait until the SVG weed <image> has bound its href.  Cached resources may
+ * skip a second load event, so we also accept a successful HTML Image decode
+ * of the same URL after giving the SVG element one frame to attach.
+ */
+async function waitForSvgWeedLayer(image: SVGImageElement, url: string): Promise<void> {
+  await new Promise<void>((resolve, reject) => {
+    let settled = false
+    const succeed = () => {
+      if (settled) return
+      settled = true
+      resolve()
+    }
+    const fail = (error?: unknown) => {
+      if (settled) return
+      settled = true
+      reject(error instanceof Error ? error : new Error('Could not load SVG map layer'))
+    }
+
+    image.addEventListener('load', succeed, { once: true })
+    image.addEventListener('error', () => fail(new Error(`Could not load ${url}`)), { once: true })
+
+    void loadAndDecodeImage(url).then(() => {
+      // One frame for the SVG <image> to adopt the already-decoded resource.
+      window.requestAnimationFrame(() => succeed())
+    }, fail)
+  })
 }
 
 function distance(left: Point, right: Point): number {
@@ -187,6 +228,7 @@ export function WorldMap({ save, camera, onCameraChange, onEnterPlot }: WorldMap
   const [lockedPulseId, setLockedPulseId] = useState<string | null>(null)
   const [loadState, setLoadState] = useState<MapLoadState>('loading')
   const [loadAttempt, setLoadAttempt] = useState(0)
+  const weedImageRef = useRef<SVGImageElement>(null)
   const cleanMapUrl = assetUrl(`assets/garden-map.webp${loadAttempt ? `?map-load-attempt=${loadAttempt}` : ''}`)
   const negativeMapUrl = assetUrl(`assets/garden-map_negative.webp${loadAttempt ? `?map-load-attempt=${loadAttempt}` : ''}`)
 
@@ -250,29 +292,29 @@ export function WorldMap({ save, camera, onCameraChange, onEnterPlot }: WorldMap
 
   useEffect(() => {
     let cancelled = false
-    let firstFrame: number | null = null
-    let secondFrame: number | null = null
 
     setLoadState('loading')
-    Promise.all([loadAndDecodeImage(cleanMapUrl), loadAndDecodeImage(negativeMapUrl)])
-      .then(() => {
-        // Leave the fully assembled, but hidden, map in the DOM for two paint
-        // frames.  SVG image compositing otherwise lags the HTML image on some
-        // Android WebViews even after decode() has resolved.
-        firstFrame = window.requestAnimationFrame(() => {
-          secondFrame = window.requestAnimationFrame(() => {
-            if (!cancelled) setLoadState('ready')
-          })
-        })
-      })
-      .catch(() => {
+    // Keep the opaque preloader up while the world paints underneath.  Hiding
+    // the world with visibility:hidden skipped SVG compositing, so removing the
+    // preloader exposed a clean plate for a frame before the weed layer caught up.
+    void (async () => {
+      try {
+        await Promise.all([loadAndDecodeImage(cleanMapUrl), loadAndDecodeImage(negativeMapUrl)])
+        if (cancelled) return
+        const weedImage = weedImageRef.current
+        if (weedImage) await waitForSvgWeedLayer(weedImage, negativeMapUrl)
+        if (cancelled) return
+        // Extra frames after the SVG <image> reports ready: mask + blend still
+        // lag the HTML clean plate on some Android WebViews.
+        await waitPaintFrames(3)
+        if (!cancelled) setLoadState('ready')
+      } catch {
         if (!cancelled) setLoadState('error')
-      })
+      }
+    })()
 
     return () => {
       cancelled = true
-      if (firstFrame !== null) window.cancelAnimationFrame(firstFrame)
-      if (secondFrame !== null) window.cancelAnimationFrame(secondFrame)
     }
   }, [cleanMapUrl, negativeMapUrl])
 
@@ -364,7 +406,7 @@ export function WorldMap({ save, camera, onCameraChange, onEnterPlot }: WorldMap
 
   return (
     <section
-      className="world-map-viewport"
+      className={`world-map-viewport ${loadState === 'error' ? 'has-map-error' : ''}`}
       ref={viewportRef}
       aria-label="Карта сада: перетаскивайте для перемещения, используйте колесо или щипок для масштаба"
       onPointerDown={onPointerDown}
@@ -407,7 +449,7 @@ export function WorldMap({ save, camera, onCameraChange, onEnterPlot }: WorldMap
               </g>
             </mask>
           </defs>
-          <image href={negativeMapUrl} width={WORLD_WIDTH} height={WORLD_HEIGHT} preserveAspectRatio="none" mask="url(#world-weed-mask)" />
+          <image ref={weedImageRef} href={negativeMapUrl} width={WORLD_WIDTH} height={WORLD_HEIGHT} preserveAspectRatio="none" mask="url(#world-weed-mask)" />
         </svg>
         <div className="world-map-hotspots">
           {plots.map((plot) => {
@@ -436,7 +478,7 @@ export function WorldMap({ save, camera, onCameraChange, onEnterPlot }: WorldMap
         <div className={`map-loading-screen ${loadState === 'error' ? 'has-error' : ''}`} role={loadState === 'error' ? 'alert' : 'status'}>
           <Leaf size={30} aria-hidden="true" />
           {loadState === 'loading' ? (
-            <span>Сад пробуждается…</span>
+            <span>Заходим в сад…</span>
           ) : (
             <>
               <span>Не удалось проявить карту</span>

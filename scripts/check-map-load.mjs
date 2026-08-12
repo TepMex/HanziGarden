@@ -37,13 +37,19 @@ try {
   const before = await delayed.page.evaluate(() => ({
     loading: Boolean(document.querySelector('.map-loading-screen')),
     ready: document.querySelector('.world-map-world')?.classList.contains('is-ready') ?? false,
-    cleanVisible: (() => {
-      const clean = document.querySelector('.world-map-clean')
-      return Boolean(clean && getComputedStyle(clean).visibility !== 'hidden' && getComputedStyle(clean.parentElement).visibility !== 'hidden')
+    loaderOpaque: (() => {
+      const loader = document.querySelector('.map-loading-screen')
+      if (!loader) return false
+      const style = getComputedStyle(loader)
+      return style.visibility !== 'hidden' && style.opacity !== '0' && Number.parseFloat(style.zIndex || '0') >= 1
     })(),
   }))
-  if (!before.loading || before.ready || before.cleanVisible) {
+  if (!before.loading || before.ready || !before.loaderOpaque) {
     throw new Error(`clean map was exposed before the negative layer: ${JSON.stringify(before)}`)
+  }
+  const loadingCopy = await delayed.page.locator('.map-loading-screen').textContent()
+  if (!loadingCopy?.includes('Заходим в сад')) {
+    throw new Error(`unexpected map loader copy: ${JSON.stringify(loadingCopy)}`)
   }
 
   releaseNegative()
@@ -73,8 +79,9 @@ try {
   const errorState = await failed.page.evaluate(() => ({
     ready: document.querySelector('.world-map-world')?.classList.contains('is-ready') ?? false,
     cleanVisible: getComputedStyle(document.querySelector('.world-map-clean').parentElement).visibility === 'visible',
+    hasErrorClass: document.querySelector('.world-map-viewport')?.classList.contains('has-map-error') ?? false,
   }))
-  if (errorState.ready || errorState.cleanVisible) {
+  if (errorState.ready || errorState.cleanVisible || !errorState.hasErrorClass) {
     throw new Error(`failed map exposed a partial layer: ${JSON.stringify(errorState)}`)
   }
 
