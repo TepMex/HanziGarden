@@ -60,7 +60,7 @@ function midpoint(left: Point, right: Point): Point {
   return { x: (left.x + right.x) / 2, y: (left.y + right.y) / 2 }
 }
 
-function localPoint(event: React.PointerEvent<HTMLElement> | React.WheelEvent<HTMLElement>, viewport: DOMRect): Point {
+function localPoint(event: React.PointerEvent<HTMLElement>, viewport: DOMRect): Point {
   return { x: event.clientX - viewport.left, y: event.clientY - viewport.top }
 }
 
@@ -228,6 +228,27 @@ export function WorldMap({ save, camera, onCameraChange, onEnterPlot }: WorldMap
   }, [])
 
   useEffect(() => {
+    const element = viewportRef.current
+    if (!element) return
+
+    const onWheel = (event: WheelEvent) => {
+      event.preventDefault()
+      const viewport = getViewport()
+      if (!viewport) return
+      const intensity = event.deltaMode === 1 ? 0.045 : 0.0015
+      const targetZoom = clampZoom(cameraRef.current.zoom * Math.exp(-event.deltaY * intensity))
+      const point = { x: event.clientX - element.getBoundingClientRect().left, y: event.clientY - element.getBoundingClientRect().top }
+      paintCamera(zoomAroundPoint(cameraRef.current, point, targetZoom, viewport))
+      if (wheelCommitRef.current) window.clearTimeout(wheelCommitRef.current)
+      wheelCommitRef.current = window.setTimeout(commitCamera, 120)
+    }
+
+    // React's onWheel is passive in Chromium; Android needs preventDefault to keep map zoom from scrolling the WebView.
+    element.addEventListener('wheel', onWheel, { passive: false })
+    return () => element.removeEventListener('wheel', onWheel)
+  }, [commitCamera, getViewport, paintCamera])
+
+  useEffect(() => {
     let cancelled = false
     let firstFrame: number | null = null
     let secondFrame: number | null = null
@@ -332,18 +353,6 @@ export function WorldMap({ save, camera, onCameraChange, onEnterPlot }: WorldMap
     if (shouldCommit) commitCamera()
   }
 
-  const onWheel = (event: React.WheelEvent<HTMLElement>) => {
-    event.preventDefault()
-    const viewport = getViewport()
-    const element = viewportRef.current
-    if (!viewport || !element) return
-    const intensity = event.deltaMode === 1 ? 0.045 : 0.0015
-    const targetZoom = clampZoom(cameraRef.current.zoom * Math.exp(-event.deltaY * intensity))
-    paintCamera(zoomAroundPoint(cameraRef.current, localPoint(event, element.getBoundingClientRect()), targetZoom, viewport))
-    if (wheelCommitRef.current) window.clearTimeout(wheelCommitRef.current)
-    wheelCommitRef.current = window.setTimeout(commitCamera, 120)
-  }
-
   const activatePlot = (plot: PlotDefinition) => {
     if (save.unlockedPlotIds.includes(plot.id)) {
       onEnterPlot(plot)
@@ -362,7 +371,6 @@ export function WorldMap({ save, camera, onCameraChange, onEnterPlot }: WorldMap
       onPointerMove={onPointerMove}
       onPointerUp={finishPointer}
       onPointerCancel={finishPointer}
-      onWheel={onWheel}
     >
       <div className={`world-map-world ${loadState === 'ready' ? 'is-ready' : ''}`} ref={worldRef} aria-hidden={loadState !== 'ready'}>
         <img className="world-map-clean" src={cleanMapUrl} alt="" draggable={false} />
