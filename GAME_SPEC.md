@@ -2,7 +2,7 @@
 
 ## 1. Product Summary
 
-**Working title:** Memory Garden / Сад памяти
+**Working title:** Memory Garden / Сад иероглифов
 
 **Repository:** single-product repo — web game at the repository root, Android WebView sideload APK under `android/`. Not a multi-project monorepo.
 

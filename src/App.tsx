@@ -94,7 +94,7 @@ function MapScreen({
   return (
     <main className="map-screen">
       <header className="map-header">
-        <div className="brand-mark"><Leaf size={18} /><span>Сад памяти</span></div>
+        <div className="brand-mark"><Leaf size={18} /><span>Сад иероглифов</span></div>
         <div className="world-summary">
           <span>{learned} изучено</span>
           <span>{due} на повторение</span>
@@ -405,10 +405,10 @@ function Welcome({ onEnter }: { onEnter: () => void }) {
       <div className="welcome-vignette" />
       <section className="welcome-card">
         <div className="seal"><span>忆</span></div>
-        <p className="eyebrow">Наследие хранителя</p>
-        <h1>Сад памяти</h1>
-        <p>Забытые иероглифы пустили корни. Вспоминайте значение, пишите каждый штрих и возвращайте земле цвет.</p>
-        <div className="welcome-rule"><span /> кисть помнит путь <span /></div>
+        <p className="eyebrow">Изучи китайскую письменность</p>
+        <h1>Сад иероглифов</h1>
+        <p>Добро пожаловать в Сад иероглифов! Очищай его от сорняков, запоминай начертания иероглифов и тренируй механическую память!</p>
+        <div className="welcome-rule"><span /> кисть поможет запомнить <span /></div>
         <button className="primary-button" onClick={onEnter}>Войти в сад <Leaf size={18} /></button>
       </section>
     </div>

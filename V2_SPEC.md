@@ -760,7 +760,7 @@ Keep the main map visually clean.
 Persistent UI may include:
 
 top-left:
-    Memory Garden / Сад памяти brand
+    Memory Garden / Сад иероглифов brand
 
 top-right:
     learned count

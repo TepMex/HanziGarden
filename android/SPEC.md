@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Ship **Memory Garden** (Сад памяти) as a sideloadable Android APK by wrapping the React/Vite web game from **this same repository** in a thin native shell. Players get the same meaning→write Hanzi garden game offline on Android 14+, downloadable from this repo’s GitHub Pages `/android/` landing.
+Ship **Memory Garden** (Сад иероглифов) as a sideloadable Android APK by wrapping the React/Vite web game from **this same repository** in a thin native shell. Players get the same meaning→write Hanzi garden game offline on Android 14+, downloadable from this repo’s GitHub Pages `/android/` landing.
 
 Audience: Mandarin learners who already use the web game and want a home-screen install with local progress.
 
