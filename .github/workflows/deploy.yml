@@ -161,10 +161,11 @@ jobs:
 
       - name: Setup Java
         if: needs.detect.outputs.build_android == 'true'
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "21"
+          cache: gradle
 
       - name: Setup Android SDK
         if: needs.detect.outputs.build_android == 'true'
@@ -177,7 +178,27 @@ jobs:
       - name: Build Memory Garden Android APK
         if: needs.detect.outputs.build_android == 'true'
         working-directory: android
-        run: chmod +x gradlew && ./gradlew --no-daemon --stacktrace assembleRelease
+        run: |
+          set -euo pipefail
+          chmod +x gradlew
+
+          # Gradle wrapper downloads can flake on services.gradle.org;
+          # retry a few times and clear a partial dist before each attempt.
+          max_attempts=3
+          attempt=1
+          while true; do
+            echo "Gradle assembleRelease attempt ${attempt}/${max_attempts}"
+            if ./gradlew --no-daemon --stacktrace assembleRelease; then
+              break
+            fi
+            if [[ "$attempt" -ge "$max_attempts" ]]; then
+              echo "Gradle assembleRelease failed after ${max_attempts} attempts" >&2
+              exit 1
+            fi
+            rm -rf "${GRADLE_USER_HOME:-$HOME/.gradle}/wrapper/dists/gradle-8.9-bin" || true
+            attempt=$((attempt + 1))
+            sleep $((attempt * 5))
+          done
 
       - name: Verify APK sideload signing
         if: needs.detect.outputs.build_android == 'true'
