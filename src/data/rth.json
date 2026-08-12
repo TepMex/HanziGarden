@@ -416,7 +416,7 @@
   {
     "frame": 47,
     "hanzi": "卡",
-    "keyword": "карта",
+    "keyword": "банковская карта",
     "rth_list": "RSH-L03: Сотни, направления и гадание",
     "lesson": 3,
     "strokes": 5,
@@ -470,7 +470,7 @@
   {
     "frame": 53,
     "hanzi": "贴",
-    "keyword": "вставить",
+    "keyword": "приклеивать",
     "rth_list": "RSH-L04: Десять тысяч и зрячие",
     "lesson": 4,
     "strokes": 9,
@@ -587,7 +587,7 @@
   {
     "frame": 66,
     "hanzi": "匀",
-    "keyword": "униформа",
+    "keyword": "равномерный",
     "rth_list": "RSH-L04: Десять тысяч и зрячие",
     "lesson": 4,
     "strokes": 4,
@@ -605,7 +605,7 @@
   {
     "frame": 68,
     "hanzi": "旬",
-    "keyword": "декамерон",
+    "keyword": "десятидневка",
     "rth_list": "RSH-L04: Десять тысяч и зрячие",
     "lesson": 4,
     "strokes": 6,
@@ -650,7 +650,7 @@
   {
     "frame": 73,
     "hanzi": "置",
-    "keyword": "настроить",
+    "keyword": "размещать",
     "rth_list": "RSH-L05: Инструменты, оружие и направления",
     "lesson": 5,
     "strokes": 13,
@@ -686,7 +686,7 @@
   {
     "frame": 77,
     "hanzi": "左",
-    "keyword": "ушел",
+    "keyword": "левый",
     "rth_list": "RSH-L05: Инструменты, оружие и направления",
     "lesson": 5,
     "strokes": 5,
@@ -695,7 +695,7 @@
   {
     "frame": 78,
     "hanzi": "右",
-    "keyword": "правильно",
+    "keyword": "правый",
     "rth_list": "RSH-L05: Инструменты, оружие и направления",
     "lesson": 5,
     "strokes": 5,
@@ -758,7 +758,7 @@
   {
     "frame": 85,
     "hanzi": "切",
-    "keyword": "вырезать",
+    "keyword": "резать",
     "rth_list": "RSH-L05: Инструменты, оружие и направления",
     "lesson": 5,
     "strokes": 4,
@@ -776,7 +776,7 @@
   {
     "frame": 87,
     "hanzi": "昭",
-    "keyword": "очевидный",
+    "keyword": "явный",
     "rth_list": "RSH-L05: Инструменты, оружие и направления",
     "lesson": 5,
     "strokes": 9,
@@ -839,7 +839,7 @@
   {
     "frame": 94,
     "hanzi": "顶",
-    "keyword": "гребень",
+    "keyword": "вершина / гребень",
     "rth_list": "RSH-L05: Инструменты, оружие и направления",
     "lesson": 5,
     "strokes": 8,
@@ -902,7 +902,7 @@
   {
     "frame": 101,
     "hanzi": "了",
-    "keyword": "-ред.",
+    "keyword": "показатель завершённости",
     "rth_list": "RSH-L06: Семья и абстрактные концепции",
     "lesson": 6,
     "strokes": 2,
@@ -956,7 +956,7 @@
   {
     "frame": 107,
     "hanzi": "兄",
-    "keyword": "старший брат",
+    "keyword": "старший брат (книжн.)",
     "rth_list": "RSH-L06: Семья и абстрактные концепции",
     "lesson": 6,
     "strokes": 5,
@@ -1019,7 +1019,7 @@
   {
     "frame": 114,
     "hanzi": "尖",
-    "keyword": "чаевые",
+    "keyword": "острие",
     "rth_list": "RSH-L07: Размер, количество и время",
     "lesson": 7,
     "strokes": 6,
@@ -1199,7 +1199,7 @@
   {
     "frame": 134,
     "hanzi": "川",
-    "keyword": "поток",
+    "keyword": "ручей",
     "rth_list": "RSH-L08: Вода и география",
     "lesson": 8,
     "strokes": 3,
@@ -1208,7 +1208,7 @@
   {
     "frame": 135,
     "hanzi": "州",
-    "keyword": "государство",
+    "keyword": "штат / область",
     "rth_list": "RSH-L08: Вода и география",
     "lesson": 8,
     "strokes": 6,
@@ -1253,7 +1253,7 @@
   {
     "frame": 140,
     "hanzi": "求",
-    "keyword": "запрос",
+    "keyword": "просить",
     "rth_list": "RSH-L08: Вода и география",
     "lesson": 8,
     "strokes": 7,
@@ -1262,7 +1262,7 @@
   {
     "frame": 141,
     "hanzi": "泉",
-    "keyword": "весна",
+    "keyword": "родник",
     "rth_list": "RSH-L08: Вода и география",
     "lesson": 8,
     "strokes": 9,
@@ -1496,7 +1496,7 @@
   {
     "frame": 167,
     "hanzi": "封",
-    "keyword": "печать",
+    "keyword": "запечатывать",
     "rth_list": "RSH-L08: Вода и география",
     "lesson": 8,
     "strokes": 9,
@@ -1550,7 +1550,7 @@
   {
     "frame": 173,
     "hanzi": "烦",
-    "keyword": "раздраженный",
+    "keyword": "досадующий",
     "rth_list": "RSH-L08: Вода и география",
     "lesson": 8,
     "strokes": 10,
@@ -1568,7 +1568,7 @@
   {
     "frame": 175,
     "hanzi": "淡",
-    "keyword": "тонкий",
+    "keyword": "разбавленный",
     "rth_list": "RSH-L08: Вода и география",
     "lesson": 8,
     "strokes": 11,
@@ -1622,7 +1622,7 @@
   {
     "frame": 181,
     "hanzi": "埋",
-    "keyword": "хоронить",
+    "keyword": "закапывать",
     "rth_list": "RSH-L09: Похороны, тьма и пещеры",
     "lesson": 9,
     "strokes": 10,
@@ -1712,7 +1712,7 @@
   {
     "frame": 191,
     "hanzi": "字",
-    "keyword": "персонаж",
+    "keyword": "письменный знак",
     "rth_list": "RSH-L09: Похороны, тьма и пещеры",
     "lesson": 9,
     "strokes": 6,
@@ -1721,7 +1721,7 @@
   {
     "frame": 192,
     "hanzi": "守",
-    "keyword": "охранник",
+    "keyword": "охранять",
     "rth_list": "RSH-L09: Похороны, тьма и пещеры",
     "lesson": 9,
     "strokes": 6,
@@ -1784,7 +1784,7 @@
   {
     "frame": 199,
     "hanzi": "寄",
-    "keyword": "почта",
+    "keyword": "отправлять почтой",
     "rth_list": "RSH-L09: Похороны, тьма и пещеры",
     "lesson": 9,
     "strokes": 11,
@@ -1838,7 +1838,7 @@
   {
     "frame": 205,
     "hanzi": "梦",
-    "keyword": "мечтать",
+    "keyword": "сон",
     "rth_list": "RSH-L10: Деревья, лес и лес",
     "lesson": 10,
     "strokes": 11,
@@ -1847,7 +1847,7 @@
   {
     "frame": 206,
     "hanzi": "机",
-    "keyword": "машина",
+    "keyword": "механизм",
     "rth_list": "RSH-L10: Деревья, лес и лес",
     "lesson": 10,
     "strokes": 6,
@@ -1874,7 +1874,7 @@
   {
     "frame": 209,
     "hanzi": "呆",
-    "keyword": "тупой",
+    "keyword": "туповатый",
     "rth_list": "RSH-L10: Деревья, лес и лес",
     "lesson": 10,
     "strokes": 7,
@@ -1919,7 +1919,7 @@
   {
     "frame": 214,
     "hanzi": "案",
-    "keyword": "дело",
+    "keyword": "судебное дело",
     "rth_list": "RSH-L10: Деревья, лес и лес",
     "lesson": 10,
     "strokes": 10,
@@ -1973,7 +1973,7 @@
   {
     "frame": 220,
     "hanzi": "查",
-    "keyword": "исследовать",
+    "keyword": "расследовать",
     "rth_list": "RSH-L10: Деревья, лес и лес",
     "lesson": 10,
     "strokes": 9,
@@ -1991,7 +1991,7 @@
   {
     "frame": 222,
     "hanzi": "染",
-    "keyword": "краситель",
+    "keyword": "окрашивать",
     "rth_list": "RSH-L10: Деревья, лес и лес",
     "lesson": 10,
     "strokes": 9,
@@ -2108,7 +2108,7 @@
   {
     "frame": 235,
     "hanzi": "苗",
-    "keyword": "рассада",
+    "keyword": "саженец",
     "rth_list": "RSH-L10: Деревья, лес и лес",
     "lesson": 10,
     "strokes": 8,
@@ -2117,7 +2117,7 @@
   {
     "frame": 236,
     "hanzi": "瞄",
-    "keyword": "цель",
+    "keyword": "прицеливаться",
     "rth_list": "RSH-L10: Деревья, лес и лес",
     "lesson": 10,
     "strokes": 13,
@@ -2144,7 +2144,7 @@
   {
     "frame": 239,
     "hanzi": "犬",
-    "keyword": "собака",
+    "keyword": "пёс",
     "rth_list": "RSH-L11: Собаки, косметика и посуда",
     "lesson": 11,
     "strokes": 4,
@@ -2153,7 +2153,7 @@
   {
     "frame": 240,
     "hanzi": "尤",
-    "keyword": "замечательный",
+    "keyword": "примечательный",
     "rth_list": "RSH-L11: Собаки, косметика и посуда",
     "lesson": 11,
     "strokes": 4,
@@ -2162,7 +2162,7 @@
   {
     "frame": 241,
     "hanzi": "厌",
-    "keyword": "ненавидеть",
+    "keyword": "питать отвращение",
     "rth_list": "RSH-L11: Собаки, косметика и посуда",
     "lesson": 11,
     "strokes": 6,
@@ -2189,7 +2189,7 @@
   {
     "frame": 244,
     "hanzi": "将",
-    "keyword": "Общий",
+    "keyword": "генерал",
     "rth_list": "RSH-L11: Собаки, косметика и посуда",
     "lesson": 11,
     "strokes": 9,
@@ -2198,7 +2198,7 @@
   {
     "frame": 245,
     "hanzi": "获",
-    "keyword": "схватить",
+    "keyword": "захватывать",
     "rth_list": "RSH-L11: Собаки, косметика и посуда",
     "lesson": 11,
     "strokes": 10,
@@ -2207,7 +2207,7 @@
   {
     "frame": 246,
     "hanzi": "默",
-    "keyword": "тихий",
+    "keyword": "безмолвный",
     "rth_list": "RSH-L11: Собаки, косметика и посуда",
     "lesson": 11,
     "strokes": 16,
@@ -2288,7 +2288,7 @@
   {
     "frame": 255,
     "hanzi": "浩",
-    "keyword": "огромный",
+    "keyword": "необъятный",
     "rth_list": "RSH-L11: Собаки, косметика и посуда",
     "lesson": 11,
     "strokes": 10,
@@ -2297,7 +2297,7 @@
   {
     "frame": 256,
     "hanzi": "先",
-    "keyword": "раньше",
+    "keyword": "прежде",
     "rth_list": "RSH-L11: Собаки, косметика и посуда",
     "lesson": 11,
     "strokes": 6,
@@ -2414,7 +2414,7 @@
   {
     "frame": 269,
     "hanzi": "现",
-    "keyword": "настоящий",
+    "keyword": "настоящее",
     "rth_list": "RSH-L12: Королевская семья, нефрит и сокровища",
     "lesson": 12,
     "strokes": 8,
@@ -2450,7 +2450,7 @@
   {
     "frame": 273,
     "hanzi": "煌",
-    "keyword": "блестящий",
+    "keyword": "ослепительный",
     "rth_list": "RSH-L12: Королевская семья, нефрит и сокровища",
     "lesson": 12,
     "strokes": 13,
@@ -2459,7 +2459,7 @@
   {
     "frame": 274,
     "hanzi": "呈",
-    "keyword": "отправить",
+    "keyword": "представлять",
     "rth_list": "RSH-L12: Королевская семья, нефрит и сокровища",
     "lesson": 12,
     "strokes": 7,
@@ -2576,7 +2576,7 @@
   {
     "frame": 287,
     "hanzi": "道",
-    "keyword": "путь",
+    "keyword": "путь / способ",
     "rth_list": "RSH-L13: Движение и транспорт",
     "lesson": 13,
     "strokes": 12,
@@ -2612,7 +2612,7 @@
   {
     "frame": 291,
     "hanzi": "过",
-    "keyword": "крест",
+    "keyword": "пересекать",
     "rth_list": "RSH-L13: Движение и транспорт",
     "lesson": 13,
     "strokes": 6,
@@ -2630,7 +2630,7 @@
   {
     "frame": 293,
     "hanzi": "迅",
-    "keyword": "быстрый",
+    "keyword": "скорый",
     "rth_list": "RSH-L13: Движение и транспорт",
     "lesson": 13,
     "strokes": 6,
@@ -2648,7 +2648,7 @@
   {
     "frame": 295,
     "hanzi": "逃",
-    "keyword": "побег",
+    "keyword": "сбегать",
     "rth_list": "RSH-L13: Движение и транспорт",
     "lesson": 13,
     "strokes": 9,
@@ -2657,7 +2657,7 @@
   {
     "frame": 296,
     "hanzi": "巡",
-    "keyword": "патруль",
+    "keyword": "патрулировать",
     "rth_list": "RSH-L13: Движение и транспорт",
     "lesson": 13,
     "strokes": 6,
@@ -2675,7 +2675,7 @@
   {
     "frame": 298,
     "hanzi": "逊",
-    "keyword": "скромный",
+    "keyword": "умеренный",
     "rth_list": "RSH-L13: Движение и транспорт",
     "lesson": 13,
     "strokes": 9,
@@ -2684,7 +2684,7 @@
   {
     "frame": 299,
     "hanzi": "逛",
-    "keyword": "прогулка",
+    "keyword": "прогуливаться",
     "rth_list": "RSH-L13: Движение и транспорт",
     "lesson": 13,
     "strokes": 10,
@@ -2738,7 +2738,7 @@
   {
     "frame": 305,
     "hanzi": "输",
-    "keyword": "транспорт",
+    "keyword": "перевозить",
     "rth_list": "RSH-L13: Движение и транспорт",
     "lesson": 13,
     "strokes": 13,
@@ -2774,7 +2774,7 @@
   {
     "frame": 309,
     "hanzi": "各",
-    "keyword": "каждый",
+    "keyword": "каждый из",
     "rth_list": "RSH-L13: Движение и транспорт",
     "lesson": 13,
     "strokes": 6,
@@ -2864,7 +2864,7 @@
   {
     "frame": 319,
     "hanzi": "沉",
-    "keyword": "глубокий",
+    "keyword": "глубокомысленный",
     "rth_list": "RSH-L14: Армия, пейзажи и здания",
     "lesson": 14,
     "strokes": 7,
@@ -2954,7 +2954,7 @@
   {
     "frame": 329,
     "hanzi": "亮",
-    "keyword": "блестящий",
+    "keyword": "глянцевый",
     "rth_list": "RSH-L14: Армия, пейзажи и здания",
     "lesson": 14,
     "strokes": 9,
@@ -2963,7 +2963,7 @@
   {
     "frame": 330,
     "hanzi": "京",
-    "keyword": "капитал",
+    "keyword": "столица",
     "rth_list": "RSH-L14: Армия, пейзажи и здания",
     "lesson": 14,
     "strokes": 8,
@@ -2972,7 +2972,7 @@
   {
     "frame": 331,
     "hanzi": "景",
-    "keyword": "декорации",
+    "keyword": "пейзаж",
     "rth_list": "RSH-L14: Армия, пейзажи и здания",
     "lesson": 14,
     "strokes": 12,
@@ -3008,7 +3008,7 @@
   {
     "frame": 335,
     "hanzi": "吉",
-    "keyword": "повезло",
+    "keyword": "удачливый",
     "rth_list": "RSH-L14: Армия, пейзажи и здания",
     "lesson": 14,
     "strokes": 6,
@@ -3026,7 +3026,7 @@
   {
     "frame": 337,
     "hanzi": "学",
-    "keyword": "исследование",
+    "keyword": "учёба",
     "rth_list": "RSH-L15: Война, право и полиция",
     "lesson": 15,
     "strokes": 8,
@@ -3035,7 +3035,7 @@
   {
     "frame": 338,
     "hanzi": "觉",
-    "keyword": "чувства",
+    "keyword": "ощущения",
     "rth_list": "RSH-L15: Война, право и полиция",
     "lesson": 15,
     "strokes": 9,
@@ -3080,7 +3080,7 @@
   {
     "frame": 343,
     "hanzi": "救",
-    "keyword": "спасение",
+    "keyword": "спасать",
     "rth_list": "RSH-L15: Война, право и полиция",
     "lesson": 15,
     "strokes": 11,
@@ -3134,7 +3134,7 @@
   {
     "frame": 349,
     "hanzi": "让",
-    "keyword": "урожайность",
+    "keyword": "уступать",
     "rth_list": "RSH-L15: Война, право и полиция",
     "lesson": 15,
     "strokes": 5,
@@ -3179,7 +3179,7 @@
   {
     "frame": 354,
     "hanzi": "话",
-    "keyword": "говорить",
+    "keyword": "разговор",
     "rth_list": "RSH-L15: Война, право и полиция",
     "lesson": 15,
     "strokes": 8,
@@ -3197,7 +3197,7 @@
   {
     "frame": 356,
     "hanzi": "语",
-    "keyword": "язык",
+    "keyword": "язык (речь)",
     "rth_list": "RSH-L15: Война, право и полиция",
     "lesson": 15,
     "strokes": 9,
@@ -3206,7 +3206,7 @@
   {
     "frame": 357,
     "hanzi": "调",
-    "keyword": "настраивать",
+    "keyword": "мелодия",
     "rth_list": "RSH-L15: Война, право и полиция",
     "lesson": 15,
     "strokes": 10,
@@ -3332,7 +3332,7 @@
   {
     "frame": 371,
     "hanzi": "威",
-    "keyword": "может быть",
+    "keyword": "могущество",
     "rth_list": "RSH-L16: Оружие, город и монеты",
     "lesson": 16,
     "strokes": 9,
@@ -3368,7 +3368,7 @@
   {
     "frame": 375,
     "hanzi": "贱",
-    "keyword": "дешево",
+    "keyword": "дешёвый",
     "rth_list": "RSH-L16: Оружие, город и монеты",
     "lesson": 16,
     "strokes": 9,
@@ -3395,7 +3395,7 @@
   {
     "frame": 378,
     "hanzi": "晓",
-    "keyword": "рассвет",
+    "keyword": "заря",
     "rth_list": "RSH-L16: Оружие, город и монеты",
     "lesson": 16,
     "strokes": 10,
@@ -3422,7 +3422,7 @@
   {
     "frame": 381,
     "hanzi": "涉",
-    "keyword": "Форд",
+    "keyword": "переходить вброд",
     "rth_list": "RSH-L17: Прогулки, Военные и Политика",
     "lesson": 17,
     "strokes": 10,
@@ -3530,7 +3530,7 @@
   {
     "frame": 393,
     "hanzi": "越",
-    "keyword": "превосходить",
+    "keyword": "перешагивать / превосходить",
     "rth_list": "RSH-L17: Прогулки, Военные и Политика",
     "lesson": 17,
     "strokes": 12,
@@ -3566,7 +3566,7 @@
   {
     "frame": 397,
     "hanzi": "诞",
-    "keyword": "Рождество",
+    "keyword": "рождение",
     "rth_list": "RSH-L17: Прогулки, Военные и Политика",
     "lesson": 17,
     "strokes": 8,
@@ -3647,7 +3647,7 @@
   {
     "frame": 406,
     "hanzi": "补",
-    "keyword": "патч",
+    "keyword": "заплатка",
     "rth_list": "RSH-L18: Одежда, ткани и сельское хозяйство",
     "lesson": 18,
     "strokes": 7,
@@ -3728,7 +3728,7 @@
   {
     "frame": 415,
     "hanzi": "帜",
-    "keyword": "стример",
+    "keyword": "вымпел",
     "rth_list": "RSH-L18: Одежда, ткани и сельское хозяйство",
     "lesson": 18,
     "strokes": 8,
@@ -3782,7 +3782,7 @@
   {
     "frame": 421,
     "hanzi": "带",
-    "keyword": "створка",
+    "keyword": "кушак",
     "rth_list": "RSH-L18: Одежда, ткани и сельское хозяйство",
     "lesson": 18,
     "strokes": 9,
@@ -3899,7 +3899,7 @@
   {
     "frame": 434,
     "hanzi": "凉",
-    "keyword": "круто",
+    "keyword": "прохладный",
     "rth_list": "RSH-L18: Одежда, ткани и сельское хозяйство",
     "lesson": 18,
     "strokes": 10,
@@ -3998,7 +3998,7 @@
   {
     "frame": 445,
     "hanzi": "泣",
-    "keyword": "плакать",
+    "keyword": "рыдать",
     "rth_list": "RSH-L18: Одежда, ткани и сельское хозяйство",
     "lesson": 18,
     "strokes": 8,
@@ -4088,7 +4088,7 @@
   {
     "frame": 455,
     "hanzi": "背",
-    "keyword": "назад",
+    "keyword": "спина",
     "rth_list": "RSH-L18: Одежда, ткани и сельское хозяйство",
     "lesson": 18,
     "strokes": 9,
@@ -4133,7 +4133,7 @@
   {
     "frame": 460,
     "hanzi": "此",
-    "keyword": "это (литературный)",
+    "keyword": "сей (книжн.)",
     "rth_list": "RSH-L18: Одежда, ткани и сельское хозяйство",
     "lesson": 18,
     "strokes": 6,
@@ -4142,7 +4142,7 @@
   {
     "frame": 461,
     "hanzi": "些",
-    "keyword": "несколько",
+    "keyword": "немного",
     "rth_list": "RSH-L18: Одежда, ткани и сельское хозяйство",
     "lesson": 18,
     "strokes": 8,
@@ -4169,7 +4169,7 @@
   {
     "frame": 464,
     "hanzi": "脂",
-    "keyword": "смазка",
+    "keyword": "жир",
     "rth_list": "RSH-L18: Одежда, ткани и сельское хозяйство",
     "lesson": 18,
     "strokes": 10,
@@ -4196,7 +4196,7 @@
   {
     "frame": 467,
     "hanzi": "每",
-    "keyword": "каждый",
+    "keyword": "всякий",
     "rth_list": "RSH-L18: Одежда, ткани и сельское хозяйство",
     "lesson": 18,
     "strokes": 7,
@@ -4223,7 +4223,7 @@
   {
     "frame": 470,
     "hanzi": "乞",
-    "keyword": "просить",
+    "keyword": "умолять",
     "rth_list": "RSH-L18: Одежда, ткани и сельское хозяйство",
     "lesson": 18,
     "strokes": 3,
@@ -4250,7 +4250,7 @@
   {
     "frame": 473,
     "hanzi": "腹",
-    "keyword": "живот",
+    "keyword": "брюшная полость",
     "rth_list": "RSH-L18: Одежда, ткани и сельское хозяйство",
     "lesson": 18,
     "strokes": 13,
@@ -4268,7 +4268,7 @@
   {
     "frame": 475,
     "hanzi": "吹",
-    "keyword": "удар",
+    "keyword": "дуть",
     "rth_list": "RSH-L18: Одежда, ткани и сельское хозяйство",
     "lesson": 18,
     "strokes": 7,
@@ -4313,7 +4313,7 @@
   {
     "frame": 480,
     "hanzi": "姿",
-    "keyword": "выглядит",
+    "keyword": "внешность",
     "rth_list": "RSH-L18: Одежда, ткани и сельское хозяйство",
     "lesson": 18,
     "strokes": 9,
@@ -4358,7 +4358,7 @@
   {
     "frame": 485,
     "hanzi": "暗",
-    "keyword": "темно",
+    "keyword": "тёмный",
     "rth_list": "RSH-L19: Звук, зеркала и границы",
     "lesson": 19,
     "strokes": 13,
@@ -4457,7 +4457,7 @@
   {
     "frame": 496,
     "hanzi": "放",
-    "keyword": "выпуск",
+    "keyword": "освобождать",
     "rth_list": "RSH-L19: Звук, зеркала и границы",
     "lesson": 19,
     "strokes": 8,
@@ -4511,7 +4511,7 @@
   {
     "frame": 502,
     "hanzi": "曾",
-    "keyword": "раньше",
+    "keyword": "ранее",
     "rth_list": "RSH-L19: Звук, зеркала и границы",
     "lesson": 19,
     "strokes": 12,
@@ -4538,7 +4538,7 @@
   {
     "frame": 505,
     "hanzi": "也",
-    "keyword": "также",
+    "keyword": "тоже",
     "rth_list": "RSH-L20: Насекомые, рептилии и яйца",
     "lesson": 20,
     "strokes": 3,
@@ -4556,7 +4556,7 @@
   {
     "frame": 507,
     "hanzi": "地",
-    "keyword": "земля",
+    "keyword": "грунт",
     "rth_list": "RSH-L20: Насекомые, рептилии и яйца",
     "lesson": 20,
     "strokes": 6,
@@ -4592,7 +4592,7 @@
   {
     "frame": 511,
     "hanzi": "独",
-    "keyword": "один",
+    "keyword": "в одиночестве",
     "rth_list": "RSH-L20: Насекомые, рептилии и яйца",
     "lesson": 20,
     "strokes": 9,
@@ -4646,7 +4646,7 @@
   {
     "frame": 517,
     "hanzi": "改",
-    "keyword": "изменить",
+    "keyword": "исправлять",
     "rth_list": "RSH-L20: Насекомые, рептилии и яйца",
     "lesson": 20,
     "strokes": 7,
@@ -4691,7 +4691,7 @@
   {
     "frame": 522,
     "hanzi": "导",
-    "keyword": "гид",
+    "keyword": "направлять",
     "rth_list": "RSH-L20: Насекомые, рептилии и яйца",
     "lesson": 20,
     "strokes": 6,
@@ -4727,7 +4727,7 @@
   {
     "frame": 526,
     "hanzi": "场",
-    "keyword": "сайт",
+    "keyword": "площадка",
     "rth_list": "RSH-L20: Насекомые, рептилии и яйца",
     "lesson": 20,
     "strokes": 6,
@@ -4817,7 +4817,7 @@
   {
     "frame": 536,
     "hanzi": "着",
-    "keyword": "длительное действие",
+    "keyword": "показатель длительного действия",
     "rth_list": "RSH-L20: Насекомые, рептилии и яйца",
     "lesson": 20,
     "strokes": 11,
@@ -4826,7 +4826,7 @@
   {
     "frame": 537,
     "hanzi": "养",
-    "keyword": "поднять",
+    "keyword": "выращивать",
     "rth_list": "RSH-L20: Насекомые, рептилии и яйца",
     "lesson": 20,
     "strokes": 9,
@@ -4880,7 +4880,7 @@
   {
     "frame": 543,
     "hanzi": "许",
-    "keyword": "разрешение",
+    "keyword": "разрешать",
     "rth_list": "RSH-L20: Насекомые, рептилии и яйца",
     "lesson": 20,
     "strokes": 6,
@@ -4961,7 +4961,7 @@
   {
     "frame": 552,
     "hanzi": "烟",
-    "keyword": "курить",
+    "keyword": "дым",
     "rth_list": "RSH-L21: Страна, Хранение и Копчение",
     "lesson": 21,
     "strokes": 10,
@@ -4988,7 +4988,7 @@
   {
     "frame": 555,
     "hanzi": "图",
-    "keyword": "картина",
+    "keyword": "изображение / схема",
     "rth_list": "RSH-L21: Страна, Хранение и Копчение",
     "lesson": 21,
     "strokes": 8,
@@ -5051,7 +5051,7 @@
   {
     "frame": 562,
     "hanzi": "庄",
-    "keyword": "деревня",
+    "keyword": "деревушка",
     "rth_list": "RSH-L21: Страна, Хранение и Копчение",
     "lesson": 21,
     "strokes": 6,
@@ -5114,7 +5114,7 @@
   {
     "frame": 569,
     "hanzi": "思",
-    "keyword": "рассмотреть",
+    "keyword": "обдумывать",
     "rth_list": "RSH-L21: Страна, Хранение и Копчение",
     "lesson": 21,
     "strokes": 9,
@@ -5213,7 +5213,7 @@
   {
     "frame": 580,
     "hanzi": "怕",
-    "keyword": "бояться",
+    "keyword": "опасаться",
     "rth_list": "RSH-L21: Страна, Хранение и Копчение",
     "lesson": 21,
     "strokes": 8,
@@ -5258,7 +5258,7 @@
   {
     "frame": 585,
     "hanzi": "看",
-    "keyword": "посмотри на",
+    "keyword": "смотреть",
     "rth_list": "RSH-L22: Действия рук и жесты",
     "lesson": 22,
     "strokes": 9,
@@ -5330,7 +5330,7 @@
   {
     "frame": 593,
     "hanzi": "打",
-    "keyword": "забастовка",
+    "keyword": "ударять",
     "rth_list": "RSH-L22: Действия рук и жесты",
     "lesson": 22,
     "strokes": 5,
@@ -5348,7 +5348,7 @@
   {
     "frame": 595,
     "hanzi": "持",
-    "keyword": "поддержка",
+    "keyword": "удерживать",
     "rth_list": "RSH-L22: Действия рук и жесты",
     "lesson": 22,
     "strokes": 9,
@@ -5357,7 +5357,7 @@
   {
     "frame": 596,
     "hanzi": "担",
-    "keyword": "предположить",
+    "keyword": "брать на себя",
     "rth_list": "RSH-L22: Действия рук и жесты",
     "lesson": 22,
     "strokes": 8,
@@ -5429,7 +5429,7 @@
   {
     "frame": 604,
     "hanzi": "接",
-    "keyword": "добро пожаловать",
+    "keyword": "встречать",
     "rth_list": "RSH-L22: Действия рук и жесты",
     "lesson": 22,
     "strokes": 11,
@@ -5447,7 +5447,7 @@
   {
     "frame": 606,
     "hanzi": "按",
-    "keyword": "нажмите на",
+    "keyword": "нажимать",
     "rth_list": "RSH-L22: Действия рук и жесты",
     "lesson": 22,
     "strokes": 9,
@@ -5456,7 +5456,7 @@
   {
     "frame": 607,
     "hanzi": "掉",
-    "keyword": "падение",
+    "keyword": "ронять",
     "rth_list": "RSH-L22: Действия рук и жесты",
     "lesson": 22,
     "strokes": 11,
@@ -5474,7 +5474,7 @@
   {
     "frame": 609,
     "hanzi": "啦",
-    "keyword": "!!",
+    "keyword": "усилительная частица",
     "rth_list": "RSH-L22: Действия рук и жесты",
     "lesson": 22,
     "strokes": 11,
@@ -5483,7 +5483,7 @@
   {
     "frame": 610,
     "hanzi": "找",
-    "keyword": "искать",
+    "keyword": "разыскивать",
     "rth_list": "RSH-L22: Действия рук и жесты",
     "lesson": 22,
     "strokes": 7,
@@ -5501,7 +5501,7 @@
   {
     "frame": 612,
     "hanzi": "抚",
-    "keyword": "комфорт",
+    "keyword": "успокаивать",
     "rth_list": "RSH-L22: Действия рук и жесты",
     "lesson": 22,
     "strokes": 7,
@@ -5519,7 +5519,7 @@
   {
     "frame": 614,
     "hanzi": "研",
-    "keyword": "отшлифовать",
+    "keyword": "шлифовать",
     "rth_list": "RSH-L22: Действия рук и жесты",
     "lesson": 22,
     "strokes": 9,
@@ -5564,7 +5564,7 @@
   {
     "frame": 619,
     "hanzi": "型",
-    "keyword": "плесень",
+    "keyword": "форма / пресс-форма",
     "rth_list": "RSH-L22: Действия рук и жесты",
     "lesson": 22,
     "strokes": 9,
@@ -5600,7 +5600,7 @@
   {
     "frame": 623,
     "hanzi": "存",
-    "keyword": "депозит",
+    "keyword": "вклад",
     "rth_list": "RSH-L22: Действия рук и жесты",
     "lesson": 22,
     "strokes": 6,
@@ -5609,7 +5609,7 @@
   {
     "frame": 624,
     "hanzi": "在",
-    "keyword": "в",
+    "keyword": "на / в",
     "rth_list": "RSH-L22: Действия рук и жесты",
     "lesson": 22,
     "strokes": 6,
@@ -5681,7 +5681,7 @@
   {
     "frame": 632,
     "hanzi": "硬",
-    "keyword": "тяжело",
+    "keyword": "твёрдый",
     "rth_list": "RSH-L22: Действия рук и жесты",
     "lesson": 22,
     "strokes": 12,
@@ -5753,7 +5753,7 @@
   {
     "frame": 640,
     "hanzi": "欢",
-    "keyword": "радостный",
+    "keyword": "ликующий",
     "rth_list": "RSH-L22: Действия рук и жесты",
     "lesson": 22,
     "strokes": 6,
@@ -5798,7 +5798,7 @@
   {
     "frame": 645,
     "hanzi": "摊",
-    "keyword": "стенд продавца",
+    "keyword": "торговый прилавок",
     "rth_list": "RSH-L22: Действия рук и жесты",
     "lesson": 22,
     "strokes": 13,
@@ -5861,7 +5861,7 @@
   {
     "frame": 652,
     "hanzi": "枝",
-    "keyword": "филиал",
+    "keyword": "ветвь",
     "rth_list": "RSH-L22: Действия рук и жесты",
     "lesson": 22,
     "strokes": 8,
@@ -5969,7 +5969,7 @@
   {
     "frame": 664,
     "hanzi": "抓",
-    "keyword": "схватить",
+    "keyword": "хватать",
     "rth_list": "RSH-L22: Действия рук и жесты",
     "lesson": 22,
     "strokes": 7,
@@ -5978,7 +5978,7 @@
   {
     "frame": 665,
     "hanzi": "采",
-    "keyword": "выбирать",
+    "keyword": "срывать / выбирать",
     "rth_list": "RSH-L22: Действия рук и жесты",
     "lesson": 22,
     "strokes": 8,
@@ -5987,7 +5987,7 @@
   {
     "frame": 666,
     "hanzi": "菜",
-    "keyword": "овощной",
+    "keyword": "овощ",
     "rth_list": "RSH-L22: Действия рук и жесты",
     "lesson": 22,
     "strokes": 11,
@@ -6005,7 +6005,7 @@
   {
     "frame": 668,
     "hanzi": "授",
-    "keyword": "назначать",
+    "keyword": "даровать",
     "rth_list": "RSH-L22: Действия рук и жесты",
     "lesson": 22,
     "strokes": 11,
@@ -6050,7 +6050,7 @@
   {
     "frame": 673,
     "hanzi": "治",
-    "keyword": "управлять",
+    "keyword": "править",
     "rth_list": "RSH-L22: Действия рук и жесты",
     "lesson": 22,
     "strokes": 8,
@@ -6059,7 +6059,7 @@
   {
     "frame": 674,
     "hanzi": "始",
-    "keyword": "начать",
+    "keyword": "приступать",
     "rth_list": "RSH-L22: Действия рук и жесты",
     "lesson": 22,
     "strokes": 8,
@@ -6086,7 +6086,7 @@
   {
     "frame": 677,
     "hanzi": "会",
-    "keyword": "встреча",
+    "keyword": "собрание",
     "rth_list": "RSH-L22: Действия рук и жесты",
     "lesson": 22,
     "strokes": 6,
@@ -6095,7 +6095,7 @@
   {
     "frame": 678,
     "hanzi": "至",
-    "keyword": "пока",
+    "keyword": "до",
     "rth_list": "RSH-L22: Действия рук и жесты",
     "lesson": 22,
     "strokes": 6,
@@ -6131,7 +6131,7 @@
   {
     "frame": 682,
     "hanzi": "充",
-    "keyword": "достаточно",
+    "keyword": "достаточный",
     "rth_list": "RSH-L22: Действия рук и жесты",
     "lesson": 22,
     "strokes": 6,
@@ -6149,7 +6149,7 @@
   {
     "frame": 684,
     "hanzi": "流",
-    "keyword": "поток",
+    "keyword": "течение",
     "rth_list": "RSH-L22: Действия рук и жесты",
     "lesson": 22,
     "strokes": 10,
@@ -6158,7 +6158,7 @@
   {
     "frame": 685,
     "hanzi": "梳",
-    "keyword": "расческа",
+    "keyword": "расчёска",
     "rth_list": "RSH-L22: Действия рук и жесты",
     "lesson": 22,
     "strokes": 11,
@@ -6167,7 +6167,7 @@
   {
     "frame": 686,
     "hanzi": "购",
-    "keyword": "покупка",
+    "keyword": "покупать",
     "rth_list": "RSH-L22: Действия рук и жесты",
     "lesson": 22,
     "strokes": 8,
@@ -6176,7 +6176,7 @@
   {
     "frame": 687,
     "hanzi": "构",
-    "keyword": "рамка",
+    "keyword": "каркас",
     "rth_list": "RSH-L22: Действия рук и жесты",
     "lesson": 22,
     "strokes": 8,
@@ -6293,7 +6293,7 @@
   {
     "frame": 700,
     "hanzi": "欲",
-    "keyword": "желание",
+    "keyword": "вожделение",
     "rth_list": "RSH-L23: Горы, долины и тайны",
     "lesson": 23,
     "strokes": 11,
@@ -6392,7 +6392,7 @@
   {
     "frame": 711,
     "hanzi": "被",
-    "keyword": "одеяло",
+    "keyword": "стёганое одеяло",
     "rth_list": "RSH-L24: Смерть, волны и уши",
     "lesson": 24,
     "strokes": 10,
@@ -6437,7 +6437,7 @@
   {
     "frame": 716,
     "hanzi": "葬",
-    "keyword": "Интер",
+    "keyword": "хоронить",
     "rth_list": "RSH-L24: Смерть, волны и уши",
     "lesson": 24,
     "strokes": 12,
@@ -6473,7 +6473,7 @@
   {
     "frame": 720,
     "hanzi": "最",
-    "keyword": "большинство",
+    "keyword": "самый / наиболее",
     "rth_list": "RSH-L24: Смерть, волны и уши",
     "lesson": 24,
     "strokes": 12,
@@ -6482,7 +6482,7 @@
   {
     "frame": 721,
     "hanzi": "职",
-    "keyword": "работа",
+    "keyword": "должность",
     "rth_list": "RSH-L24: Смерть, волны и уши",
     "lesson": 24,
     "strokes": 11,
@@ -6491,7 +6491,7 @@
   {
     "frame": 722,
     "hanzi": "敢",
-    "keyword": "храбрый",
+    "keyword": "отважный",
     "rth_list": "RSH-L24: Смерть, волны и уши",
     "lesson": 24,
     "strokes": 11,
@@ -6518,7 +6518,7 @@
   {
     "frame": 725,
     "hanzi": "漫",
-    "keyword": "переполнение",
+    "keyword": "переливаться через край",
     "rth_list": "RSH-L24: Смерть, волны и уши",
     "lesson": 24,
     "strokes": 14,
@@ -6545,7 +6545,7 @@
   {
     "frame": 728,
     "hanzi": "替",
-    "keyword": "заменить",
+    "keyword": "заменять",
     "rth_list": "RSH-L24: Смерть, волны и уши",
     "lesson": 24,
     "strokes": 12,
@@ -6554,7 +6554,7 @@
   {
     "frame": 729,
     "hanzi": "失",
-    "keyword": "проиграть",
+    "keyword": "терять",
     "rth_list": "RSH-L24: Смерть, волны и уши",
     "lesson": 24,
     "strokes": 5,
@@ -6581,7 +6581,7 @@
   {
     "frame": 732,
     "hanzi": "力",
-    "keyword": "власть",
+    "keyword": "сила",
     "rth_list": "RSH-L24: Смерть, волны и уши",
     "lesson": 24,
     "strokes": 2,
@@ -6590,7 +6590,7 @@
   {
     "frame": 733,
     "hanzi": "边",
-    "keyword": "граница",
+    "keyword": "край / рубеж",
     "rth_list": "RSH-L24: Смерть, волны и уши",
     "lesson": 24,
     "strokes": 5,
@@ -6599,7 +6599,7 @@
   {
     "frame": 734,
     "hanzi": "势",
-    "keyword": "сила",
+    "keyword": "напор",
     "rth_list": "RSH-L24: Смерть, волны и уши",
     "lesson": 24,
     "strokes": 8,
@@ -6635,7 +6635,7 @@
   {
     "frame": 738,
     "hanzi": "另",
-    "keyword": "другой",
+    "keyword": "иной",
     "rth_list": "RSH-L24: Смерть, волны и уши",
     "lesson": 24,
     "strokes": 5,
@@ -6680,7 +6680,7 @@
   {
     "frame": 743,
     "hanzi": "办",
-    "keyword": "управлять",
+    "keyword": "заведовать",
     "rth_list": "RSH-L24: Смерть, волны и уши",
     "lesson": 24,
     "strokes": 4,
@@ -6716,7 +6716,7 @@
   {
     "frame": 747,
     "hanzi": "奴",
-    "keyword": "раб",
+    "keyword": "невольник",
     "rth_list": "RSH-L24: Смерть, волны и уши",
     "lesson": 24,
     "strokes": 5,
@@ -6797,7 +6797,7 @@
   {
     "frame": 756,
     "hanzi": "得",
-    "keyword": "должен",
+    "keyword": "обязан",
     "rth_list": "RSH-L24: Смерть, волны и уши",
     "lesson": 24,
     "strokes": 11,
@@ -6806,7 +6806,7 @@
   {
     "frame": 757,
     "hanzi": "待",
-    "keyword": "лечить",
+    "keyword": "обращаться с",
     "rth_list": "RSH-L24: Смерть, волны и уши",
     "lesson": 24,
     "strokes": 9,
@@ -6815,7 +6815,7 @@
   {
     "frame": 758,
     "hanzi": "往",
-    "keyword": "к",
+    "keyword": "по направлению к",
     "rth_list": "RSH-L24: Смерть, волны и уши",
     "lesson": 24,
     "strokes": 8,
@@ -6878,7 +6878,7 @@
   {
     "frame": 765,
     "hanzi": "积",
-    "keyword": "накапливать",
+    "keyword": "накоплять",
     "rth_list": "RSH-L25: Зерно, времена года и прибыль",
     "lesson": 25,
     "strokes": 10,
@@ -6896,7 +6896,7 @@
   {
     "frame": 767,
     "hanzi": "移",
-    "keyword": "сдвиг",
+    "keyword": "сдвигать",
     "rth_list": "RSH-L25: Зерно, времена года и прибыль",
     "lesson": 25,
     "strokes": 11,
@@ -6914,7 +6914,7 @@
   {
     "frame": 769,
     "hanzi": "愁",
-    "keyword": "мрачный",
+    "keyword": "унылый",
     "rth_list": "RSH-L25: Зерно, времена года и прибыль",
     "lesson": 25,
     "strokes": 13,
@@ -6923,7 +6923,7 @@
   {
     "frame": 770,
     "hanzi": "揪",
-    "keyword": "держись крепче",
+    "keyword": "крепко схватить",
     "rth_list": "RSH-L25: Зерно, времена года и прибыль",
     "lesson": 25,
     "strokes": 12,
@@ -7031,7 +7031,7 @@
   {
     "frame": 782,
     "hanzi": "类",
-    "keyword": "добрый",
+    "keyword": "вид / категория",
     "rth_list": "RSH-L25: Зерно, времена года и прибыль",
     "lesson": 25,
     "strokes": 9,
@@ -7040,7 +7040,7 @@
   {
     "frame": 783,
     "hanzi": "来",
-    "keyword": "приди",
+    "keyword": "приходить",
     "rth_list": "RSH-L25: Зерно, времена года и прибыль",
     "lesson": 25,
     "strokes": 7,
@@ -7049,7 +7049,7 @@
   {
     "frame": 784,
     "hanzi": "数",
-    "keyword": "номер",
+    "keyword": "число",
     "rth_list": "RSH-L25: Зерно, времена года и прибыль",
     "lesson": 25,
     "strokes": 13,
@@ -7139,7 +7139,7 @@
   {
     "frame": 794,
     "hanzi": "认",
-    "keyword": "признать",
+    "keyword": "распознавать",
     "rth_list": "RSH-L26: Люди, местоимения и ценности",
     "lesson": 26,
     "strokes": 4,
@@ -7193,7 +7193,7 @@
   {
     "frame": 800,
     "hanzi": "您",
-    "keyword": "ты (уважительно)",
+    "keyword": "Вы (уважительно)",
     "rth_list": "RSH-L26: Люди, местоимения и ценности",
     "lesson": 26,
     "strokes": 11,
@@ -7274,7 +7274,7 @@
   {
     "frame": 809,
     "hanzi": "仍",
-    "keyword": "все еще",
+    "keyword": "по-прежнему",
     "rth_list": "RSH-L26: Люди, местоимения и ценности",
     "lesson": 26,
     "strokes": 4,
@@ -7301,7 +7301,7 @@
   {
     "frame": 812,
     "hanzi": "休",
-    "keyword": "отдых",
+    "keyword": "отдыхать",
     "rth_list": "RSH-L26: Люди, местоимения и ценности",
     "lesson": 26,
     "strokes": 6,
@@ -7355,7 +7355,7 @@
   {
     "frame": 818,
     "hanzi": "停",
-    "keyword": "остановка",
+    "keyword": "останавливаться",
     "rth_list": "RSH-L26: Люди, местоимения и ценности",
     "lesson": 26,
     "strokes": 11,
@@ -7382,7 +7382,7 @@
   {
     "frame": 821,
     "hanzi": "优",
-    "keyword": "отлично",
+    "keyword": "превосходный",
     "rth_list": "RSH-L26: Люди, местоимения и ценности",
     "lesson": 26,
     "strokes": 6,
@@ -7400,7 +7400,7 @@
   {
     "frame": 823,
     "hanzi": "保",
-    "keyword": "охранять",
+    "keyword": "оберегать",
     "rth_list": "RSH-L26: Люди, местоимения и ценности",
     "lesson": 26,
     "strokes": 9,
@@ -7445,7 +7445,7 @@
   {
     "frame": 828,
     "hanzi": "代",
-    "keyword": "заменить",
+    "keyword": "замещать",
     "rth_list": "RSH-L26: Люди, местоимения и ценности",
     "lesson": 26,
     "strokes": 5,
@@ -7499,7 +7499,7 @@
   {
     "frame": 834,
     "hanzi": "货",
-    "keyword": "товары",
+    "keyword": "товар",
     "rth_list": "RSH-L26: Люди, местоимения и ценности",
     "lesson": 26,
     "strokes": 8,
@@ -7535,7 +7535,7 @@
   {
     "frame": 838,
     "hanzi": "使",
-    "keyword": "использовать",
+    "keyword": "применять",
     "rth_list": "RSH-L26: Люди, местоимения и ценности",
     "lesson": 26,
     "strokes": 8,
@@ -7562,7 +7562,7 @@
   {
     "frame": 841,
     "hanzi": "呐",
-    "keyword": "кричать",
+    "keyword": "орать",
     "rth_list": "RSH-L26: Люди, местоимения и ценности",
     "lesson": 26,
     "strokes": 7,
@@ -7661,7 +7661,7 @@
   {
     "frame": 852,
     "hanzi": "渴",
-    "keyword": "жаждущий",
+    "keyword": "испытывать жажду",
     "rth_list": "RSH-L26: Люди, местоимения и ценности",
     "lesson": 26,
     "strokes": 12,
@@ -7778,7 +7778,7 @@
   {
     "frame": 865,
     "hanzi": "吕",
-    "keyword": "позвоночник",
+    "keyword": "позвонки",
     "rth_list": "RSH-L27: Торговля, суды и чтение",
     "lesson": 27,
     "strokes": 6,
@@ -7787,7 +7787,7 @@
   {
     "frame": 866,
     "hanzi": "侣",
-    "keyword": "партнер",
+    "keyword": "спутник",
     "rth_list": "RSH-L27: Торговля, суды и чтение",
     "lesson": 27,
     "strokes": 8,
@@ -7868,7 +7868,7 @@
   {
     "frame": 875,
     "hanzi": "施",
-    "keyword": "выполнять",
+    "keyword": "осуществлять",
     "rth_list": "RSH-L28: Путешествие, жилье и трупы",
     "lesson": 28,
     "strokes": 9,
@@ -7886,7 +7886,7 @@
   {
     "frame": 877,
     "hanzi": "勿",
-    "keyword": "нет",
+    "keyword": "не",
     "rth_list": "RSH-L28: Путешествие, жилье и трупы",
     "lesson": 28,
     "strokes": 4,
@@ -7994,7 +7994,7 @@
   {
     "frame": 889,
     "hanzi": "锯",
-    "keyword": "увидел",
+    "keyword": "пила",
     "rth_list": "RSH-L28: Путешествие, жилье и трупы",
     "lesson": 28,
     "strokes": 13,
@@ -8021,7 +8021,7 @@
   {
     "frame": 892,
     "hanzi": "层",
-    "keyword": "история",
+    "keyword": "этаж",
     "rth_list": "RSH-L28: Путешествие, жилье и трупы",
     "lesson": 28,
     "strokes": 7,
@@ -8039,7 +8039,7 @@
   {
     "frame": 894,
     "hanzi": "尺",
-    "keyword": "правитель",
+    "keyword": "линейка",
     "rth_list": "RSH-L28: Путешествие, жилье и трупы",
     "lesson": 28,
     "strokes": 4,
@@ -8120,7 +8120,7 @@
   {
     "frame": 903,
     "hanzi": "视",
-    "keyword": "проверять",
+    "keyword": "осматривать",
     "rth_list": "RSH-L29: Религия, церемонии и поклонение",
     "lesson": 29,
     "strokes": 8,
@@ -8201,7 +8201,7 @@
   {
     "frame": 912,
     "hanzi": "擦",
-    "keyword": "скраб",
+    "keyword": "оттирать",
     "rth_list": "RSH-L29: Религия, церемонии и поклонение",
     "lesson": 29,
     "strokes": 17,
@@ -8246,7 +8246,7 @@
   {
     "frame": 917,
     "hanzi": "押",
-    "keyword": "пешка",
+    "keyword": "закладывать",
     "rth_list": "RSH-L29: Религия, церемонии и поклонение",
     "lesson": 29,
     "strokes": 8,
@@ -8264,7 +8264,7 @@
   {
     "frame": 919,
     "hanzi": "伸",
-    "keyword": "расширять",
+    "keyword": "протягивать",
     "rth_list": "RSH-L29: Религия, церемонии и поклонение",
     "lesson": 29,
     "strokes": 7,
@@ -8309,7 +8309,7 @@
   {
     "frame": 924,
     "hanzi": "斤",
-    "keyword": "ехидный",
+    "keyword": "цзинь (мера веса)",
     "rth_list": "RSH-L30: Слушание, философия и право",
     "lesson": 30,
     "strokes": 4,
@@ -8318,7 +8318,7 @@
   {
     "frame": 925,
     "hanzi": "听",
-    "keyword": "слушай",
+    "keyword": "слушать",
     "rth_list": "RSH-L30: Слушание, философия и право",
     "lesson": 30,
     "strokes": 7,
@@ -8345,7 +8345,7 @@
   {
     "frame": 928,
     "hanzi": "斩",
-    "keyword": "хе-хе",
+    "keyword": "разрубать",
     "rth_list": "RSH-L30: Слушание, философия и право",
     "lesson": 30,
     "strokes": 8,
@@ -8534,7 +8534,7 @@
   {
     "frame": 949,
     "hanzi": "录",
-    "keyword": "запись",
+    "keyword": "записывать",
     "rth_list": "RSH-L30: Слушание, философия и право",
     "lesson": 30,
     "strokes": 8,
@@ -8552,7 +8552,7 @@
   {
     "frame": 951,
     "hanzi": "争",
-    "keyword": "бороться",
+    "keyword": "состязаться",
     "rth_list": "RSH-L30: Слушание, философия и право",
     "lesson": 30,
     "strokes": 6,
@@ -8561,7 +8561,7 @@
   {
     "frame": 952,
     "hanzi": "净",
-    "keyword": "чистый",
+    "keyword": "без грязи",
     "rth_list": "RSH-L30: Слушание, философия и право",
     "lesson": 30,
     "strokes": 8,
@@ -8597,7 +8597,7 @@
   {
     "frame": 956,
     "hanzi": "康",
-    "keyword": "здоровый",
+    "keyword": "крепкий здоровьем",
     "rth_list": "RSH-L30: Слушание, философия и право",
     "lesson": 30,
     "strokes": 11,
@@ -8651,7 +8651,7 @@
   {
     "frame": 962,
     "hanzi": "而",
-    "keyword": "и",
+    "keyword": "и / а",
     "rth_list": "RSH-L30: Слушание, философия и право",
     "lesson": 30,
     "strokes": 6,
@@ -8678,7 +8678,7 @@
   {
     "frame": 965,
     "hanzi": "瑞",
-    "keyword": "благоприятный",
+    "keyword": "благовещий",
     "rth_list": "RSH-L30: Слушание, философия и право",
     "lesson": 30,
     "strokes": 13,
@@ -8687,7 +8687,7 @@
   {
     "frame": 966,
     "hanzi": "端",
-    "keyword": "вертикальный",
+    "keyword": "прямостоящий",
     "rth_list": "RSH-L30: Слушание, философия и право",
     "lesson": 30,
     "strokes": 14,
@@ -8705,7 +8705,7 @@
   {
     "frame": 968,
     "hanzi": "斗",
-    "keyword": "Большая Медведица",
+    "keyword": "Большой Ковш",
     "rth_list": "RSH-L30: Слушание, философия и право",
     "lesson": 30,
     "strokes": 4,
@@ -8714,7 +8714,7 @@
   {
     "frame": 969,
     "hanzi": "料",
-    "keyword": "материал",
+    "keyword": "вещество / материал",
     "rth_list": "RSH-L30: Слушание, философия и право",
     "lesson": 30,
     "strokes": 10,
@@ -8795,7 +8795,7 @@
   {
     "frame": 978,
     "hanzi": "度",
-    "keyword": "степени",
+    "keyword": "градусы",
     "rth_list": "RSH-L31: Время, измерение и половины",
     "lesson": 31,
     "strokes": 9,
@@ -8831,7 +8831,7 @@
   {
     "frame": 982,
     "hanzi": "胖",
-    "keyword": "толстый",
+    "keyword": "полный (телосложение)",
     "rth_list": "RSH-L31: Время, измерение и половины",
     "lesson": 31,
     "strokes": 9,
@@ -8840,7 +8840,7 @@
   {
     "frame": 983,
     "hanzi": "判",
-    "keyword": "судья",
+    "keyword": "судить",
     "rth_list": "RSH-L31: Время, измерение и половины",
     "lesson": 31,
     "strokes": 7,
@@ -8885,7 +8885,7 @@
   {
     "frame": 988,
     "hanzi": "之",
-    "keyword": "из",
+    "keyword": "из / родительный показатель",
     "rth_list": "RSH-L31: Время, измерение и половины",
     "lesson": 31,
     "strokes": 3,
@@ -8894,7 +8894,7 @@
   {
     "frame": 989,
     "hanzi": "乏",
-    "keyword": "утомленный",
+    "keyword": "изнурённый",
     "rth_list": "RSH-L31: Время, измерение и половины",
     "lesson": 31,
     "strokes": 4,
@@ -9083,7 +9083,7 @@
   {
     "frame": 1010,
     "hanzi": "临",
-    "keyword": "собираться",
+    "keyword": "вот-вот",
     "rth_list": "RSH-L32: Мудрость, копья и племена",
     "lesson": 32,
     "strokes": 9,
@@ -9092,7 +9092,7 @@
   {
     "frame": 1011,
     "hanzi": "坚",
-    "keyword": "фирма",
+    "keyword": "твёрдый / стойкий",
     "rth_list": "RSH-L32: Мудрость, копья и племена",
     "lesson": 32,
     "strokes": 7,
@@ -9110,7 +9110,7 @@
   {
     "frame": 1013,
     "hanzi": "弓",
-    "keyword": "лук",
+    "keyword": "лук (оружие)",
     "rth_list": "RSH-L32: Мудрость, копья и племена",
     "lesson": 32,
     "strokes": 3,
@@ -9119,7 +9119,7 @@
   {
     "frame": 1014,
     "hanzi": "引",
-    "keyword": "рисовать",
+    "keyword": "натягивать / тянуть",
     "rth_list": "RSH-L32: Мудрость, копья и племена",
     "lesson": 32,
     "strokes": 4,
@@ -9128,7 +9128,7 @@
   {
     "frame": 1015,
     "hanzi": "弥",
-    "keyword": "заполнить",
+    "keyword": "наполнять",
     "rth_list": "RSH-L32: Мудрость, копья и племена",
     "lesson": 32,
     "strokes": 8,
@@ -9155,7 +9155,7 @@
   {
     "frame": 1018,
     "hanzi": "单",
-    "keyword": "список",
+    "keyword": "перечень",
     "rth_list": "RSH-L32: Мудрость, копья и племена",
     "lesson": 32,
     "strokes": 8,
@@ -9200,7 +9200,7 @@
   {
     "frame": 1023,
     "hanzi": "第",
-    "keyword": "Нет.",
+    "keyword": "№ / порядковый номер",
     "rth_list": "RSH-L32: Мудрость, копья и племена",
     "lesson": 32,
     "strokes": 11,
@@ -9227,7 +9227,7 @@
   {
     "frame": 1026,
     "hanzi": "身",
-    "keyword": "кто-то",
+    "keyword": "некто",
     "rth_list": "RSH-L33: Письмо, преподавание и экзамены",
     "lesson": 33,
     "strokes": 7,
@@ -9245,7 +9245,7 @@
   {
     "frame": 1028,
     "hanzi": "谢",
-    "keyword": "спасибо",
+    "keyword": "благодарить",
     "rth_list": "RSH-L33: Письмо, преподавание и экзамены",
     "lesson": 33,
     "strokes": 12,
@@ -9281,7 +9281,7 @@
   {
     "frame": 1032,
     "hanzi": "与",
-    "keyword": "предложение",
+    "keyword": "предлагать",
     "rth_list": "RSH-L33: Письмо, преподавание и экзамены",
     "lesson": 33,
     "strokes": 3,
@@ -9326,7 +9326,7 @@
   {
     "frame": 1037,
     "hanzi": "者",
-    "keyword": "кто-то",
+    "keyword": "кто-либо",
     "rth_list": "RSH-L33: Письмо, преподавание и экзамены",
     "lesson": 33,
     "strokes": 8,
@@ -9353,7 +9353,7 @@
   {
     "frame": 1040,
     "hanzi": "追",
-    "keyword": "преследовать",
+    "keyword": "гнаться",
     "rth_list": "RSH-L33: Письмо, преподавание и экзамены",
     "lesson": 33,
     "strokes": 9,
@@ -9425,7 +9425,7 @@
   {
     "frame": 1048,
     "hanzi": "足",
-    "keyword": "голень",
+    "keyword": "нижняя часть ноги",
     "rth_list": "RSH-L33: Письмо, преподавание и экзамены",
     "lesson": 33,
     "strokes": 7,
@@ -9452,7 +9452,7 @@
   {
     "frame": 1051,
     "hanzi": "路",
-    "keyword": "путь",
+    "keyword": "дорога",
     "rth_list": "RSH-L33: Письмо, преподавание и экзамены",
     "lesson": 33,
     "strokes": 13,
@@ -9533,7 +9533,7 @@
   {
     "frame": 1060,
     "hanzi": "荫",
-    "keyword": "теневой",
+    "keyword": "тенистый",
     "rth_list": "RSH-L34: Инь, Ян и космические силы",
     "lesson": 34,
     "strokes": 9,
@@ -9569,7 +9569,7 @@
   {
     "frame": 1064,
     "hanzi": "阶",
-    "keyword": "лестница",
+    "keyword": "ступени",
     "rth_list": "RSH-L34: Инь, Ян и космические силы",
     "lesson": 34,
     "strokes": 6,
@@ -9578,7 +9578,7 @@
   {
     "frame": 1065,
     "hanzi": "院",
-    "keyword": "Инст.",
+    "keyword": "учреждение",
     "rth_list": "RSH-L34: Инь, Ян и космические силы",
     "lesson": 34,
     "strokes": 9,
@@ -9605,7 +9605,7 @@
   {
     "frame": 1068,
     "hanzi": "坠",
-    "keyword": "погружаться",
+    "keyword": "ринуться вниз",
     "rth_list": "RSH-L34: Инь, Ян и космические силы",
     "lesson": 34,
     "strokes": 7,
@@ -9677,7 +9677,7 @@
   {
     "frame": 1076,
     "hanzi": "探",
-    "keyword": "шпион",
+    "keyword": "разведывать",
     "rth_list": "RSH-L34: Инь, Ян и космические силы",
     "lesson": 34,
     "strokes": 11,
@@ -9758,7 +9758,7 @@
   {
     "frame": 1085,
     "hanzi": "结",
-    "keyword": "галстук",
+    "keyword": "завязывать",
     "rth_list": "RSH-L35: Шелк, нитки и цвета",
     "lesson": 35,
     "strokes": 9,
@@ -9812,7 +9812,7 @@
   {
     "frame": 1091,
     "hanzi": "细",
-    "keyword": "хорошо",
+    "keyword": "тонкий / мелкий",
     "rth_list": "RSH-L35: Шелк, нитки и цвета",
     "lesson": 35,
     "strokes": 8,
@@ -9848,7 +9848,7 @@
   {
     "frame": 1095,
     "hanzi": "轻",
-    "keyword": "легкий",
+    "keyword": "лёгкий по весу",
     "rth_list": "RSH-L35: Шелк, нитки и цвета",
     "lesson": 35,
     "strokes": 9,
@@ -9866,7 +9866,7 @@
   {
     "frame": 1097,
     "hanzi": "继",
-    "keyword": "продолжай",
+    "keyword": "продолжать начатое",
     "rth_list": "RSH-L35: Шелк, нитки и цвета",
     "lesson": 35,
     "strokes": 10,
@@ -9875,7 +9875,7 @@
   {
     "frame": 1098,
     "hanzi": "药",
-    "keyword": "медицина",
+    "keyword": "лекарство",
     "rth_list": "RSH-L35: Шелк, нитки и цвета",
     "lesson": 35,
     "strokes": 9,
@@ -9902,7 +9902,7 @@
   {
     "frame": 1101,
     "hanzi": "却",
-    "keyword": "уйти",
+    "keyword": "отступать",
     "rth_list": "RSH-L36: Ноги, холод и торговля",
     "lesson": 36,
     "strokes": 7,
@@ -9911,7 +9911,7 @@
   {
     "frame": 1102,
     "hanzi": "脚",
-    "keyword": "нога",
+    "keyword": "ступня",
     "rth_list": "RSH-L36: Ноги, холод и торговля",
     "lesson": 36,
     "strokes": 11,
@@ -9920,7 +9920,7 @@
   {
     "frame": 1103,
     "hanzi": "服",
-    "keyword": "одежда",
+    "keyword": "одежное убранство",
     "rth_list": "RSH-L36: Ноги, холод и торговля",
     "lesson": 36,
     "strokes": 8,
@@ -9965,7 +9965,7 @@
   {
     "frame": 1108,
     "hanzi": "溜",
-    "keyword": "слайд",
+    "keyword": "скользить",
     "rth_list": "RSH-L36: Ноги, холод и торговля",
     "lesson": 36,
     "strokes": 13,
@@ -9974,7 +9974,7 @@
   {
     "frame": 1109,
     "hanzi": "聊",
-    "keyword": "чат",
+    "keyword": "беседовать",
     "rth_list": "RSH-L36: Ноги, холод и торговля",
     "lesson": 36,
     "strokes": 11,
@@ -10001,7 +10001,7 @@
   {
     "frame": 1112,
     "hanzi": "卫",
-    "keyword": "защищать",
+    "keyword": "оборонять",
     "rth_list": "RSH-L36: Ноги, холод и торговля",
     "lesson": 36,
     "strokes": 3,
@@ -10010,7 +10010,7 @@
   {
     "frame": 1113,
     "hanzi": "令",
-    "keyword": "заказы",
+    "keyword": "приказы",
     "rth_list": "RSH-L36: Ноги, холод и торговля",
     "lesson": 36,
     "strokes": 5,
@@ -10055,7 +10055,7 @@
   {
     "frame": 1118,
     "hanzi": "勇",
-    "keyword": "смелый",
+    "keyword": "храбрый",
     "rth_list": "RSH-L36: Ноги, холод и торговля",
     "lesson": 36,
     "strokes": 9,
@@ -10064,7 +10064,7 @@
   {
     "frame": 1119,
     "hanzi": "仓",
-    "keyword": "склад",
+    "keyword": "хранилище",
     "rth_list": "RSH-L36: Ноги, холод и торговля",
     "lesson": 36,
     "strokes": 4,
@@ -10073,7 +10073,7 @@
   {
     "frame": 1120,
     "hanzi": "枪",
-    "keyword": "пистолет",
+    "keyword": "ружьё",
     "rth_list": "RSH-L36: Ноги, холод и торговля",
     "lesson": 36,
     "strokes": 8,
@@ -10082,7 +10082,7 @@
   {
     "frame": 1121,
     "hanzi": "创",
-    "keyword": "инициировать",
+    "keyword": "начинать дело",
     "rth_list": "RSH-L36: Ноги, холод и торговля",
     "lesson": 36,
     "strokes": 6,
@@ -10118,7 +10118,7 @@
   {
     "frame": 1125,
     "hanzi": "印",
-    "keyword": "распечатать",
+    "keyword": "печатать",
     "rth_list": "RSH-L36: Ноги, холод и торговля",
     "lesson": 36,
     "strokes": 5,
@@ -10127,7 +10127,7 @@
   {
     "frame": 1126,
     "hanzi": "酒",
-    "keyword": "ликер",
+    "keyword": "спиртное",
     "rth_list": "RSH-L37: спиртные напитки, кухня и барабаны",
     "lesson": 37,
     "strokes": 10,
@@ -10136,7 +10136,7 @@
   {
     "frame": 1127,
     "hanzi": "配",
-    "keyword": "распространять",
+    "keyword": "распределять",
     "rth_list": "RSH-L37: спиртные напитки, кухня и барабаны",
     "lesson": 37,
     "strokes": 10,
@@ -10154,7 +10154,7 @@
   {
     "frame": 1129,
     "hanzi": "尊",
-    "keyword": "почитать",
+    "keyword": "чтить",
     "rth_list": "RSH-L37: спиртные напитки, кухня и барабаны",
     "lesson": 37,
     "strokes": 12,
@@ -10163,7 +10163,7 @@
   {
     "frame": 1130,
     "hanzi": "遵",
-    "keyword": "соблюдать",
+    "keyword": "следовать правилам",
     "rth_list": "RSH-L37: спиртные напитки, кухня и барабаны",
     "lesson": 37,
     "strokes": 15,
@@ -10280,7 +10280,7 @@
   {
     "frame": 1143,
     "hanzi": "跟",
-    "keyword": "каблук",
+    "keyword": "пятка",
     "rth_list": "RSH-L37: спиртные напитки, кухня и барабаны",
     "lesson": 37,
     "strokes": 13,
@@ -10361,7 +10361,7 @@
   {
     "frame": 1152,
     "hanzi": "浪",
-    "keyword": "выключатели",
+    "keyword": "прибойные волны",
     "rth_list": "RSH-L37: спиртные напитки, кухня и барабаны",
     "lesson": 37,
     "strokes": 10,
@@ -10370,7 +10370,7 @@
   {
     "frame": 1153,
     "hanzi": "娘",
-    "keyword": "мама",
+    "keyword": "мать (разг.)",
     "rth_list": "RSH-L37: спиртные напитки, кухня и барабаны",
     "lesson": 37,
     "strokes": 10,
@@ -10379,7 +10379,7 @@
   {
     "frame": 1154,
     "hanzi": "食",
-    "keyword": "еда",
+    "keyword": "пища",
     "rth_list": "RSH-L37: спиртные напитки, кухня и барабаны",
     "lesson": 37,
     "strokes": 9,
@@ -10388,7 +10388,7 @@
   {
     "frame": 1155,
     "hanzi": "饭",
-    "keyword": "еда",
+    "keyword": "трапеза",
     "rth_list": "RSH-L37: спиртные напитки, кухня и барабаны",
     "lesson": 37,
     "strokes": 7,
@@ -10406,7 +10406,7 @@
   {
     "frame": 1157,
     "hanzi": "馆",
-    "keyword": "корп.",
+    "keyword": "корпус",
     "rth_list": "RSH-L37: спиртные напитки, кухня и барабаны",
     "lesson": 37,
     "strokes": 11,
@@ -10433,7 +10433,7 @@
   {
     "frame": 1160,
     "hanzi": "平",
-    "keyword": "даже",
+    "keyword": "ровный",
     "rth_list": "RSH-L38: Ветер, сети и убийства",
     "lesson": 38,
     "strokes": 5,
@@ -10604,7 +10604,7 @@
   {
     "frame": 1179,
     "hanzi": "禽",
-    "keyword": "птица",
+    "keyword": "домашняя птица",
     "rth_list": "RSH-L38: Ветер, сети и убийства",
     "lesson": 38,
     "strokes": 12,
@@ -10622,7 +10622,7 @@
   {
     "frame": 1181,
     "hanzi": "议",
-    "keyword": "преднамеренный",
+    "keyword": "обсуждать",
     "rth_list": "RSH-L38: Ветер, сети и убийства",
     "lesson": 38,
     "strokes": 5,
@@ -10640,7 +10640,7 @@
   {
     "frame": 1183,
     "hanzi": "辛",
-    "keyword": "острый",
+    "keyword": "жгучий",
     "rth_list": "RSH-L38: Ветер, сети и убийства",
     "lesson": 38,
     "strokes": 7,
@@ -10667,7 +10667,7 @@
   {
     "frame": 1186,
     "hanzi": "壁",
-    "keyword": "раздел",
+    "keyword": "перегородка",
     "rth_list": "RSH-L38: Ветер, сети и убийства",
     "lesson": 38,
     "strokes": 16,
@@ -10712,7 +10712,7 @@
   {
     "frame": 1191,
     "hanzi": "幸",
-    "keyword": "удачи",
+    "keyword": "удача",
     "rth_list": "RSH-L38: Ветер, сети и убийства",
     "lesson": 38,
     "strokes": 8,
@@ -10721,7 +10721,7 @@
   {
     "frame": 1192,
     "hanzi": "叫",
-    "keyword": "позвонить",
+    "keyword": "звать",
     "rth_list": "RSH-L38: Ветер, сети и убийства",
     "lesson": 38,
     "strokes": 5,
@@ -10757,7 +10757,7 @@
   {
     "frame": 1196,
     "hanzi": "孩",
-    "keyword": "тотал",
+    "keyword": "малыш",
     "rth_list": "RSH-L38: Ветер, сети и убийства",
     "lesson": 38,
     "strokes": 9,
@@ -10775,7 +10775,7 @@
   {
     "frame": 1198,
     "hanzi": "该",
-    "keyword": "должен",
+    "keyword": "следует",
     "rth_list": "RSH-L38: Ветер, сети и убийства",
     "lesson": 38,
     "strokes": 8,
@@ -10820,7 +10820,7 @@
   {
     "frame": 1203,
     "hanzi": "寒",
-    "keyword": "холодный",
+    "keyword": "морозный",
     "rth_list": "RSH-L38: Ветер, сети и убийства",
     "lesson": 38,
     "strokes": 12,
@@ -10874,7 +10874,7 @@
   {
     "frame": 1209,
     "hanzi": "精",
-    "keyword": "изысканный",
+    "keyword": "утончённый",
     "rth_list": "RSH-L39: Яд, пшеница и чистота",
     "lesson": 39,
     "strokes": 14,
@@ -10910,7 +10910,7 @@
   {
     "frame": 1213,
     "hanzi": "清",
-    "keyword": "чистый",
+    "keyword": "чистый / прозрачный",
     "rth_list": "RSH-L39: Яд, пшеница и чистота",
     "lesson": 39,
     "strokes": 11,
@@ -10982,7 +10982,7 @@
   {
     "frame": 1221,
     "hanzi": "性",
-    "keyword": "секс",
+    "keyword": "пол",
     "rth_list": "RSH-L39: Яд, пшеница и чистота",
     "lesson": 39,
     "strokes": 8,
@@ -11000,7 +11000,7 @@
   {
     "frame": 1223,
     "hanzi": "丰",
-    "keyword": "обильный",
+    "keyword": "изобильный",
     "rth_list": "RSH-L39: Яд, пшеница и чистота",
     "lesson": 39,
     "strokes": 4,
@@ -11027,7 +11027,7 @@
   {
     "frame": 1226,
     "hanzi": "慧",
-    "keyword": "умный",
+    "keyword": "интеллектуальный",
     "rth_list": "RSH-L39: Яд, пшеница и чистота",
     "lesson": 39,
     "strokes": 15,
@@ -11054,7 +11054,7 @@
   {
     "frame": 1229,
     "hanzi": "伟",
-    "keyword": "отлично",
+    "keyword": "великий",
     "rth_list": "RSH-L39: Яд, пшеница и чистота",
     "lesson": 39,
     "strokes": 6,
@@ -11072,7 +11072,7 @@
   {
     "frame": 1231,
     "hanzi": "泰",
-    "keyword": "спокойный",
+    "keyword": "безмятежный",
     "rth_list": "RSH-L39: Яд, пшеница и чистота",
     "lesson": 39,
     "strokes": 10,
@@ -11081,7 +11081,7 @@
   {
     "frame": 1232,
     "hanzi": "奉",
-    "keyword": "предлагать",
+    "keyword": "преподносить",
     "rth_list": "RSH-L39: Яд, пшеница и чистота",
     "lesson": 39,
     "strokes": 8,
@@ -11126,7 +11126,7 @@
   {
     "frame": 1237,
     "hanzi": "传",
-    "keyword": "распространение",
+    "keyword": "распространять",
     "rth_list": "RSH-L39: Яд, пшеница и чистота",
     "lesson": 39,
     "strokes": 6,
@@ -11153,7 +11153,7 @@
   {
     "frame": 1240,
     "hanzi": "谨",
-    "keyword": "осторожный",
+    "keyword": "осмотрительный",
     "rth_list": "RSH-L39: Яд, пшеница и чистота",
     "lesson": 39,
     "strokes": 13,
@@ -11198,7 +11198,7 @@
   {
     "frame": 1245,
     "hanzi": "含",
-    "keyword": "гавань",
+    "keyword": "таить / содержать",
     "rth_list": "RSH-L40: Восток, Запад и здания",
     "lesson": 40,
     "strokes": 7,
@@ -11207,7 +11207,7 @@
   {
     "frame": 1246,
     "hanzi": "念",
-    "keyword": "пропустить",
+    "keyword": "скучать по",
     "rth_list": "RSH-L40: Восток, Запад и здания",
     "lesson": 40,
     "strokes": 8,
@@ -11252,7 +11252,7 @@
   {
     "frame": 1251,
     "hanzi": "练",
-    "keyword": "практика",
+    "keyword": "упражняться",
     "rth_list": "RSH-L40: Восток, Запад и здания",
     "lesson": 40,
     "strokes": 8,
@@ -11279,7 +11279,7 @@
   {
     "frame": 1254,
     "hanzi": "要",
-    "keyword": "хочу",
+    "keyword": "хотеть",
     "rth_list": "RSH-L40: Восток, Запад и здания",
     "lesson": 40,
     "strokes": 9,
@@ -11405,7 +11405,7 @@
   {
     "frame": 1268,
     "hanzi": "排",
-    "keyword": "строка",
+    "keyword": "ряд",
     "rth_list": "RSH-L41: Ворота, Досуг и Ожидание",
     "lesson": 41,
     "strokes": 11,
@@ -11441,7 +11441,7 @@
   {
     "frame": 1272,
     "hanzi": "候",
-    "keyword": "подожди",
+    "keyword": "ждать",
     "rth_list": "RSH-L41: Ворота, Досуг и Ожидание",
     "lesson": 41,
     "strokes": 10,
@@ -11513,7 +11513,7 @@
   {
     "frame": 1280,
     "hanzi": "赶",
-    "keyword": "спешите",
+    "keyword": "торопиться",
     "rth_list": "RSH-L42: Засуха, сухость и скорость",
     "lesson": 42,
     "strokes": 10,
@@ -11567,7 +11567,7 @@
   {
     "frame": 1286,
     "hanzi": "束",
-    "keyword": "собраться в кучу",
+    "keyword": "связывать в пучок",
     "rth_list": "RSH-L42: Засуха, сухость и скорость",
     "lesson": 42,
     "strokes": 7,
@@ -11585,7 +11585,7 @@
   {
     "frame": 1288,
     "hanzi": "辣",
-    "keyword": "пряный, горячий",
+    "keyword": "острый (еда)",
     "rth_list": "RSH-L42: Засуха, сухость и скорость",
     "lesson": 42,
     "strokes": 14,
@@ -11657,7 +11657,7 @@
   {
     "frame": 1296,
     "hanzi": "枢",
-    "keyword": "концентратор",
+    "keyword": "узел / центр",
     "rth_list": "RSH-L43: Болезни, медицина и регионы",
     "lesson": 43,
     "strokes": 8,
@@ -11684,7 +11684,7 @@
   {
     "frame": 1299,
     "hanzi": "仰",
-    "keyword": "смотреть на",
+    "keyword": "взирать снизу вверх",
     "rth_list": "RSH-L43: Болезни, медицина и регионы",
     "lesson": 43,
     "strokes": 6,
@@ -11720,7 +11720,7 @@
   {
     "frame": 1303,
     "hanzi": "废",
-    "keyword": "выбросить",
+    "keyword": "отбрасывать",
     "rth_list": "RSH-L43: Болезни, медицина и регионы",
     "lesson": 43,
     "strokes": 8,
@@ -11774,7 +11774,7 @@
   {
     "frame": 1309,
     "hanzi": "惨",
-    "keyword": "несчастный",
+    "keyword": "жалкий",
     "rth_list": "RSH-L44: Форма, литература и комары",
     "lesson": 44,
     "strokes": 11,
@@ -11783,7 +11783,7 @@
   {
     "frame": 1310,
     "hanzi": "修",
-    "keyword": "ремонт",
+    "keyword": "чинить",
     "rth_list": "RSH-L44: Форма, литература и комары",
     "lesson": 44,
     "strokes": 9,
@@ -11792,7 +11792,7 @@
   {
     "frame": 1311,
     "hanzi": "珍",
-    "keyword": "редкий",
+    "keyword": "редкостный",
     "rth_list": "RSH-L44: Форма, литература и комары",
     "lesson": 44,
     "strokes": 9,
@@ -11801,7 +11801,7 @@
   {
     "frame": 1312,
     "hanzi": "产",
-    "keyword": "продукты",
+    "keyword": "продукция",
     "rth_list": "RSH-L44: Форма, литература и комары",
     "lesson": 44,
     "strokes": 6,
@@ -11819,7 +11819,7 @@
   {
     "frame": 1314,
     "hanzi": "颜",
-    "keyword": "выражение лица",
+    "keyword": "лик",
     "rth_list": "RSH-L44: Форма, литература и комары",
     "lesson": 44,
     "strokes": 15,
@@ -11846,7 +11846,7 @@
   {
     "frame": 1317,
     "hanzi": "这",
-    "keyword": "это",
+    "keyword": "этот",
     "rth_list": "RSH-L44: Форма, литература и комары",
     "lesson": 44,
     "strokes": 7,
@@ -11873,7 +11873,7 @@
   {
     "frame": 1320,
     "hanzi": "率",
-    "keyword": "ставка",
+    "keyword": "коэффициент / норма",
     "rth_list": "RSH-L44: Форма, литература и комары",
     "lesson": 44,
     "strokes": 11,
@@ -11882,7 +11882,7 @@
   {
     "frame": 1321,
     "hanzi": "摔",
-    "keyword": "падать",
+    "keyword": "кувыркаться / падать",
     "rth_list": "RSH-L44: Форма, литература и комары",
     "lesson": 44,
     "strokes": 14,
@@ -11909,7 +11909,7 @@
   {
     "frame": 1324,
     "hanzi": "唤",
-    "keyword": "звать",
+    "keyword": "окликать",
     "rth_list": "RSH-L44: Форма, литература и комары",
     "lesson": 44,
     "strokes": 10,
@@ -11936,7 +11936,7 @@
   {
     "frame": 1327,
     "hanzi": "把",
-    "keyword": "схватить",
+    "keyword": "ухватить",
     "rth_list": "RSH-L44: Форма, литература и комары",
     "lesson": 44,
     "strokes": 7,
@@ -11954,7 +11954,7 @@
   {
     "frame": 1329,
     "hanzi": "吧",
-    "keyword": "бар",
+    "keyword": "частица «ба»",
     "rth_list": "RSH-L44: Форма, литература и комары",
     "lesson": 44,
     "strokes": 7,
@@ -11972,7 +11972,7 @@
   {
     "frame": 1331,
     "hanzi": "绝",
-    "keyword": "прекратить",
+    "keyword": "прерывать",
     "rth_list": "RSH-L44: Форма, литература и комары",
     "lesson": 44,
     "strokes": 9,
@@ -11981,7 +11981,7 @@
   {
     "frame": 1332,
     "hanzi": "艳",
-    "keyword": "великолепный",
+    "keyword": "роскошный",
     "rth_list": "RSH-L44: Форма, литература и комары",
     "lesson": 44,
     "strokes": 10,
@@ -12008,7 +12008,7 @@
   {
     "frame": 1335,
     "hanzi": "其",
-    "keyword": "его-ее-его-их",
+    "keyword": "его / её / их",
     "rth_list": "RSH-L45: Сладкое, дорогое и танцевальное",
     "lesson": 45,
     "strokes": 8,
@@ -12188,7 +12188,7 @@
   {
     "frame": 1355,
     "hanzi": "供",
-    "keyword": "поставка",
+    "keyword": "снабжать",
     "rth_list": "RSH-L46: Расширенная семья и Азия",
     "lesson": 46,
     "strokes": 8,
@@ -12215,7 +12215,7 @@
   {
     "frame": 1358,
     "hanzi": "井",
-    "keyword": "ну",
+    "keyword": "колодец",
     "rth_list": "RSH-L47: Написание, компиляция и каноны",
     "lesson": 47,
     "strokes": 4,
@@ -12233,7 +12233,7 @@
   {
     "frame": 1360,
     "hanzi": "进",
-    "keyword": "заранее",
+    "keyword": "продвигаться",
     "rth_list": "RSH-L47: Написание, компиляция и каноны",
     "lesson": 47,
     "strokes": 7,
@@ -12278,7 +12278,7 @@
   {
     "frame": 1365,
     "hanzi": "嘴",
-    "keyword": "отверстие",
+    "keyword": "устье / отверстие",
     "rth_list": "RSH-L47: Написание, компиляция и каноны",
     "lesson": 47,
     "strokes": 16,
@@ -12296,7 +12296,7 @@
   {
     "frame": 1367,
     "hanzi": "扁",
-    "keyword": "квартира",
+    "keyword": "плоский",
     "rth_list": "RSH-L47: Написание, компиляция и каноны",
     "lesson": 47,
     "strokes": 9,
@@ -12305,7 +12305,7 @@
   {
     "frame": 1368,
     "hanzi": "篇",
-    "keyword": "кусок письма",
+    "keyword": "текст / статья",
     "rth_list": "RSH-L47: Написание, компиляция и каноны",
     "lesson": 47,
     "strokes": 15,
@@ -12314,7 +12314,7 @@
   {
     "frame": 1369,
     "hanzi": "编",
-    "keyword": "компилировать",
+    "keyword": "составлять",
     "rth_list": "RSH-L47: Написание, компиляция и каноны",
     "lesson": 47,
     "strokes": 12,
@@ -12332,7 +12332,7 @@
   {
     "frame": 1371,
     "hanzi": "氏",
-    "keyword": "фамилия",
+    "keyword": "родовое имя",
     "rth_list": "RSH-L48: Брак, бумага и города",
     "lesson": 48,
     "strokes": 4,
@@ -12395,7 +12395,7 @@
   {
     "frame": 1378,
     "hanzi": "眠",
-    "keyword": "сон",
+    "keyword": "дремота",
     "rth_list": "RSH-L48: Брак, бумага и города",
     "lesson": 48,
     "strokes": 10,
@@ -12431,7 +12431,7 @@
   {
     "frame": 1382,
     "hanzi": "搏",
-    "keyword": "бороться",
+    "keyword": "бороться в схватке",
     "rth_list": "RSH-L48: Брак, бумага и города",
     "lesson": 48,
     "strokes": 13,
@@ -12485,7 +12485,7 @@
   {
     "frame": 1388,
     "hanzi": "段",
-    "keyword": "раздел",
+    "keyword": "секция",
     "rth_list": "RSH-L49: Лодки, книги и сироты",
     "lesson": 49,
     "strokes": 9,
@@ -12557,7 +12557,7 @@
   {
     "frame": 1396,
     "hanzi": "般",
-    "keyword": "сортировать",
+    "keyword": "разновидность",
     "rth_list": "RSH-L49: Лодки, книги и сироты",
     "lesson": 49,
     "strokes": 10,
@@ -12575,7 +12575,7 @@
   {
     "frame": 1398,
     "hanzi": "搬",
-    "keyword": "переместить",
+    "keyword": "перемещать вещи",
     "rth_list": "RSH-L49: Лодки, книги и сироты",
     "lesson": 49,
     "strokes": 13,
@@ -12611,7 +12611,7 @@
   {
     "frame": 1402,
     "hanzi": "假",
-    "keyword": "отпуск",
+    "keyword": "каникулы / отпуск",
     "rth_list": "RSH-L50: Воздух, кожа и обувь",
     "lesson": 50,
     "strokes": 11,
@@ -12638,7 +12638,7 @@
   {
     "frame": 1405,
     "hanzi": "汽",
-    "keyword": "пар",
+    "keyword": "испарение",
     "rth_list": "RSH-L50: Воздух, кожа и обувь",
     "lesson": 50,
     "strokes": 7,
@@ -12656,7 +12656,7 @@
   {
     "frame": 1407,
     "hanzi": "革",
-    "keyword": "кожа",
+    "keyword": "кожа (выделанная)",
     "rth_list": "RSH-L50: Воздух, кожа и обувь",
     "lesson": 50,
     "strokes": 9,
@@ -12665,7 +12665,7 @@
   {
     "frame": 1408,
     "hanzi": "鞋",
-    "keyword": "обувь",
+    "keyword": "туфли",
     "rth_list": "RSH-L50: Воздух, кожа и обувь",
     "lesson": 50,
     "strokes": 15,
@@ -12683,7 +12683,7 @@
   {
     "frame": 1410,
     "hanzi": "馨",
-    "keyword": "ароматный",
+    "keyword": "благоухающий",
     "rth_list": "RSH-L50: Воздух, кожа и обувь",
     "lesson": 50,
     "strokes": 20,
@@ -12710,7 +12710,7 @@
   {
     "frame": 1413,
     "hanzi": "蒸",
-    "keyword": "пар",
+    "keyword": "водяной пар",
     "rth_list": "RSH-L50: Воздух, кожа и обувь",
     "lesson": 50,
     "strokes": 13,
@@ -12755,7 +12755,7 @@
   {
     "frame": 1418,
     "hanzi": "番",
-    "keyword": "попробуй",
+    "keyword": "попробовать",
     "rth_list": "RSH-L51: Зубы, мех и жилища",
     "lesson": 51,
     "strokes": 12,
@@ -12800,7 +12800,7 @@
   {
     "frame": 1423,
     "hanzi": "笔",
-    "keyword": "ручка",
+    "keyword": "ручка (для письма)",
     "rth_list": "RSH-L51: Зубы, мех и жилища",
     "lesson": 51,
     "strokes": 10,
@@ -12881,7 +12881,7 @@
   {
     "frame": 1432,
     "hanzi": "应",
-    "keyword": "должен",
+    "keyword": "надлежит",
     "rth_list": "RSH-L52: Птицы, ястребы и острова",
     "lesson": 52,
     "strokes": 7,
@@ -12908,7 +12908,7 @@
   {
     "frame": 1435,
     "hanzi": "检",
-    "keyword": "исследовать",
+    "keyword": "проверять",
     "rth_list": "RSH-L52: Птицы, ястребы и острова",
     "lesson": 52,
     "strokes": 11,
@@ -12980,7 +12980,7 @@
   {
     "frame": 1443,
     "hanzi": "遇",
-    "keyword": "встреча",
+    "keyword": "случайная встреча",
     "rth_list": "RSH-L52: Птицы, ястребы и острова",
     "lesson": 52,
     "strokes": 12,
@@ -12989,7 +12989,7 @@
   {
     "frame": 1444,
     "hanzi": "缺",
-    "keyword": "несовершенный",
+    "keyword": "недостающий",
     "rth_list": "RSH-L52: Птицы, ястребы и острова",
     "lesson": 52,
     "strokes": 10,
@@ -13025,7 +13025,7 @@
   {
     "frame": 1448,
     "hanzi": "逸",
-    "keyword": "бежать",
+    "keyword": "убегать",
     "rth_list": "RSH-L52: Птицы, ястребы и острова",
     "lesson": 52,
     "strokes": 11,
@@ -13088,7 +13088,7 @@
   {
     "frame": 1455,
     "hanzi": "吗",
-    "keyword": "да или нет",
+    "keyword": "вопрос «да/нет»",
     "rth_list": "RSH-L53: Лошади, тигры и олени",
     "lesson": 53,
     "strokes": 6,
@@ -13142,7 +13142,7 @@
   {
     "frame": 1461,
     "hanzi": "虚",
-    "keyword": "ложный",
+    "keyword": "мнимый",
     "rth_list": "RSH-L53: Лошади, тигры и олени",
     "lesson": 53,
     "strokes": 11,
@@ -13187,7 +13187,7 @@
   {
     "frame": 1466,
     "hanzi": "演",
-    "keyword": "выполнять",
+    "keyword": "исполнять",
     "rth_list": "RSH-L54: Драконы, призраки и зодиак",
     "lesson": 54,
     "strokes": 14,
@@ -13277,7 +13277,7 @@
   {
     "frame": 1476,
     "hanzi": "那",
-    "keyword": "что",
+    "keyword": "тот",
     "rth_list": "RSH-L55: Цвета, электричество и окна",
     "lesson": 55,
     "strokes": 6,
@@ -13295,7 +13295,7 @@
   {
     "frame": 1478,
     "hanzi": "两",
-    "keyword": "дос",
+    "keyword": "два перед счётным словом",
     "rth_list": "RSH-L55: Цвета, электричество и окна",
     "lesson": 55,
     "strokes": 7,
@@ -13322,7 +13322,7 @@
   {
     "frame": 1481,
     "hanzi": "县",
-    "keyword": "графство",
+    "keyword": "уезд / округ",
     "rth_list": "RSH-L55: Цвета, электричество и окна",
     "lesson": 55,
     "strokes": 7,
@@ -13331,7 +13331,7 @@
   {
     "frame": 1482,
     "hanzi": "悬",
-    "keyword": "приостановить",
+    "keyword": "подвешивать",
     "rth_list": "RSH-L55: Цвета, электричество и окна",
     "lesson": 55,
     "strokes": 11,
@@ -13448,7 +13448,7 @@
   {
     "frame": 1495,
     "hanzi": "变",
-    "keyword": "изменить",
+    "keyword": "менять",
     "rth_list": "RSH-L55: Цвета, электричество и окна",
     "lesson": 55,
     "strokes": 8,
@@ -13457,7 +13457,7 @@
   {
     "frame": 1496,
     "hanzi": "卑",
-    "keyword": "скромный",
+    "keyword": "низменный",
     "rth_list": "RSH-L55: Цвета, электричество и окна",
     "lesson": 55,
     "strokes": 8,
@@ -13466,7 +13466,7 @@
   {
     "frame": 1497,
     "hanzi": "牌",
-    "keyword": "бренд",
+    "keyword": "марка / табличка",
     "rth_list": "RSH-L55: Цвета, электричество и окна",
     "lesson": 55,
     "strokes": 12,
@@ -13475,7 +13475,7 @@
   {
     "frame": 1498,
     "hanzi": "套",
-    "keyword": "обложка",
+    "keyword": "чехол",
     "rth_list": "RSH-L55: Цвета, электричество и окна",
     "lesson": 55,
     "strokes": 10,
@@ -13502,7 +13502,7 @@
   {
     "frame": 1501,
     "hanzi": "叭",
-    "keyword": "труба",
+    "keyword": "труба (музыкальная)",
     "rth_list": "RSH2-L01: Труба и примитивы: вступление",
     "lesson": 1,
     "strokes": 5,
@@ -13628,7 +13628,7 @@
   {
     "frame": 1515,
     "hanzi": "刮",
-    "keyword": "царапать",
+    "keyword": "скоблить",
     "rth_list": "RSH2-L05: Усилия и щеки",
     "lesson": 5,
     "strokes": 8,
@@ -13700,7 +13700,7 @@
   {
     "frame": 1523,
     "hanzi": "夹",
-    "keyword": "нажмите с обеих сторон",
+    "keyword": "сжимать с двух сторон",
     "rth_list": "RSH2-L07: Напряжение, кирпичи и свист",
     "lesson": 7,
     "strokes": 6,
@@ -13727,7 +13727,7 @@
   {
     "frame": 1526,
     "hanzi": "硕",
-    "keyword": "большой",
+    "keyword": "крупный",
     "rth_list": "RSH2-L07: Напряжение, кирпичи и свист",
     "lesson": 7,
     "strokes": 11,
@@ -13772,7 +13772,7 @@
   {
     "frame": 1531,
     "hanzi": "泄",
-    "keyword": "разрядка",
+    "keyword": "сброс",
     "rth_list": "RSH2-L08: Слёзы, вода и железы",
     "lesson": 8,
     "strokes": 8,
@@ -13817,7 +13817,7 @@
   {
     "frame": 1536,
     "hanzi": "咏",
-    "keyword": "петь",
+    "keyword": "воспевать",
     "rth_list": "RSH2-L08: Слёзы, вода и железы",
     "lesson": 8,
     "strokes": 8,
@@ -13844,7 +13844,7 @@
   {
     "frame": 1539,
     "hanzi": "坦",
-    "keyword": "уровень",
+    "keyword": "ровная поверхность",
     "rth_list": "RSH2-L08: Слёзы, вода и железы",
     "lesson": 8,
     "strokes": 8,
@@ -13862,7 +13862,7 @@
   {
     "frame": 1541,
     "hanzi": "涯",
-    "keyword": "банк",
+    "keyword": "край берега",
     "rth_list": "RSH2-L08: Слёзы, вода и железы",
     "lesson": 8,
     "strokes": 11,
@@ -13889,7 +13889,7 @@
   {
     "frame": 1544,
     "hanzi": "碍",
-    "keyword": "препятствовать",
+    "keyword": "затруднять",
     "rth_list": "RSH2-L08: Слёзы, вода и железы",
     "lesson": 8,
     "strokes": 13,
@@ -13916,7 +13916,7 @@
   {
     "frame": 1547,
     "hanzi": "炒",
-    "keyword": "жаркое",
+    "keyword": "жарить, помешивая",
     "rth_list": "RSH2-L08: Слёзы, вода и железы",
     "lesson": 8,
     "strokes": 8,
@@ -13970,7 +13970,7 @@
   {
     "frame": 1553,
     "hanzi": "熏",
-    "keyword": "лечить дымом",
+    "keyword": "окуривать",
     "rth_list": "RSH2-L09: Расстояние, Карп и Киноварь",
     "lesson": 9,
     "strokes": 14,
@@ -13979,7 +13979,7 @@
   {
     "frame": 1554,
     "hanzi": "丹",
-    "keyword": "киноварь красная",
+    "keyword": "киноварно-красный",
     "rth_list": "RSH2-L09: Расстояние, Карп и Киноварь",
     "lesson": 9,
     "strokes": 4,
@@ -13988,7 +13988,7 @@
   {
     "frame": 1555,
     "hanzi": "炯",
-    "keyword": "блестящий",
+    "keyword": "сияющий",
     "rth_list": "RSH2-L09: Расстояние, Карп и Киноварь",
     "lesson": 9,
     "strokes": 9,
@@ -14033,7 +14033,7 @@
   {
     "frame": 1560,
     "hanzi": "喧",
-    "keyword": "шумный",
+    "keyword": "шумливый",
     "rth_list": "RSH2-L09: Расстояние, Карп и Киноварь",
     "lesson": 9,
     "strokes": 12,
@@ -14060,7 +14060,7 @@
   {
     "frame": 1563,
     "hanzi": "朴",
-    "keyword": "равнина",
+    "keyword": "простой / незатейливый",
     "rth_list": "RSH2-L10: Деревья, сарай и вишня",
     "lesson": 10,
     "strokes": 6,
@@ -14069,7 +14069,7 @@
   {
     "frame": 1564,
     "hanzi": "朵",
-    "keyword": "наводнения",
+    "keyword": "цветок (счётное слово)",
     "rth_list": "RSH2-L10: Деревья, сарай и вишня",
     "lesson": 10,
     "strokes": 6,
@@ -14123,7 +14123,7 @@
   {
     "frame": 1570,
     "hanzi": "杰",
-    "keyword": "выдающийся",
+    "keyword": "неординарный",
     "rth_list": "RSH2-L10: Деревья, сарай и вишня",
     "lesson": 10,
     "strokes": 8,
@@ -14141,7 +14141,7 @@
   {
     "frame": 1572,
     "hanzi": "宋",
-    "keyword": "Песня",
+    "keyword": "династия Сун",
     "rth_list": "RSH2-L10: Деревья, сарай и вишня",
     "lesson": 10,
     "strokes": 7,
@@ -14267,7 +14267,7 @@
   {
     "frame": 1586,
     "hanzi": "寞",
-    "keyword": "одинокий",
+    "keyword": "уединённый",
     "rth_list": "RSH2-L10: Деревья, сарай и вишня",
     "lesson": 10,
     "strokes": 13,
@@ -14285,7 +14285,7 @@
   {
     "frame": 1588,
     "hanzi": "狭",
-    "keyword": "узкий",
+    "keyword": "тесный",
     "rth_list": "RSH2-L11: Кошки, тюрьма и конституция",
     "lesson": 11,
     "strokes": 9,
@@ -14339,7 +14339,7 @@
   {
     "frame": 1594,
     "hanzi": "牢",
-    "keyword": "тюрьма",
+    "keyword": "темница",
     "rth_list": "RSH2-L11: Кошки, тюрьма и конституция",
     "lesson": 11,
     "strokes": 7,
@@ -14366,7 +14366,7 @@
   {
     "frame": 1597,
     "hanzi": "赞",
-    "keyword": "помощь",
+    "keyword": "поддержка",
     "rth_list": "RSH2-L11: Кошки, тюрьма и конституция",
     "lesson": 11,
     "strokes": 16,
@@ -14393,7 +14393,7 @@
   {
     "frame": 1600,
     "hanzi": "啥",
-    "keyword": "что?",
+    "keyword": "чё?",
     "rth_list": "RSH2-L12: Зонты, нефрит и жемчуг",
     "lesson": 12,
     "strokes": 11,
@@ -14411,7 +14411,7 @@
   {
     "frame": 1602,
     "hanzi": "旺",
-    "keyword": "процветающий",
+    "keyword": "преуспевающий",
     "rth_list": "RSH2-L12: Зонты, нефрит и жемчуг",
     "lesson": 12,
     "strokes": 8,
@@ -14474,7 +14474,7 @@
   {
     "frame": 1609,
     "hanzi": "栓",
-    "keyword": "вилка",
+    "keyword": "пробка / заглушка",
     "rth_list": "RSH2-L12: Зонты, нефрит и жемчуг",
     "lesson": 12,
     "strokes": 10,
@@ -14483,7 +14483,7 @@
   {
     "frame": 1610,
     "hanzi": "柱",
-    "keyword": "столб",
+    "keyword": "колонна",
     "rth_list": "RSH2-L12: Зонты, нефрит и жемчуг",
     "lesson": 12,
     "strokes": 9,
@@ -14519,7 +14519,7 @@
   {
     "frame": 1614,
     "hanzi": "锁",
-    "keyword": "замок",
+    "keyword": "замок (запор)",
     "rth_list": "RSH2-L12: Зонты, нефрит и жемчуг",
     "lesson": 12,
     "strokes": 12,
@@ -14555,7 +14555,7 @@
   {
     "frame": 1618,
     "hanzi": "迁",
-    "keyword": "переместить",
+    "keyword": "переселять",
     "rth_list": "RSH2-L13: Принуждение, рельсы и цепи",
     "lesson": 13,
     "strokes": 6,
@@ -14744,7 +14744,7 @@
   {
     "frame": 1639,
     "hanzi": "哼",
-    "keyword": "гул",
+    "keyword": "гудеть / напевать",
     "rth_list": "RSH2-L14: Эйфелева башня и киты",
     "lesson": 14,
     "strokes": 10,
@@ -14807,7 +14807,7 @@
   {
     "frame": 1646,
     "hanzi": "敦",
-    "keyword": "откровенный",
+    "keyword": "прямой в общении",
     "rth_list": "RSH2-L15: Вязание крючком, розы и холмики",
     "lesson": 15,
     "strokes": 12,
@@ -14861,7 +14861,7 @@
   {
     "frame": 1652,
     "hanzi": "罚",
-    "keyword": "наказывать",
+    "keyword": "штрафовать",
     "rth_list": "RSH2-L15: Вязание крючком, розы и холмики",
     "lesson": 15,
     "strokes": 9,
@@ -14924,7 +14924,7 @@
   {
     "frame": 1659,
     "hanzi": "贰",
-    "keyword": "два",
+    "keyword": "II (римская двойка)",
     "rth_list": "RSH2-L16: Генеалогическое древо и шпионаж",
     "lesson": 16,
     "strokes": 9,
@@ -14987,7 +14987,7 @@
   {
     "frame": 1666,
     "hanzi": "喊",
-    "keyword": "кричать",
+    "keyword": "звать криком",
     "rth_list": "RSH2-L16: Генеалогическое древо и шпионаж",
     "lesson": 16,
     "strokes": 12,
@@ -15113,7 +15113,7 @@
   {
     "frame": 1680,
     "hanzi": "猿",
-    "keyword": "обезьяна",
+    "keyword": "человекообразная обезьяна",
     "rth_list": "RSH2-L18: Носки, валюта и паруса",
     "lesson": 18,
     "strokes": 13,
@@ -15221,7 +15221,7 @@
   {
     "frame": 1692,
     "hanzi": "尝",
-    "keyword": "вкус",
+    "keyword": "пробовать на вкус",
     "rth_list": "RSH2-L18: Носки, валюта и паруса",
     "lesson": 18,
     "strokes": 9,
@@ -15293,7 +15293,7 @@
   {
     "frame": 1700,
     "hanzi": "垃",
-    "keyword": "мусор",
+    "keyword": "отбросы",
     "rth_list": "RSH2-L18: Носки, валюта и паруса",
     "lesson": 18,
     "strokes": 8,
@@ -15365,7 +15365,7 @@
   {
     "frame": 1708,
     "hanzi": "毕",
-    "keyword": "полный",
+    "keyword": "завершённый",
     "rth_list": "RSH2-L18: Носки, валюта и паруса",
     "lesson": 18,
     "strokes": 6,
@@ -15374,7 +15374,7 @@
   {
     "frame": 1709,
     "hanzi": "棍",
-    "keyword": "клуб",
+    "keyword": "дубинка",
     "rth_list": "RSH2-L18: Носки, валюта и паруса",
     "lesson": 18,
     "strokes": 12,
@@ -15536,7 +15536,7 @@
   {
     "frame": 1727,
     "hanzi": "茫",
-    "keyword": "безграничный",
+    "keyword": "бескрайний",
     "rth_list": "RSH2-L19: Магеллан, манго и мастер-классы",
     "lesson": 19,
     "strokes": 9,
@@ -15563,7 +15563,7 @@
   {
     "frame": 1730,
     "hanzi": "访",
-    "keyword": "позвонить",
+    "keyword": "навещать",
     "rth_list": "RSH2-L19: Магеллан, манго и мастер-классы",
     "lesson": 19,
     "strokes": 6,
@@ -15590,7 +15590,7 @@
   {
     "frame": 1733,
     "hanzi": "膀",
-    "keyword": "плечо",
+    "keyword": "верхняя часть руки",
     "rth_list": "RSH2-L19: Магеллан, манго и мастер-классы",
     "lesson": 19,
     "strokes": 14,
@@ -15617,7 +15617,7 @@
   {
     "frame": 1736,
     "hanzi": "锐",
-    "keyword": "острый",
+    "keyword": "острый (лезвие)",
     "rth_list": "RSH2-L19: Магеллан, манго и мастер-классы",
     "lesson": 19,
     "strokes": 12,
@@ -15725,7 +15725,7 @@
   {
     "frame": 1748,
     "hanzi": "雹",
-    "keyword": "приветствую",
+    "keyword": "град",
     "rth_list": "RSH2-L20: Летучие мыши, лягушки и коконы",
     "lesson": 20,
     "strokes": 13,
@@ -15770,7 +15770,7 @@
   {
     "frame": 1753,
     "hanzi": "嫁",
-    "keyword": "жениться",
+    "keyword": "выходить замуж",
     "rth_list": "RSH2-L20: Летучие мыши, лягушки и коконы",
     "lesson": 20,
     "strokes": 13,
@@ -15851,7 +15851,7 @@
   {
     "frame": 1762,
     "hanzi": "拦",
-    "keyword": "препятствовать",
+    "keyword": "преграждать",
     "rth_list": "RSH2-L20: Летучие мыши, лягушки и коконы",
     "lesson": 20,
     "strokes": 8,
@@ -15896,7 +15896,7 @@
   {
     "frame": 1767,
     "hanzi": "截",
-    "keyword": "оторваться",
+    "keyword": "обрубать",
     "rth_list": "RSH2-L20: Летучие мыши, лягушки и коконы",
     "lesson": 20,
     "strokes": 14,
@@ -15986,7 +15986,7 @@
   {
     "frame": 1777,
     "hanzi": "耀",
-    "keyword": "хвастаться",
+    "keyword": "щеголять",
     "rth_list": "RSH2-L20: Летучие мыши, лягушки и коконы",
     "lesson": 20,
     "strokes": 20,
@@ -15995,7 +15995,7 @@
   {
     "frame": 1778,
     "hanzi": "戳",
-    "keyword": "удар",
+    "keyword": "тычок",
     "rth_list": "RSH2-L20: Летучие мыши, лягушки и коконы",
     "lesson": 20,
     "strokes": 18,
@@ -16013,7 +16013,7 @@
   {
     "frame": 1780,
     "hanzi": "姻",
-    "keyword": "зять",
+    "keyword": "брачное родство",
     "rth_list": "RSH2-L21: Питомники, стены и шахты",
     "lesson": 21,
     "strokes": 9,
@@ -16031,7 +16031,7 @@
   {
     "frame": 1782,
     "hanzi": "旷",
-    "keyword": "экспансивный",
+    "keyword": "необозримый",
     "rth_list": "RSH2-L21: Питомники, стены и шахты",
     "lesson": 21,
     "strokes": 7,
@@ -16040,7 +16040,7 @@
   {
     "frame": 1783,
     "hanzi": "矿",
-    "keyword": "мой",
+    "keyword": "рудник",
     "rth_list": "RSH2-L21: Питомники, стены и шахты",
     "lesson": 21,
     "strokes": 8,
@@ -16058,7 +16058,7 @@
   {
     "frame": 1785,
     "hanzi": "嘛",
-    "keyword": "(маркер паузы)",
+    "keyword": "маркер паузы",
     "rth_list": "RSH2-L21: Питомники, стены и шахты",
     "lesson": 21,
     "strokes": 14,
@@ -16094,7 +16094,7 @@
   {
     "frame": 1789,
     "hanzi": "桩",
-    "keyword": "ставка",
+    "keyword": "кол / свая",
     "rth_list": "RSH2-L21: Питомники, стены и шахты",
     "lesson": 21,
     "strokes": 10,
@@ -16202,7 +16202,7 @@
   {
     "frame": 1801,
     "hanzi": "惧",
-    "keyword": "бояться",
+    "keyword": "пугаться",
     "rth_list": "RSH2-L21: Питомники, стены и шахты",
     "lesson": 21,
     "strokes": 11,
@@ -16220,7 +16220,7 @@
   {
     "frame": 1803,
     "hanzi": "惰",
-    "keyword": "ленивый",
+    "keyword": "праздный",
     "rth_list": "RSH2-L21: Питомники, стены и шахты",
     "lesson": 21,
     "strokes": 12,
@@ -16229,7 +16229,7 @@
   {
     "frame": 1804,
     "hanzi": "恢",
-    "keyword": "огромный",
+    "keyword": "исполинский",
     "rth_list": "RSH2-L21: Питомники, стены и шахты",
     "lesson": 21,
     "strokes": 9,
@@ -16265,7 +16265,7 @@
   {
     "frame": 1808,
     "hanzi": "恍",
-    "keyword": "внезапно",
+    "keyword": "вдруг",
     "rth_list": "RSH2-L21: Питомники, стены и шахты",
     "lesson": 21,
     "strokes": 9,
@@ -16301,7 +16301,7 @@
   {
     "frame": 1812,
     "hanzi": "怖",
-    "keyword": "бояться",
+    "keyword": "страшиться",
     "rth_list": "RSH2-L21: Питомники, стены и шахты",
     "lesson": 21,
     "strokes": 8,
@@ -16319,7 +16319,7 @@
   {
     "frame": 1814,
     "hanzi": "愣",
-    "keyword": "ошеломленный",
+    "keyword": "ошеломлённый",
     "rth_list": "RSH2-L21: Питомники, стены и шахты",
     "lesson": 21,
     "strokes": 12,
@@ -16328,7 +16328,7 @@
   {
     "frame": 1815,
     "hanzi": "悦",
-    "keyword": "в восторге",
+    "keyword": "довольный",
     "rth_list": "RSH2-L21: Питомники, стены и шахты",
     "lesson": 21,
     "strokes": 10,
@@ -16373,7 +16373,7 @@
   {
     "frame": 1820,
     "hanzi": "添",
-    "keyword": "увеличить",
+    "keyword": "прибавлять",
     "rth_list": "RSH2-L21: Питомники, стены и шахты",
     "lesson": 21,
     "strokes": 11,
@@ -16445,7 +16445,7 @@
   {
     "frame": 1828,
     "hanzi": "扣",
-    "keyword": "кнопка",
+    "keyword": "пуговица",
     "rth_list": "RSH2-L22: Хайд, леопарды и мотыльки",
     "lesson": 22,
     "strokes": 6,
@@ -16517,7 +16517,7 @@
   {
     "frame": 1836,
     "hanzi": "扎",
-    "keyword": "укол",
+    "keyword": "колоть",
     "rth_list": "RSH2-L22: Хайд, леопарды и мотыльки",
     "lesson": 22,
     "strokes": 4,
@@ -16571,7 +16571,7 @@
   {
     "frame": 1842,
     "hanzi": "捏",
-    "keyword": "щепотка",
+    "keyword": "щипать",
     "rth_list": "RSH2-L22: Хайд, леопарды и мотыльки",
     "lesson": 22,
     "strokes": 10,
@@ -16580,7 +16580,7 @@
   {
     "frame": 1843,
     "hanzi": "拧",
-    "keyword": "подправить",
+    "keyword": "подкручивать",
     "rth_list": "RSH2-L22: Хайд, леопарды и мотыльки",
     "lesson": 22,
     "strokes": 8,
@@ -16589,7 +16589,7 @@
   {
     "frame": 1844,
     "hanzi": "抹",
-    "keyword": "мазать",
+    "keyword": "намазывать",
     "rth_list": "RSH2-L22: Хайд, леопарды и мотыльки",
     "lesson": 22,
     "strokes": 8,
@@ -16625,7 +16625,7 @@
   {
     "frame": 1848,
     "hanzi": "扰",
-    "keyword": "преследовать",
+    "keyword": "досаждать",
     "rth_list": "RSH2-L22: Хайд, леопарды и мотыльки",
     "lesson": 22,
     "strokes": 7,
@@ -16652,7 +16652,7 @@
   {
     "frame": 1851,
     "hanzi": "拾",
-    "keyword": "прибраться",
+    "keyword": "подбирать / прибирать",
     "rth_list": "RSH2-L22: Хайд, леопарды и мотыльки",
     "lesson": 22,
     "strokes": 9,
@@ -16661,7 +16661,7 @@
   {
     "frame": 1852,
     "hanzi": "搭",
-    "keyword": "выставить",
+    "keyword": "сооружать",
     "rth_list": "RSH2-L22: Хайд, леопарды и мотыльки",
     "lesson": 22,
     "strokes": 12,
@@ -16670,7 +16670,7 @@
   {
     "frame": 1853,
     "hanzi": "掠",
-    "keyword": "грабеж",
+    "keyword": "грабить",
     "rth_list": "RSH2-L22: Хайд, леопарды и мотыльки",
     "lesson": 22,
     "strokes": 11,
@@ -16742,7 +16742,7 @@
   {
     "frame": 1861,
     "hanzi": "搓",
-    "keyword": "массаж",
+    "keyword": "растирать",
     "rth_list": "RSH2-L22: Хайд, леопарды и мотыльки",
     "lesson": 22,
     "strokes": 12,
@@ -16760,7 +16760,7 @@
   {
     "frame": 1863,
     "hanzi": "扩",
-    "keyword": "увеличить",
+    "keyword": "расширять",
     "rth_list": "RSH2-L22: Хайд, леопарды и мотыльки",
     "lesson": 22,
     "strokes": 6,
@@ -16769,7 +16769,7 @@
   {
     "frame": 1864,
     "hanzi": "撼",
-    "keyword": "бегать",
+    "keyword": "раскачивать",
     "rth_list": "RSH2-L22: Хайд, леопарды и мотыльки",
     "lesson": 22,
     "strokes": 16,
@@ -16778,7 +16778,7 @@
   {
     "frame": 1865,
     "hanzi": "挟",
-    "keyword": "принуждение",
+    "keyword": "вынуждать угрозой",
     "rth_list": "RSH2-L22: Хайд, леопарды и мотыльки",
     "lesson": 22,
     "strokes": 9,
@@ -16832,7 +16832,7 @@
   {
     "frame": 1871,
     "hanzi": "莽",
-    "keyword": "грубый",
+    "keyword": "грубый (невоспитанный)",
     "rth_list": "RSH2-L22: Хайд, леопарды и мотыльки",
     "lesson": 22,
     "strokes": 10,
@@ -16841,7 +16841,7 @@
   {
     "frame": 1872,
     "hanzi": "奔",
-    "keyword": "рывок",
+    "keyword": "мчаться",
     "rth_list": "RSH2-L22: Хайд, леопарды и мотыльки",
     "lesson": 22,
     "strokes": 8,
@@ -16850,7 +16850,7 @@
   {
     "frame": 1873,
     "hanzi": "喷",
-    "keyword": "рывок",
+    "keyword": "брызгать струёй",
     "rth_list": "RSH2-L22: Хайд, леопарды и мотыльки",
     "lesson": 22,
     "strokes": 12,
@@ -16868,7 +16868,7 @@
   {
     "frame": 1875,
     "hanzi": "材",
-    "keyword": "вещи",
+    "keyword": "сырьё",
     "rth_list": "RSH2-L22: Хайд, леопарды и мотыльки",
     "lesson": 22,
     "strokes": 7,
@@ -16895,7 +16895,7 @@
   {
     "frame": 1878,
     "hanzi": "扔",
-    "keyword": "выбросить",
+    "keyword": "выбрасывать",
     "rth_list": "RSH2-L22: Хайд, леопарды и мотыльки",
     "lesson": 22,
     "strokes": 5,
@@ -16922,7 +16922,7 @@
   {
     "frame": 1881,
     "hanzi": "梗",
-    "keyword": "выслеживать",
+    "keyword": "стебель",
     "rth_list": "RSH2-L22: Хайд, леопарды и мотыльки",
     "lesson": 22,
     "strokes": 11,
@@ -16949,7 +16949,7 @@
   {
     "frame": 1884,
     "hanzi": "权",
-    "keyword": "авторитет",
+    "keyword": "власть / полномочия",
     "rth_list": "RSH2-L22: Хайд, леопарды и мотыльки",
     "lesson": 22,
     "strokes": 6,
@@ -16976,7 +16976,7 @@
   {
     "frame": 1887,
     "hanzi": "轰",
-    "keyword": "гул",
+    "keyword": "грохот",
     "rth_list": "RSH2-L22: Хайд, леопарды и мотыльки",
     "lesson": 22,
     "strokes": 8,
@@ -17039,7 +17039,7 @@
   {
     "frame": 1894,
     "hanzi": "淑",
-    "keyword": "изящный",
+    "keyword": "грациозный",
     "rth_list": "RSH2-L22: Хайд, леопарды и мотыльки",
     "lesson": 22,
     "strokes": 11,
@@ -17075,7 +17075,7 @@
   {
     "frame": 1898,
     "hanzi": "扳",
-    "keyword": "буксир",
+    "keyword": "дёргать",
     "rth_list": "RSH2-L22: Хайд, леопарды и мотыльки",
     "lesson": 22,
     "strokes": 7,
@@ -17120,7 +17120,7 @@
   {
     "frame": 1903,
     "hanzi": "貌",
-    "keyword": "выражение лица",
+    "keyword": "облик",
     "rth_list": "RSH2-L22: Хайд, леопарды и мотыльки",
     "lesson": 22,
     "strokes": 14,
@@ -17129,7 +17129,7 @@
   {
     "frame": 1904,
     "hanzi": "睬",
-    "keyword": "уведомление",
+    "keyword": "обращать внимание",
     "rth_list": "RSH2-L22: Хайд, леопарды и мотыльки",
     "lesson": 22,
     "strokes": 13,
@@ -17147,7 +17147,7 @@
   {
     "frame": 1906,
     "hanzi": "宏",
-    "keyword": "великолепный",
+    "keyword": "величественный",
     "rth_list": "RSH2-L22: Хайд, леопарды и мотыльки",
     "lesson": 22,
     "strokes": 7,
@@ -17192,7 +17192,7 @@
   {
     "frame": 1911,
     "hanzi": "冶",
-    "keyword": "пахло",
+    "keyword": "плавить металл",
     "rth_list": "RSH2-L22: Хайд, леопарды и мотыльки",
     "lesson": 22,
     "strokes": 7,
@@ -17210,7 +17210,7 @@
   {
     "frame": 1913,
     "hanzi": "罢",
-    "keyword": "прекратить",
+    "keyword": "прекращать",
     "rth_list": "RSH2-L22: Хайд, леопарды и мотыльки",
     "lesson": 22,
     "strokes": 10,
@@ -17228,7 +17228,7 @@
   {
     "frame": 1915,
     "hanzi": "丢",
-    "keyword": "запутаться",
+    "keyword": "потерять",
     "rth_list": "RSH2-L22: Хайд, леопарды и мотыльки",
     "lesson": 22,
     "strokes": 6,
@@ -17255,7 +17255,7 @@
   {
     "frame": 1918,
     "hanzi": "撤",
-    "keyword": "удалить",
+    "keyword": "убирать / отводить",
     "rth_list": "RSH2-L22: Хайд, леопарды и мотыльки",
     "lesson": 22,
     "strokes": 15,
@@ -17282,7 +17282,7 @@
   {
     "frame": 1921,
     "hanzi": "疏",
-    "keyword": "редкий",
+    "keyword": "разреженный",
     "rth_list": "RSH2-L22: Хайд, леопарды и мотыльки",
     "lesson": 22,
     "strokes": 12,
@@ -17336,7 +17336,7 @@
   {
     "frame": 1927,
     "hanzi": "岩",
-    "keyword": "рок",
+    "keyword": "скальная порода",
     "rth_list": "RSH2-L23: Горы, камни и уголь",
     "lesson": 23,
     "strokes": 8,
@@ -17345,7 +17345,7 @@
   {
     "frame": 1928,
     "hanzi": "峭",
-    "keyword": "стремительный",
+    "keyword": "отвесный",
     "rth_list": "RSH2-L23: Горы, камни и уголь",
     "lesson": 23,
     "strokes": 10,
@@ -17354,7 +17354,7 @@
   {
     "frame": 1929,
     "hanzi": "崎",
-    "keyword": "прочный",
+    "keyword": "изрезанный / неровный",
     "rth_list": "RSH2-L23: Горы, камни и уголь",
     "lesson": 23,
     "strokes": 11,
@@ -17363,7 +17363,7 @@
   {
     "frame": 1930,
     "hanzi": "崖",
-    "keyword": "скала",
+    "keyword": "утёс",
     "rth_list": "RSH2-L23: Горы, камни и уголь",
     "lesson": 23,
     "strokes": 11,
@@ -17372,7 +17372,7 @@
   {
     "frame": 1931,
     "hanzi": "灿",
-    "keyword": "блестящий",
+    "keyword": "лучезарный",
     "rth_list": "RSH2-L23: Горы, камни и уголь",
     "lesson": 23,
     "strokes": 7,
@@ -17435,7 +17435,7 @@
   {
     "frame": 1938,
     "hanzi": "摧",
-    "keyword": "крушение",
+    "keyword": "разрушать",
     "rth_list": "RSH2-L23: Горы, камни и уголь",
     "lesson": 23,
     "strokes": 14,
@@ -17462,7 +17462,7 @@
   {
     "frame": 1941,
     "hanzi": "塑",
-    "keyword": "пластик",
+    "keyword": "пластмасса",
     "rth_list": "RSH2-L23: Горы, камни и уголь",
     "lesson": 23,
     "strokes": 13,
@@ -17489,7 +17489,7 @@
   {
     "frame": 1944,
     "hanzi": "芬",
-    "keyword": "сущность",
+    "keyword": "аромат / эссенция",
     "rth_list": "RSH2-L23: Горы, камни и уголь",
     "lesson": 23,
     "strokes": 7,
@@ -17534,7 +17534,7 @@
   {
     "frame": 1949,
     "hanzi": "滚",
-    "keyword": "кататься",
+    "keyword": "катиться",
     "rth_list": "RSH2-L23: Горы, камни и уголь",
     "lesson": 23,
     "strokes": 13,
@@ -17561,7 +17561,7 @@
   {
     "frame": 1952,
     "hanzi": "裕",
-    "keyword": "обильный",
+    "keyword": "обеспеченный",
     "rth_list": "RSH2-L23: Горы, камни и уголь",
     "lesson": 23,
     "strokes": 12,
@@ -17579,7 +17579,7 @@
   {
     "frame": 1954,
     "hanzi": "熔",
-    "keyword": "предохранитель",
+    "keyword": "плавить / сплавлять",
     "rth_list": "RSH2-L23: Горы, камни и уголь",
     "lesson": 23,
     "strokes": 14,
@@ -17588,7 +17588,7 @@
   {
     "frame": 1955,
     "hanzi": "裳",
-    "keyword": "одежда",
+    "keyword": "одеяние",
     "rth_list": "RSH2-L24: Нары, пальмы и шпинат",
     "lesson": 24,
     "strokes": 14,
@@ -17615,7 +17615,7 @@
   {
     "frame": 1958,
     "hanzi": "膛",
-    "keyword": "грудь",
+    "keyword": "грудная клетка",
     "rth_list": "RSH2-L24: Нары, пальмы и шпинат",
     "lesson": 24,
     "strokes": 15,
@@ -17660,7 +17660,7 @@
   {
     "frame": 1963,
     "hanzi": "歼",
-    "keyword": "уничтожить",
+    "keyword": "истреблять",
     "rth_list": "RSH2-L24: Нары, пальмы и шпинат",
     "lesson": 24,
     "strokes": 7,
@@ -17669,7 +17669,7 @@
   {
     "frame": 1964,
     "hanzi": "殖",
-    "keyword": "порода",
+    "keyword": "разводить",
     "rth_list": "RSH2-L24: Нары, пальмы и шпинат",
     "lesson": 24,
     "strokes": 12,
@@ -17741,7 +17741,7 @@
   {
     "frame": 1972,
     "hanzi": "耻",
-    "keyword": "позор",
+    "keyword": "стыд",
     "rth_list": "RSH2-L24: Нары, пальмы и шпинат",
     "lesson": 24,
     "strokes": 10,
@@ -17750,7 +17750,7 @@
   {
     "frame": 1973,
     "hanzi": "摄",
-    "keyword": "сфотографироваться",
+    "keyword": "фотографировать",
     "rth_list": "RSH2-L24: Нары, пальмы и шпинат",
     "lesson": 24,
     "strokes": 13,
@@ -17759,7 +17759,7 @@
   {
     "frame": 1974,
     "hanzi": "聪",
-    "keyword": "умный",
+    "keyword": "смышленый",
     "rth_list": "RSH2-L24: Нары, пальмы и шпинат",
     "lesson": 24,
     "strokes": 15,
@@ -17768,7 +17768,7 @@
   {
     "frame": 1975,
     "hanzi": "娶",
-    "keyword": "возьми жену",
+    "keyword": "жениться",
     "rth_list": "RSH2-L24: Нары, пальмы и шпинат",
     "lesson": 24,
     "strokes": 11,
@@ -17831,7 +17831,7 @@
   {
     "frame": 1982,
     "hanzi": "熙",
-    "keyword": "великолепный",
+    "keyword": "блистательный",
     "rth_list": "RSH2-L24: Нары, пальмы и шпинат",
     "lesson": 24,
     "strokes": 14,
@@ -17858,7 +17858,7 @@
   {
     "frame": 1985,
     "hanzi": "募",
-    "keyword": "нанимать",
+    "keyword": "набирать",
     "rth_list": "RSH2-L24: Нары, пальмы и шпинат",
     "lesson": 24,
     "strokes": 12,
@@ -17876,7 +17876,7 @@
   {
     "frame": 1987,
     "hanzi": "劫",
-    "keyword": "грабить",
+    "keyword": "разграблять",
     "rth_list": "RSH2-L24: Нары, пальмы и шпинат",
     "lesson": 24,
     "strokes": 7,
@@ -17885,7 +17885,7 @@
   {
     "frame": 1988,
     "hanzi": "抛",
-    "keyword": "бросать",
+    "keyword": "подбрасывать",
     "rth_list": "RSH2-L24: Нары, пальмы и шпинат",
     "lesson": 24,
     "strokes": 7,
@@ -17930,7 +17930,7 @@
   {
     "frame": 1993,
     "hanzi": "征",
-    "keyword": "требовать",
+    "keyword": "взимать / требовать",
     "rth_list": "RSH2-L24: Нары, пальмы и шпинат",
     "lesson": 24,
     "strokes": 8,
@@ -17939,7 +17939,7 @@
   {
     "frame": 1994,
     "hanzi": "惩",
-    "keyword": "наказывать",
+    "keyword": "карать",
     "rth_list": "RSH2-L24: Нары, пальмы и шпинат",
     "lesson": 24,
     "strokes": 12,
@@ -17957,7 +17957,7 @@
   {
     "frame": 1996,
     "hanzi": "徊",
-    "keyword": "нерешительный",
+    "keyword": "колеблющийся",
     "rth_list": "RSH2-L24: Нары, пальмы и шпинат",
     "lesson": 24,
     "strokes": 9,
@@ -17966,7 +17966,7 @@
   {
     "frame": 1997,
     "hanzi": "役",
-    "keyword": "услуга",
+    "keyword": "служба",
     "rth_list": "RSH2-L24: Нары, пальмы и шпинат",
     "lesson": 24,
     "strokes": 7,
@@ -17975,7 +17975,7 @@
   {
     "frame": 1998,
     "hanzi": "循",
-    "keyword": "соблюдать",
+    "keyword": "соблюдать порядок",
     "rth_list": "RSH2-L24: Нары, пальмы и шпинат",
     "lesson": 24,
     "strokes": 12,
@@ -17984,7 +17984,7 @@
   {
     "frame": 1999,
     "hanzi": "彼",
-    "keyword": "другой",
+    "keyword": "тот, другой",
     "rth_list": "RSH2-L24: Нары, пальмы и шпинат",
     "lesson": 24,
     "strokes": 8,
@@ -18047,7 +18047,7 @@
   {
     "frame": 2006,
     "hanzi": "稍",
-    "keyword": "немного",
+    "keyword": "слегка",
     "rth_list": "RSH2-L25: Обезглавливание и Румпельбрелла",
     "lesson": 25,
     "strokes": 12,
@@ -18065,7 +18065,7 @@
   {
     "frame": 2008,
     "hanzi": "稿",
-    "keyword": "проект",
+    "keyword": "черновик",
     "rth_list": "RSH2-L25: Обезглавливание и Румпельбрелла",
     "lesson": 25,
     "strokes": 15,
@@ -18083,7 +18083,7 @@
   {
     "frame": 2010,
     "hanzi": "颖",
-    "keyword": "умный",
+    "keyword": "смышлёный",
     "rth_list": "RSH2-L25: Обезглавливание и Румпельбрелла",
     "lesson": 25,
     "strokes": 13,
@@ -18155,7 +18155,7 @@
   {
     "frame": 2018,
     "hanzi": "秩",
-    "keyword": "заказать",
+    "keyword": "порядок / чин",
     "rth_list": "RSH2-L25: Обезглавливание и Румпельбрелла",
     "lesson": 25,
     "strokes": 10,
@@ -18209,7 +18209,7 @@
   {
     "frame": 2024,
     "hanzi": "黎",
-    "keyword": "хозяин",
+    "keyword": "сонм / множество",
     "rth_list": "RSH2-L25: Обезглавливание и Румпельбрелла",
     "lesson": 25,
     "strokes": 15,
@@ -18254,7 +18254,7 @@
   {
     "frame": 2029,
     "hanzi": "糊",
-    "keyword": "тесто",
+    "keyword": "кляр / жидкое тесто",
     "rth_list": "RSH2-L25: Обезглавливание и Румпельбрелла",
     "lesson": 25,
     "strokes": 15,
@@ -18272,7 +18272,7 @@
   {
     "frame": 2031,
     "hanzi": "奥",
-    "keyword": "большой глубины",
+    "keyword": "глубинный",
     "rth_list": "RSH2-L25: Обезглавливание и Румпельбрелла",
     "lesson": 25,
     "strokes": 12,
@@ -18281,7 +18281,7 @@
   {
     "frame": 2032,
     "hanzi": "澳",
-    "keyword": "глубокий вход",
+    "keyword": "глубокая бухта",
     "rth_list": "RSH2-L25: Обезглавливание и Румпельбрелла",
     "lesson": 25,
     "strokes": 15,
@@ -18317,7 +18317,7 @@
   {
     "frame": 2036,
     "hanzi": "粱",
-    "keyword": "мелкое просо",
+    "keyword": "просо (отборное)",
     "rth_list": "RSH2-L25: Обезглавливание и Румпельбрелла",
     "lesson": 25,
     "strokes": 13,
@@ -18335,7 +18335,7 @@
   {
     "frame": 2038,
     "hanzi": "糙",
-    "keyword": "грубый",
+    "keyword": "шероховатый",
     "rth_list": "RSH2-L25: Обезглавливание и Румпельбрелла",
     "lesson": 25,
     "strokes": 16,
@@ -18362,7 +18362,7 @@
   {
     "frame": 2041,
     "hanzi": "蔽",
-    "keyword": "убежище",
+    "keyword": "укрывать",
     "rth_list": "RSH2-L25: Обезглавливание и Румпельбрелла",
     "lesson": 25,
     "strokes": 14,
@@ -18389,7 +18389,7 @@
   {
     "frame": 2044,
     "hanzi": "弊",
-    "keyword": "мошенничество",
+    "keyword": "махинация",
     "rth_list": "RSH2-L25: Обезглавливание и Румпельбрелла",
     "lesson": 25,
     "strokes": 14,
@@ -18398,7 +18398,7 @@
   {
     "frame": 2045,
     "hanzi": "莱",
-    "keyword": "ягненок",
+    "keyword": "лебеда",
     "rth_list": "RSH2-L25: Обезглавливание и Румпельбрелла",
     "lesson": 25,
     "strokes": 10,
@@ -18434,7 +18434,7 @@
   {
     "frame": 2049,
     "hanzi": "笨",
-    "keyword": "глупый",
+    "keyword": "тупой",
     "rth_list": "RSH2-L25: Обезглавливание и Румпельбрелла",
     "lesson": 25,
     "strokes": 11,
@@ -18443,7 +18443,7 @@
   {
     "frame": 2050,
     "hanzi": "筒",
-    "keyword": "трубка",
+    "keyword": "цилиндр / трубка",
     "rth_list": "RSH2-L25: Обезглавливание и Румпельбрелла",
     "lesson": 25,
     "strokes": 12,
@@ -18479,7 +18479,7 @@
   {
     "frame": 2054,
     "hanzi": "伍",
-    "keyword": "В",
+    "keyword": "V (римская пятёрка)",
     "rth_list": "RSH2-L26: Враждебность, благословения и обнаружение",
     "lesson": 26,
     "strokes": 6,
@@ -18497,7 +18497,7 @@
   {
     "frame": 2056,
     "hanzi": "倡",
-    "keyword": "начать",
+    "keyword": "инициировать",
     "rth_list": "RSH2-L26: Враждебность, благословения и обнаружение",
     "lesson": 26,
     "strokes": 10,
@@ -18551,7 +18551,7 @@
   {
     "frame": 2062,
     "hanzi": "俱",
-    "keyword": "вообще",
+    "keyword": "все вместе",
     "rth_list": "RSH2-L26: Враждебность, благословения и обнаружение",
     "lesson": 26,
     "strokes": 10,
@@ -18560,7 +18560,7 @@
   {
     "frame": 2063,
     "hanzi": "佑",
-    "keyword": "благослови",
+    "keyword": "благословлять",
     "rth_list": "RSH2-L26: Враждебность, благословения и обнаружение",
     "lesson": 26,
     "strokes": 7,
@@ -18686,7 +18686,7 @@
   {
     "frame": 2077,
     "hanzi": "偷",
-    "keyword": "украсть",
+    "keyword": "красть",
     "rth_list": "RSH2-L26: Враждебность, благословения и обнаружение",
     "lesson": 26,
     "strokes": 11,
@@ -18704,7 +18704,7 @@
   {
     "frame": 2079,
     "hanzi": "伐",
-    "keyword": "упал",
+    "keyword": "валить (дерево)",
     "rth_list": "RSH2-L26: Враждебность, благословения и обнаружение",
     "lesson": 26,
     "strokes": 6,
@@ -18749,7 +18749,7 @@
   {
     "frame": 2084,
     "hanzi": "侮",
-    "keyword": "оскорбление",
+    "keyword": "оскорблять",
     "rth_list": "RSH2-L26: Враждебность, благословения и обнаружение",
     "lesson": 26,
     "strokes": 9,
@@ -18875,7 +18875,7 @@
   {
     "frame": 2098,
     "hanzi": "聚",
-    "keyword": "собрать",
+    "keyword": "скапливаться",
     "rth_list": "RSH2-L26: Враждебность, благословения и обнаружение",
     "lesson": 26,
     "strokes": 14,
@@ -19001,7 +19001,7 @@
   {
     "frame": 2112,
     "hanzi": "揭",
-    "keyword": "раскрыть",
+    "keyword": "разоблачать",
     "rth_list": "RSH2-L26: Враждебность, благословения и обнаружение",
     "lesson": 26,
     "strokes": 12,
@@ -19028,7 +19028,7 @@
   {
     "frame": 2115,
     "hanzi": "挺",
-    "keyword": "возводить",
+    "keyword": "прямой / выпрямленный",
     "rth_list": "RSH2-L27: Фарфор, бутылки и дворцы",
     "lesson": 27,
     "strokes": 9,
@@ -19109,7 +19109,7 @@
   {
     "frame": 2124,
     "hanzi": "莹",
-    "keyword": "блестящий",
+    "keyword": "лоснящийся",
     "rth_list": "RSH2-L27: Фарфор, бутылки и дворцы",
     "lesson": 27,
     "strokes": 10,
@@ -19154,7 +19154,7 @@
   {
     "frame": 2129,
     "hanzi": "吻",
-    "keyword": "поцелуй",
+    "keyword": "целовать",
     "rth_list": "RSH2-L28: Водовороты, лук и моча",
     "lesson": 28,
     "strokes": 7,
@@ -19217,7 +19217,7 @@
   {
     "frame": 2136,
     "hanzi": "屑",
-    "keyword": "биты",
+    "keyword": "крошки / частицы",
     "rth_list": "RSH2-L28: Водовороты, лук и моча",
     "lesson": 28,
     "strokes": 10,
@@ -19253,7 +19253,7 @@
   {
     "frame": 2140,
     "hanzi": "刷",
-    "keyword": "кисть",
+    "keyword": "щётка",
     "rth_list": "RSH2-L28: Водовороты, лук и моча",
     "lesson": 28,
     "strokes": 8,
@@ -19406,7 +19406,7 @@
   {
     "frame": 2157,
     "hanzi": "扇",
-    "keyword": "вентилятор",
+    "keyword": "веер",
     "rth_list": "RSH2-L28: Водовороты, лук и моча",
     "lesson": 28,
     "strokes": 10,
@@ -19469,7 +19469,7 @@
   {
     "frame": 2164,
     "hanzi": "蔚",
-    "keyword": "пышный",
+    "keyword": "буйный",
     "rth_list": "RSH2-L29: Ришелье, Чеснок и спиртные напитки",
     "lesson": 29,
     "strokes": 14,
@@ -19478,7 +19478,7 @@
   {
     "frame": 2165,
     "hanzi": "慰",
-    "keyword": "консоль",
+    "keyword": "утешать",
     "rth_list": "RSH2-L29: Ришелье, Чеснок и спиртные напитки",
     "lesson": 29,
     "strokes": 15,
@@ -19550,7 +19550,7 @@
   {
     "frame": 2173,
     "hanzi": "届",
-    "keyword": "наступает срок погашения",
+    "keyword": "наступать (о сроке)",
     "rth_list": "RSH2-L29: Ришелье, Чеснок и спиртные напитки",
     "lesson": 29,
     "strokes": 8,
@@ -19568,7 +19568,7 @@
   {
     "frame": 2175,
     "hanzi": "坤",
-    "keyword": "женщина",
+    "keyword": "женское начало",
     "rth_list": "RSH2-L29: Ришелье, Чеснок и спиртные напитки",
     "lesson": 29,
     "strokes": 8,
@@ -19622,7 +19622,7 @@
   {
     "frame": 2181,
     "hanzi": "裸",
-    "keyword": "голый",
+    "keyword": "обнажённый",
     "rth_list": "RSH2-L29: Ришелье, Чеснок и спиртные напитки",
     "lesson": 29,
     "strokes": 13,
@@ -19667,7 +19667,7 @@
   {
     "frame": 2186,
     "hanzi": "祈",
-    "keyword": "просить",
+    "keyword": "молить",
     "rth_list": "RSH2-L30: Сетки для волос, сельдерей и восторг",
     "lesson": 30,
     "strokes": 8,
@@ -19676,7 +19676,7 @@
   {
     "frame": 2187,
     "hanzi": "欣",
-    "keyword": "в восторге",
+    "keyword": "воодушевлённый",
     "rth_list": "RSH2-L30: Сетки для волос, сельдерей и восторг",
     "lesson": 30,
     "strokes": 8,
@@ -19685,7 +19685,7 @@
   {
     "frame": 2188,
     "hanzi": "掀",
-    "keyword": "раскрыть",
+    "keyword": "откидывать",
     "rth_list": "RSH2-L30: Сетки для волос, сельдерей и восторг",
     "lesson": 30,
     "strokes": 11,
@@ -19748,7 +19748,7 @@
   {
     "frame": 2195,
     "hanzi": "诈",
-    "keyword": "мошенничество",
+    "keyword": "жульничество",
     "rth_list": "RSH2-L30: Сетки для волос, сельдерей и восторг",
     "lesson": 30,
     "strokes": 7,
@@ -19802,7 +19802,7 @@
   {
     "frame": 2201,
     "hanzi": "浸",
-    "keyword": "погружаться",
+    "keyword": "окунать",
     "rth_list": "RSH2-L30: Сетки для волос, сельдерей и восторг",
     "lesson": 30,
     "strokes": 10,
@@ -19829,7 +19829,7 @@
   {
     "frame": 2204,
     "hanzi": "缘",
-    "keyword": "причина",
+    "keyword": "основание",
     "rth_list": "RSH2-L30: Сетки для волос, сельдерей и восторг",
     "lesson": 30,
     "strokes": 12,
@@ -19856,7 +19856,7 @@
   {
     "frame": 2207,
     "hanzi": "剥",
-    "keyword": "слезать",
+    "keyword": "сдирать",
     "rth_list": "RSH2-L30: Сетки для волос, сельдерей и восторг",
     "lesson": 30,
     "strokes": 10,
@@ -19919,7 +19919,7 @@
   {
     "frame": 2214,
     "hanzi": "萧",
-    "keyword": "пустынный",
+    "keyword": "опустошённый",
     "rth_list": "RSH2-L30: Сетки для волос, сельдерей и восторг",
     "lesson": 30,
     "strokes": 11,
@@ -19955,7 +19955,7 @@
   {
     "frame": 2218,
     "hanzi": "谦",
-    "keyword": "скромный",
+    "keyword": "непритязательный",
     "rth_list": "RSH2-L30: Сетки для волос, сельдерей и восторг",
     "lesson": 30,
     "strokes": 12,
@@ -19991,7 +19991,7 @@
   {
     "frame": 2222,
     "hanzi": "睁",
-    "keyword": "незатворенный",
+    "keyword": "открывать глаза",
     "rth_list": "RSH2-L30: Сетки для волос, сельдерей и восторг",
     "lesson": 30,
     "strokes": 11,
@@ -20000,7 +20000,7 @@
   {
     "frame": 2223,
     "hanzi": "挣",
-    "keyword": "борьба",
+    "keyword": "бороться / вырываться",
     "rth_list": "RSH2-L30: Сетки для волос, сельдерей и восторг",
     "lesson": 30,
     "strokes": 9,
@@ -20027,7 +20027,7 @@
   {
     "frame": 2226,
     "hanzi": "隶",
-    "keyword": "раб",
+    "keyword": "подневольный слуга",
     "rth_list": "RSH2-L30: Сетки для волос, сельдерей и восторг",
     "lesson": 30,
     "strokes": 8,
@@ -20081,7 +20081,7 @@
   {
     "frame": 2232,
     "hanzi": "耐",
-    "keyword": "-доказательство",
+    "keyword": "стойкий к...",
     "rth_list": "RSH2-L30: Сетки для волос, сельдерей и восторг",
     "lesson": 30,
     "strokes": 9,
@@ -20099,7 +20099,7 @@
   {
     "frame": 2234,
     "hanzi": "揣",
-    "keyword": "догадка",
+    "keyword": "предполагать",
     "rth_list": "RSH2-L30: Сетки для волос, сельдерей и восторг",
     "lesson": 30,
     "strokes": 12,
@@ -20135,7 +20135,7 @@
   {
     "frame": 2238,
     "hanzi": "抖",
-    "keyword": "колчан",
+    "keyword": "трястись",
     "rth_list": "RSH2-L30: Сетки для волос, сельдерей и восторг",
     "lesson": 30,
     "strokes": 7,
@@ -20144,7 +20144,7 @@
   {
     "frame": 2239,
     "hanzi": "惜",
-    "keyword": "улица",
+    "keyword": "сожалеть",
     "rth_list": "RSH2-L31: Рута, воск и предательство",
     "lesson": 31,
     "strokes": 11,
@@ -20189,7 +20189,7 @@
   {
     "frame": 2244,
     "hanzi": "燕",
-    "keyword": "глотать",
+    "keyword": "ласточка",
     "rth_list": "RSH2-L31: Рута, воск и предательство",
     "lesson": 31,
     "strokes": 16,
@@ -20216,7 +20216,7 @@
   {
     "frame": 2247,
     "hanzi": "拌",
-    "keyword": "смешивать",
+    "keyword": "перемешивать",
     "rth_list": "RSH2-L31: Рута, воск и предательство",
     "lesson": 31,
     "strokes": 8,
@@ -20342,7 +20342,7 @@
   {
     "frame": 2261,
     "hanzi": "簇",
-    "keyword": "кластер",
+    "keyword": "скопление",
     "rth_list": "RSH2-L32: Арбалеты, пыль и мандарины",
     "lesson": 32,
     "strokes": 17,
@@ -20378,7 +20378,7 @@
   {
     "frame": 2265,
     "hanzi": "览",
-    "keyword": "просмотр",
+    "keyword": "обозревать",
     "rth_list": "RSH2-L32: Арбалеты, пыль и мандарины",
     "lesson": 32,
     "strokes": 9,
@@ -20450,7 +20450,7 @@
   {
     "frame": 2273,
     "hanzi": "僵",
-    "keyword": "жесткий",
+    "keyword": "одеревенелый",
     "rth_list": "RSH2-L32: Арбалеты, пыль и мандарины",
     "lesson": 32,
     "strokes": 15,
@@ -20495,7 +20495,7 @@
   {
     "frame": 2278,
     "hanzi": "拂",
-    "keyword": "ласкать",
+    "keyword": "гладить",
     "rth_list": "RSH2-L32: Арбалеты, пыль и мандарины",
     "lesson": 32,
     "strokes": 8,
@@ -20549,7 +20549,7 @@
   {
     "frame": 2284,
     "hanzi": "聘",
-    "keyword": "нанимать",
+    "keyword": "брать на работу",
     "rth_list": "RSH2-L32: Арбалеты, пыль и мандарины",
     "lesson": 32,
     "strokes": 13,
@@ -20558,7 +20558,7 @@
   {
     "frame": 2285,
     "hanzi": "姊",
-    "keyword": "старшая сестра",
+    "keyword": "старшая сестра (книжн.)",
     "rth_list": "RSH2-L32: Арбалеты, пыль и мандарины",
     "lesson": 32,
     "strokes": 7,
@@ -20567,7 +20567,7 @@
   {
     "frame": 2286,
     "hanzi": "亏",
-    "keyword": "потеря",
+    "keyword": "убыток",
     "rth_list": "RSH2-L32: Арбалеты, пыль и мандарины",
     "lesson": 32,
     "strokes": 3,
@@ -20576,7 +20576,7 @@
   {
     "frame": 2287,
     "hanzi": "污",
-    "keyword": "грязный",
+    "keyword": "загрязнённый",
     "rth_list": "RSH2-L32: Арбалеты, пыль и мандарины",
     "lesson": 32,
     "strokes": 6,
@@ -20594,7 +20594,7 @@
   {
     "frame": 2289,
     "hanzi": "垮",
-    "keyword": "коллапс",
+    "keyword": "обваливаться",
     "rth_list": "RSH2-L32: Арбалеты, пыль и мандарины",
     "lesson": 32,
     "strokes": 9,
@@ -20621,7 +20621,7 @@
   {
     "frame": 2292,
     "hanzi": "愕",
-    "keyword": "ошеломленный",
+    "keyword": "потрясённый",
     "rth_list": "RSH2-L32: Арбалеты, пыль и мандарины",
     "lesson": 32,
     "strokes": 12,
@@ -20639,7 +20639,7 @@
   {
     "frame": 2294,
     "hanzi": "躲",
-    "keyword": "уклоняться",
+    "keyword": "уворачиваться",
     "rth_list": "RSH2-L33: Древесная масса, порка и островки",
     "lesson": 33,
     "strokes": 13,
@@ -20675,7 +20675,7 @@
   {
     "frame": 2298,
     "hanzi": "拷",
-    "keyword": "порка",
+    "keyword": "пороть",
     "rth_list": "RSH2-L33: Древесная масса, порка и островки",
     "lesson": 33,
     "strokes": 9,
@@ -20702,7 +20702,7 @@
   {
     "frame": 2301,
     "hanzi": "睹",
-    "keyword": "вот",
+    "keyword": "лицезреть",
     "rth_list": "RSH2-L33: Древесная масса, порка и островки",
     "lesson": 33,
     "strokes": 13,
@@ -20711,7 +20711,7 @@
   {
     "frame": 2302,
     "hanzi": "署",
-    "keyword": "добавь своего Джона Хэнкока",
+    "keyword": "подписываться",
     "rth_list": "RSH2-L33: Древесная масса, порка и островки",
     "lesson": 33,
     "strokes": 13,
@@ -20729,7 +20729,7 @@
   {
     "frame": 2304,
     "hanzi": "赌",
-    "keyword": "рисковать",
+    "keyword": "играть на деньги",
     "rth_list": "RSH2-L33: Древесная масса, порка и островки",
     "lesson": 33,
     "strokes": 12,
@@ -20747,7 +20747,7 @@
   {
     "frame": 2306,
     "hanzi": "堵",
-    "keyword": "остановиться",
+    "keyword": "закупоривать",
     "rth_list": "RSH2-L33: Древесная масса, порка и островки",
     "lesson": 33,
     "strokes": 11,
@@ -20801,7 +20801,7 @@
   {
     "frame": 2312,
     "hanzi": "爹",
-    "keyword": "папа",
+    "keyword": "батя",
     "rth_list": "RSH2-L33: Древесная масса, порка и островки",
     "lesson": 33,
     "strokes": 10,
@@ -20828,7 +20828,7 @@
   {
     "frame": 2315,
     "hanzi": "胶",
-    "keyword": "жвачка",
+    "keyword": "клей / камедь",
     "rth_list": "RSH2-L33: Древесная масса, порка и островки",
     "lesson": 33,
     "strokes": 10,
@@ -20837,7 +20837,7 @@
   {
     "frame": 2316,
     "hanzi": "狡",
-    "keyword": "хитрый",
+    "keyword": "лукавый",
     "rth_list": "RSH2-L33: Древесная масса, порка и островки",
     "lesson": 33,
     "strokes": 9,
@@ -20891,7 +20891,7 @@
   {
     "frame": 2322,
     "hanzi": "跃",
-    "keyword": "прыжок",
+    "keyword": "скакать",
     "rth_list": "RSH2-L33: Древесная масса, порка и островки",
     "lesson": 33,
     "strokes": 11,
@@ -20918,7 +20918,7 @@
   {
     "frame": 2325,
     "hanzi": "蹦",
-    "keyword": "прыгать",
+    "keyword": "подпрыгивать",
     "rth_list": "RSH2-L33: Древесная масса, порка и островки",
     "lesson": 33,
     "strokes": 18,
@@ -20945,7 +20945,7 @@
   {
     "frame": 2328,
     "hanzi": "踪",
-    "keyword": "треки",
+    "keyword": "следы",
     "rth_list": "RSH2-L33: Древесная масса, порка и островки",
     "lesson": 33,
     "strokes": 15,
@@ -20981,7 +20981,7 @@
   {
     "frame": 2332,
     "hanzi": "澡",
-    "keyword": "ванна",
+    "keyword": "купание",
     "rth_list": "RSH2-L33: Древесная масса, порка и островки",
     "lesson": 33,
     "strokes": 16,
@@ -21008,7 +21008,7 @@
   {
     "frame": 2335,
     "hanzi": "操",
-    "keyword": "упражнение",
+    "keyword": "тренироваться",
     "rth_list": "RSH2-L33: Древесная масса, порка и островки",
     "lesson": 33,
     "strokes": 16,
@@ -21044,7 +21044,7 @@
   {
     "frame": 2339,
     "hanzi": "隙",
-    "keyword": "раскол",
+    "keyword": "щель / разрыв",
     "rth_list": "RSH2-L34: Пищевод, котлы и туннели",
     "lesson": 34,
     "strokes": 12,
@@ -21143,7 +21143,7 @@
   {
     "frame": 2350,
     "hanzi": "凌",
-    "keyword": "хулиган",
+    "keyword": "задирать / притеснять",
     "rth_list": "RSH2-L34: Пищевод, котлы и туннели",
     "lesson": 34,
     "strokes": 10,
@@ -21170,7 +21170,7 @@
   {
     "frame": 2353,
     "hanzi": "窃",
-    "keyword": "вор",
+    "keyword": "красть по мелочи",
     "rth_list": "RSH2-L34: Пищевод, котлы и туннели",
     "lesson": 34,
     "strokes": 9,
@@ -21197,7 +21197,7 @@
   {
     "frame": 2356,
     "hanzi": "窥",
-    "keyword": "пищать",
+    "keyword": "подглядывать",
     "rth_list": "RSH2-L34: Пищевод, котлы и туннели",
     "lesson": 34,
     "strokes": 13,
@@ -21215,7 +21215,7 @@
   {
     "frame": 2358,
     "hanzi": "窄",
-    "keyword": "пролив",
+    "keyword": "узкий",
     "rth_list": "RSH2-L34: Пищевод, котлы и туннели",
     "lesson": 34,
     "strokes": 10,
@@ -21242,7 +21242,7 @@
   {
     "frame": 2361,
     "hanzi": "窘",
-    "keyword": "бедный",
+    "keyword": "нуждающийся",
     "rth_list": "RSH2-L34: Пищевод, котлы и туннели",
     "lesson": 34,
     "strokes": 12,
@@ -21332,7 +21332,7 @@
   {
     "frame": 2371,
     "hanzi": "绷",
-    "keyword": "растягиваться",
+    "keyword": "натягивать",
     "rth_list": "RSH2-L35: Мона Лиза, часовни и голуби",
     "lesson": 35,
     "strokes": 11,
@@ -21350,7 +21350,7 @@
   {
     "frame": 2373,
     "hanzi": "绰",
-    "keyword": "обильный",
+    "keyword": "просторный / обильный",
     "rth_list": "RSH2-L35: Мона Лиза, часовни и голуби",
     "lesson": 35,
     "strokes": 11,
@@ -21368,7 +21368,7 @@
   {
     "frame": 2375,
     "hanzi": "纱",
-    "keyword": "пряжа",
+    "keyword": "марля / пряжа",
     "rth_list": "RSH2-L35: Мона Лиза, часовни и голуби",
     "lesson": 35,
     "strokes": 7,
@@ -21377,7 +21377,7 @@
   {
     "frame": 2376,
     "hanzi": "络",
-    "keyword": "сеть",
+    "keyword": "паутина / сеть связей",
     "rth_list": "RSH2-L35: Мона Лиза, часовни и голуби",
     "lesson": 35,
     "strokes": 9,
@@ -21395,7 +21395,7 @@
   {
     "frame": 2378,
     "hanzi": "绒",
-    "keyword": "вниз",
+    "keyword": "пух",
     "rth_list": "RSH2-L35: Мона Лиза, часовни и голуби",
     "lesson": 35,
     "strokes": 9,
@@ -21440,7 +21440,7 @@
   {
     "frame": 2383,
     "hanzi": "纺",
-    "keyword": "вращаться",
+    "keyword": "прясть",
     "rth_list": "RSH2-L35: Мона Лиза, часовни и голуби",
     "lesson": 35,
     "strokes": 7,
@@ -21449,7 +21449,7 @@
   {
     "frame": 2384,
     "hanzi": "缠",
-    "keyword": "вращаться вокруг",
+    "keyword": "обматывать",
     "rth_list": "RSH2-L35: Мона Лиза, часовни и голуби",
     "lesson": 35,
     "strokes": 13,
@@ -21458,7 +21458,7 @@
   {
     "frame": 2385,
     "hanzi": "绘",
-    "keyword": "краска",
+    "keyword": "рисовать",
     "rth_list": "RSH2-L35: Мона Лиза, часовни и голуби",
     "lesson": 35,
     "strokes": 9,
@@ -21530,7 +21530,7 @@
   {
     "frame": 2393,
     "hanzi": "绪",
-    "keyword": "начало",
+    "keyword": "зарождение",
     "rth_list": "RSH2-L35: Мона Лиза, часовни и голуби",
     "lesson": 35,
     "strokes": 11,
@@ -21620,7 +21620,7 @@
   {
     "frame": 2403,
     "hanzi": "哟",
-    "keyword": "О!",
+    "keyword": "восклицание «о!»",
     "rth_list": "RSH2-L35: Мона Лиза, часовни и голуби",
     "lesson": 35,
     "strokes": 9,
@@ -21674,7 +21674,7 @@
   {
     "frame": 2409,
     "hanzi": "溪",
-    "keyword": "ручей",
+    "keyword": "горный ручей",
     "rth_list": "RSH2-L35: Мона Лиза, часовни и голуби",
     "lesson": 35,
     "strokes": 13,
@@ -21809,7 +21809,7 @@
   {
     "frame": 2424,
     "hanzi": "脖",
-    "keyword": "головной шарнир",
+    "keyword": "шейный сгиб",
     "rth_list": "RSH2-L35: Мона Лиза, часовни и голуби",
     "lesson": 35,
     "strokes": 11,
@@ -21818,7 +21818,7 @@
   {
     "frame": 2425,
     "hanzi": "勃",
-    "keyword": "яркий",
+    "keyword": "энергичный",
     "rth_list": "RSH2-L35: Мона Лиза, часовни и голуби",
     "lesson": 35,
     "strokes": 9,
@@ -21836,7 +21836,7 @@
   {
     "frame": 2427,
     "hanzi": "御",
-    "keyword": "выдерживать",
+    "keyword": "противостоять",
     "rth_list": "RSH2-L36: Молнии, гнезда и пленники",
     "lesson": 36,
     "strokes": 12,
@@ -21845,7 +21845,7 @@
   {
     "frame": 2428,
     "hanzi": "卵",
-    "keyword": "заначки",
+    "keyword": "яйца",
     "rth_list": "RSH2-L36: Молнии, гнезда и пленники",
     "lesson": 36,
     "strokes": 7,
@@ -21854,7 +21854,7 @@
   {
     "frame": 2429,
     "hanzi": "孵",
-    "keyword": "люк",
+    "keyword": "высиживать / вылупляться",
     "rth_list": "RSH2-L36: Молнии, гнезда и пленники",
     "lesson": 36,
     "strokes": 14,
@@ -21863,7 +21863,7 @@
   {
     "frame": 2430,
     "hanzi": "乳",
-    "keyword": "грудь",
+    "keyword": "грудь (молочная железа)",
     "rth_list": "RSH2-L36: Молнии, гнезда и пленники",
     "lesson": 36,
     "strokes": 8,
@@ -21872,7 +21872,7 @@
   {
     "frame": 2431,
     "hanzi": "浮",
-    "keyword": "плавать",
+    "keyword": "держаться на воде",
     "rth_list": "RSH2-L36: Молнии, гнезда и пленники",
     "lesson": 36,
     "strokes": 10,
@@ -21926,7 +21926,7 @@
   {
     "frame": 2437,
     "hanzi": "玲",
-    "keyword": "изысканный",
+    "keyword": "изящный",
     "rth_list": "RSH2-L36: Молнии, гнезда и пленники",
     "lesson": 36,
     "strokes": 9,
@@ -21998,7 +21998,7 @@
   {
     "frame": 2445,
     "hanzi": "范",
-    "keyword": "модель",
+    "keyword": "образец",
     "rth_list": "RSH2-L36: Молнии, гнезда и пленники",
     "lesson": 36,
     "strokes": 8,
@@ -22007,7 +22007,7 @@
   {
     "frame": 2446,
     "hanzi": "扼",
-    "keyword": "сцепление",
+    "keyword": "сжимать / душить",
     "rth_list": "RSH2-L36: Молнии, гнезда и пленники",
     "lesson": 36,
     "strokes": 7,
@@ -22016,7 +22016,7 @@
   {
     "frame": 2447,
     "hanzi": "卷",
-    "keyword": "экзаменационная бумага",
+    "keyword": "экзаменационный лист",
     "rth_list": "RSH2-L36: Молнии, гнезда и пленники",
     "lesson": 36,
     "strokes": 8,
@@ -22025,7 +22025,7 @@
   {
     "frame": 2448,
     "hanzi": "倦",
-    "keyword": "изношенный",
+    "keyword": "измотанный",
     "rth_list": "RSH2-L36: Молнии, гнезда и пленники",
     "lesson": 36,
     "strokes": 10,
@@ -22052,7 +22052,7 @@
   {
     "frame": 2451,
     "hanzi": "宛",
-    "keyword": "обмотка",
+    "keyword": "извилистый",
     "rth_list": "RSH2-L36: Молнии, гнезда и пленники",
     "lesson": 36,
     "strokes": 8,
@@ -22097,7 +22097,7 @@
   {
     "frame": 2456,
     "hanzi": "抢",
-    "keyword": "грабить",
+    "keyword": "ограблять",
     "rth_list": "RSH2-L36: Молнии, гнезда и пленники",
     "lesson": 36,
     "strokes": 7,
@@ -22142,7 +22142,7 @@
   {
     "frame": 2461,
     "hanzi": "酬",
-    "keyword": "награда",
+    "keyword": "вознаграждение",
     "rth_list": "RSH2-L37: Франкенбоузер и тореадоры",
     "lesson": 37,
     "strokes": 13,
@@ -22151,7 +22151,7 @@
   {
     "frame": 2462,
     "hanzi": "酷",
-    "keyword": "жестокий",
+    "keyword": "зверский",
     "rth_list": "RSH2-L37: Франкенбоузер и тореадоры",
     "lesson": 37,
     "strokes": 14,
@@ -22268,7 +22268,7 @@
   {
     "frame": 2475,
     "hanzi": "梭",
-    "keyword": "шаттл",
+    "keyword": "челнок",
     "rth_list": "RSH2-L37: Франкенбоузер и тореадоры",
     "lesson": 37,
     "strokes": 11,
@@ -22277,7 +22277,7 @@
   {
     "frame": 2476,
     "hanzi": "峻",
-    "keyword": "высокий",
+    "keyword": "возвышенный",
     "rth_list": "RSH2-L37: Франкенбоузер и тореадоры",
     "lesson": 37,
     "strokes": 10,
@@ -22286,7 +22286,7 @@
   {
     "frame": 2477,
     "hanzi": "俊",
-    "keyword": "красивый",
+    "keyword": "красивый мужчина",
     "rth_list": "RSH2-L37: Франкенбоузер и тореадоры",
     "lesson": 37,
     "strokes": 9,
@@ -22295,7 +22295,7 @@
   {
     "frame": 2478,
     "hanzi": "奠",
-    "keyword": "нашел",
+    "keyword": "основывать",
     "rth_list": "RSH2-L37: Франкенбоузер и тореадоры",
     "lesson": 37,
     "strokes": 12,
@@ -22322,7 +22322,7 @@
   {
     "frame": 2481,
     "hanzi": "橱",
-    "keyword": "шкаф",
+    "keyword": "шкаф-витрина",
     "rth_list": "RSH2-L37: Франкенбоузер и тореадоры",
     "lesson": 37,
     "strokes": 16,
@@ -22367,7 +22367,7 @@
   {
     "frame": 2486,
     "hanzi": "猛",
-    "keyword": "жестокий",
+    "keyword": "свирепый",
     "rth_list": "RSH2-L37: Франкенбоузер и тореадоры",
     "lesson": 37,
     "strokes": 11,
@@ -22403,7 +22403,7 @@
   {
     "frame": 2490,
     "hanzi": "盛",
-    "keyword": "процветающий",
+    "keyword": "цветущий",
     "rth_list": "RSH2-L37: Франкенбоузер и тореадоры",
     "lesson": 37,
     "strokes": 11,
@@ -22439,7 +22439,7 @@
   {
     "frame": 2494,
     "hanzi": "盈",
-    "keyword": "насыщенный",
+    "keyword": "переполненный",
     "rth_list": "RSH2-L37: Франкенбоузер и тореадоры",
     "lesson": 37,
     "strokes": 9,
@@ -22448,7 +22448,7 @@
   {
     "frame": 2495,
     "hanzi": "盆",
-    "keyword": "бассейн",
+    "keyword": "таз / чаша",
     "rth_list": "RSH2-L37: Франкенбоузер и тореадоры",
     "lesson": 37,
     "strokes": 9,
@@ -22457,7 +22457,7 @@
   {
     "frame": 2496,
     "hanzi": "蕴",
-    "keyword": "накапливать",
+    "keyword": "таить / копить",
     "rth_list": "RSH2-L37: Франкенбоузер и тореадоры",
     "lesson": 37,
     "strokes": 15,
@@ -22484,7 +22484,7 @@
   {
     "frame": 2499,
     "hanzi": "尴",
-    "keyword": "смущенный",
+    "keyword": "сконфуженный",
     "rth_list": "RSH2-L37: Франкенбоузер и тореадоры",
     "lesson": 37,
     "strokes": 13,
@@ -22493,7 +22493,7 @@
   {
     "frame": 2500,
     "hanzi": "尬",
-    "keyword": "смущенный",
+    "keyword": "неловкий",
     "rth_list": "RSH2-L37: Франкенбоузер и тореадоры",
     "lesson": 37,
     "strokes": 7,
@@ -22538,7 +22538,7 @@
   {
     "frame": 2505,
     "hanzi": "垦",
-    "keyword": "вернуть себе",
+    "keyword": "осваивать целину",
     "rth_list": "RSH2-L37: Франкенбоузер и тореадоры",
     "lesson": 37,
     "strokes": 9,
@@ -22574,7 +22574,7 @@
   {
     "frame": 2509,
     "hanzi": "爵",
-    "keyword": "верхняя корка",
+    "keyword": "знать / высший свет",
     "rth_list": "RSH2-L37: Франкенбоузер и тореадоры",
     "lesson": 37,
     "strokes": 17,
@@ -22628,7 +22628,7 @@
   {
     "frame": 2515,
     "hanzi": "粮",
-    "keyword": "положения",
+    "keyword": "провиант",
     "rth_list": "RSH2-L37: Франкенбоузер и тореадоры",
     "lesson": 37,
     "strokes": 13,
@@ -22637,7 +22637,7 @@
   {
     "frame": 2516,
     "hanzi": "酿",
-    "keyword": "заваривать",
+    "keyword": "бродить / варить (напиток)",
     "rth_list": "RSH2-L37: Франкенбоузер и тореадоры",
     "lesson": 37,
     "strokes": 14,
@@ -22655,7 +22655,7 @@
   {
     "frame": 2518,
     "hanzi": "饶",
-    "keyword": "запасной",
+    "keyword": "щадить",
     "rth_list": "RSH2-L37: Франкенбоузер и тореадоры",
     "lesson": 37,
     "strokes": 9,
@@ -22691,7 +22691,7 @@
   {
     "frame": 2522,
     "hanzi": "饱",
-    "keyword": "насыщенный",
+    "keyword": "сытый",
     "rth_list": "RSH2-L37: Франкенбоузер и тореадоры",
     "lesson": 37,
     "strokes": 8,
@@ -22718,7 +22718,7 @@
   {
     "frame": 2525,
     "hanzi": "饺",
-    "keyword": "клецки",
+    "keyword": "пельмень / цзяоцзы",
     "rth_list": "RSH2-L37: Франкенбоузер и тореадоры",
     "lesson": 37,
     "strokes": 9,
@@ -22772,7 +22772,7 @@
   {
     "frame": 2531,
     "hanzi": "秤",
-    "keyword": "масштаб",
+    "keyword": "весы",
     "rth_list": "RSH2-L38: Яблоки, клены и тормоза",
     "lesson": 38,
     "strokes": 10,
@@ -22853,7 +22853,7 @@
   {
     "frame": 2540,
     "hanzi": "岗",
-    "keyword": "холм",
+    "keyword": "пригорок",
     "rth_list": "RSH2-L38: Яблоки, клены и тормоза",
     "lesson": 38,
     "strokes": 7,
@@ -22898,7 +22898,7 @@
   {
     "frame": 2545,
     "hanzi": "纯",
-    "keyword": "чистый",
+    "keyword": "чистый, без примесей",
     "rth_list": "RSH2-L38: Яблоки, клены и тормоза",
     "lesson": 38,
     "strokes": 7,
@@ -22997,7 +22997,7 @@
   {
     "frame": 2556,
     "hanzi": "臂",
-    "keyword": "рука",
+    "keyword": "рука (от плеча)",
     "rth_list": "RSH2-L38: Яблоки, клены и тормоза",
     "lesson": 38,
     "strokes": 17,
@@ -23006,7 +23006,7 @@
   {
     "frame": 2557,
     "hanzi": "劈",
-    "keyword": "раскол",
+    "keyword": "раскалывать",
     "rth_list": "RSH2-L38: Яблоки, клены и тормоза",
     "lesson": 38,
     "strokes": 15,
@@ -23024,7 +23024,7 @@
   {
     "frame": 2559,
     "hanzi": "僻",
-    "keyword": "отдаленный",
+    "keyword": "глухой / отдалённый",
     "rth_list": "RSH2-L38: Яблоки, клены и тормоза",
     "lesson": 38,
     "strokes": 15,
@@ -23051,7 +23051,7 @@
   {
     "frame": 2562,
     "hanzi": "嚷",
-    "keyword": "кричать",
+    "keyword": "вопить",
     "rth_list": "RSH2-L38: Яблоки, клены и тормоза",
     "lesson": 38,
     "strokes": 20,
@@ -23060,7 +23060,7 @@
   {
     "frame": 2563,
     "hanzi": "镶",
-    "keyword": "инкрустация",
+    "keyword": "инкрустировать",
     "rth_list": "RSH2-L38: Яблоки, клены и тормоза",
     "lesson": 38,
     "strokes": 22,
@@ -23078,7 +23078,7 @@
   {
     "frame": 2565,
     "hanzi": "寨",
-    "keyword": "частокол",
+    "keyword": "укреплённый лагерь",
     "rth_list": "RSH2-L38: Яблоки, клены и тормоза",
     "lesson": 38,
     "strokes": 14,
@@ -23096,7 +23096,7 @@
   {
     "frame": 2567,
     "hanzi": "猜",
-    "keyword": "догадайся",
+    "keyword": "угадывать",
     "rth_list": "RSH2-L39: Пугала, орангутанги и долги",
     "lesson": 39,
     "strokes": 11,
@@ -23195,7 +23195,7 @@
   {
     "frame": 2578,
     "hanzi": "铸",
-    "keyword": "актерский состав",
+    "keyword": "отливать",
     "rth_list": "RSH2-L39: Пугала, орангутанги и долги",
     "lesson": 39,
     "strokes": 12,
@@ -23231,7 +23231,7 @@
   {
     "frame": 2582,
     "hanzi": "拜",
-    "keyword": "обожаю",
+    "keyword": "поклоняться",
     "rth_list": "RSH2-L39: Пугала, орангутанги и долги",
     "lesson": 39,
     "strokes": 9,
@@ -23240,7 +23240,7 @@
   {
     "frame": 2583,
     "hanzi": "锋",
-    "keyword": "передний край",
+    "keyword": "режущая кромка",
     "rth_list": "RSH2-L39: Пугала, орангутанги и долги",
     "lesson": 39,
     "strokes": 12,
@@ -23249,7 +23249,7 @@
   {
     "frame": 2584,
     "hanzi": "逢",
-    "keyword": "случайно",
+    "keyword": "случайно встретить",
     "rth_list": "RSH2-L39: Пугала, орангутанги и долги",
     "lesson": 39,
     "strokes": 10,
@@ -23312,7 +23312,7 @@
   {
     "frame": 2591,
     "hanzi": "辖",
-    "keyword": "управлять",
+    "keyword": "администрировать",
     "rth_list": "RSH2-L39: Пугала, орангутанги и долги",
     "lesson": 39,
     "strokes": 14,
@@ -23393,7 +23393,7 @@
   {
     "frame": 2600,
     "hanzi": "泽",
-    "keyword": "болото",
+    "keyword": "топь",
     "rth_list": "RSH2-L39: Пугала, орангутанги и долги",
     "lesson": 39,
     "strokes": 8,
@@ -23402,7 +23402,7 @@
   {
     "frame": 2601,
     "hanzi": "译",
-    "keyword": "перевести",
+    "keyword": "переводить",
     "rth_list": "RSH2-L39: Пугала, орангутанги и долги",
     "lesson": 39,
     "strokes": 7,
@@ -23411,7 +23411,7 @@
   {
     "frame": 2602,
     "hanzi": "择",
-    "keyword": "выбрать",
+    "keyword": "отбирать",
     "rth_list": "RSH2-L39: Пугала, орангутанги и долги",
     "lesson": 39,
     "strokes": 8,
@@ -23447,7 +23447,7 @@
   {
     "frame": 2606,
     "hanzi": "吟",
-    "keyword": "читать",
+    "keyword": "декламировать",
     "rth_list": "RSH2-L40: Читай, лютни и каштаны",
     "lesson": 40,
     "strokes": 7,
@@ -23474,7 +23474,7 @@
   {
     "frame": 2609,
     "hanzi": "炼",
-    "keyword": "усовершенствовать",
+    "keyword": "очищать / рафинировать",
     "rth_list": "RSH2-L40: Читай, лютни и каштаны",
     "lesson": 40,
     "strokes": 9,
@@ -23483,7 +23483,7 @@
   {
     "frame": 2610,
     "hanzi": "晒",
-    "keyword": "греться",
+    "keyword": "греться на солнце",
     "rth_list": "RSH2-L40: Читай, лютни и каштаны",
     "lesson": 40,
     "strokes": 10,
@@ -23501,7 +23501,7 @@
   {
     "frame": 2612,
     "hanzi": "栖",
-    "keyword": "окунь",
+    "keyword": "сидеть на насесте",
     "rth_list": "RSH2-L40: Читай, лютни и каштаны",
     "lesson": 40,
     "strokes": 10,
@@ -23564,7 +23564,7 @@
   {
     "frame": 2619,
     "hanzi": "阔",
-    "keyword": "широкий",
+    "keyword": "широкий простор",
     "rth_list": "RSH2-L41: Шкафы, клапаны и вспышки",
     "lesson": 41,
     "strokes": 12,
@@ -23582,7 +23582,7 @@
   {
     "frame": 2621,
     "hanzi": "阁",
-    "keyword": "кабинет",
+    "keyword": "палата / кабинет",
     "rth_list": "RSH2-L41: Шкафы, клапаны и вспышки",
     "lesson": 41,
     "strokes": 9,
@@ -23627,7 +23627,7 @@
   {
     "frame": 2626,
     "hanzi": "闭",
-    "keyword": "закрыть",
+    "keyword": "закрывать",
     "rth_list": "RSH2-L41: Шкафы, клапаны и вспышки",
     "lesson": 41,
     "strokes": 6,
@@ -23681,7 +23681,7 @@
   {
     "frame": 2632,
     "hanzi": "菲",
-    "keyword": "скромный",
+    "keyword": "смиренный",
     "rth_list": "RSH2-L41: Шкафы, клапаны и вспышки",
     "lesson": 41,
     "strokes": 11,
@@ -23690,7 +23690,7 @@
   {
     "frame": 2633,
     "hanzi": "辈",
-    "keyword": "продолжительность жизни",
+    "keyword": "поколение / жизнь",
     "rth_list": "RSH2-L41: Шкафы, клапаны и вспышки",
     "lesson": 41,
     "strokes": 12,
@@ -23798,7 +23798,7 @@
   {
     "frame": 2645,
     "hanzi": "竿",
-    "keyword": "столб",
+    "keyword": "шест",
     "rth_list": "RSH2-L42: Печень, пот и веранды",
     "lesson": 42,
     "strokes": 9,
@@ -23807,7 +23807,7 @@
   {
     "frame": 2646,
     "hanzi": "悍",
-    "keyword": "смелый",
+    "keyword": "дерзкий",
     "rth_list": "RSH2-L42: Печень, пот и веранды",
     "lesson": 42,
     "strokes": 10,
@@ -23816,7 +23816,7 @@
   {
     "frame": 2647,
     "hanzi": "吁",
-    "keyword": "умолять",
+    "keyword": "взывать",
     "rth_list": "RSH2-L42: Печень, пот и веранды",
     "lesson": 42,
     "strokes": 6,
@@ -23825,7 +23825,7 @@
   {
     "frame": 2648,
     "hanzi": "涂",
-    "keyword": "мазать",
+    "keyword": "покрывать мазком",
     "rth_list": "RSH2-L42: Печень, пот и веранды",
     "lesson": 42,
     "strokes": 10,
@@ -23834,7 +23834,7 @@
   {
     "frame": 2649,
     "hanzi": "叙",
-    "keyword": "пересчитывать",
+    "keyword": "излагать",
     "rth_list": "RSH2-L42: Печень, пот и веранды",
     "lesson": 42,
     "strokes": 9,
@@ -23870,7 +23870,7 @@
   {
     "frame": 2653,
     "hanzi": "嗽",
-    "keyword": "взломать",
+    "keyword": "кашлять",
     "rth_list": "RSH2-L42: Печень, пот и веранды",
     "lesson": 42,
     "strokes": 14,
@@ -23897,7 +23897,7 @@
   {
     "frame": 2656,
     "hanzi": "嫩",
-    "keyword": "тендер",
+    "keyword": "нежный / молодой",
     "rth_list": "RSH2-L42: Печень, пот и веранды",
     "lesson": 42,
     "strokes": 14,
@@ -23933,7 +23933,7 @@
   {
     "frame": 2660,
     "hanzi": "症",
-    "keyword": "болезнь",
+    "keyword": "заболевание",
     "rth_list": "RSH2-L43: Стремянки, мокрота и эпидемии",
     "lesson": 43,
     "strokes": 10,
@@ -23987,7 +23987,7 @@
   {
     "frame": 2666,
     "hanzi": "疲",
-    "keyword": "утомленный",
+    "keyword": "утомлённый",
     "rth_list": "RSH2-L43: Стремянки, мокрота и эпидемии",
     "lesson": 43,
     "strokes": 10,
@@ -24014,7 +24014,7 @@
   {
     "frame": 2669,
     "hanzi": "疮",
-    "keyword": "болит",
+    "keyword": "язва / болячка",
     "rth_list": "RSH2-L43: Стремянки, мокрота и эпидемии",
     "lesson": 43,
     "strokes": 9,
@@ -24023,7 +24023,7 @@
   {
     "frame": 2670,
     "hanzi": "疾",
-    "keyword": "быстрый",
+    "keyword": "стремительный",
     "rth_list": "RSH2-L43: Стремянки, мокрота и эпидемии",
     "lesson": 43,
     "strokes": 10,
@@ -24131,7 +24131,7 @@
   {
     "frame": 2682,
     "hanzi": "柜",
-    "keyword": "шкаф",
+    "keyword": "шкафчик",
     "rth_list": "RSH2-L43: Стремянки, мокрота и эпидемии",
     "lesson": 43,
     "strokes": 8,
@@ -24149,7 +24149,7 @@
   {
     "frame": 2684,
     "hanzi": "拒",
-    "keyword": "отказаться",
+    "keyword": "отказывать",
     "rth_list": "RSH2-L43: Стремянки, мокрота и эпидемии",
     "lesson": 43,
     "strokes": 7,
@@ -24158,7 +24158,7 @@
   {
     "frame": 2685,
     "hanzi": "矩",
-    "keyword": "квадрат",
+    "keyword": "угольник / квадрат",
     "rth_list": "RSH2-L43: Стремянки, мокрота и эпидемии",
     "lesson": 43,
     "strokes": 9,
@@ -24230,7 +24230,7 @@
   {
     "frame": 2693,
     "hanzi": "瞪",
-    "keyword": "блики",
+    "keyword": "свирепо смотреть",
     "rth_list": "RSH2-L43: Стремянки, мокрота и эпидемии",
     "lesson": 43,
     "strokes": 17,
@@ -24275,7 +24275,7 @@
   {
     "frame": 2698,
     "hanzi": "泼",
-    "keyword": "всплеск",
+    "keyword": "плескать",
     "rth_list": "RSH2-L43: Стремянки, мокрота и эпидемии",
     "lesson": 43,
     "strokes": 8,
@@ -24320,7 +24320,7 @@
   {
     "frame": 2703,
     "hanzi": "彰",
-    "keyword": "манифестировать",
+    "keyword": "проявлять / демонстрировать",
     "rth_list": "RSH2-L44: Елки, рубашки и диагнозы",
     "lesson": 44,
     "strokes": 14,
@@ -24329,7 +24329,7 @@
   {
     "frame": 2704,
     "hanzi": "膨",
-    "keyword": "пухлый",
+    "keyword": "вздутый",
     "rth_list": "RSH2-L44: Елки, рубашки и диагнозы",
     "lesson": 44,
     "strokes": 16,
@@ -24365,7 +24365,7 @@
   {
     "frame": 2708,
     "hanzi": "寥",
-    "keyword": "пустынный",
+    "keyword": "безлюдный",
     "rth_list": "RSH2-L44: Елки, рубашки и диагнозы",
     "lesson": 44,
     "strokes": 14,
@@ -24374,7 +24374,7 @@
   {
     "frame": 2709,
     "hanzi": "谬",
-    "keyword": "неправильно",
+    "keyword": "ложный",
     "rth_list": "RSH2-L44: Елки, рубашки и диагнозы",
     "lesson": 44,
     "strokes": 13,
@@ -24410,7 +24410,7 @@
   {
     "frame": 2713,
     "hanzi": "坟",
-    "keyword": "могила",
+    "keyword": "могильный холм",
     "rth_list": "RSH2-L44: Елки, рубашки и диагнозы",
     "lesson": 44,
     "strokes": 7,
@@ -24455,7 +24455,7 @@
   {
     "frame": 2718,
     "hanzi": "挤",
-    "keyword": "сжимать",
+    "keyword": "выжимать / теснить",
     "rth_list": "RSH2-L44: Елки, рубашки и диагнозы",
     "lesson": 44,
     "strokes": 9,
@@ -24509,7 +24509,7 @@
   {
     "frame": 2724,
     "hanzi": "秧",
-    "keyword": "юнлинг",
+    "keyword": "рассада",
     "rth_list": "RSH2-L44: Елки, рубашки и диагнозы",
     "lesson": 44,
     "strokes": 10,
@@ -24518,7 +24518,7 @@
   {
     "frame": 2725,
     "hanzi": "焕",
-    "keyword": "светящийся",
+    "keyword": "озарённый",
     "rth_list": "RSH2-L44: Елки, рубашки и диагнозы",
     "lesson": 44,
     "strokes": 11,
@@ -24527,7 +24527,7 @@
   {
     "frame": 2726,
     "hanzi": "肥",
-    "keyword": "пухлый",
+    "keyword": "упитанный",
     "rth_list": "RSH2-L44: Елки, рубашки и диагнозы",
     "lesson": 44,
     "strokes": 8,
@@ -24554,7 +24554,7 @@
   {
     "frame": 2729,
     "hanzi": "甜",
-    "keyword": "сладкий",
+    "keyword": "сахаристый",
     "rth_list": "RSH2-L45: Геркулес, Уголь и Шахматы",
     "lesson": 45,
     "strokes": 11,
@@ -24563,7 +24563,7 @@
   {
     "frame": 2730,
     "hanzi": "嵌",
-    "keyword": "набор",
+    "keyword": "вставлять / инкрустировать",
     "rth_list": "RSH2-L45: Геркулес, Уголь и Шахматы",
     "lesson": 45,
     "strokes": 12,
@@ -24599,7 +24599,7 @@
   {
     "frame": 2734,
     "hanzi": "谋",
-    "keyword": "схема",
+    "keyword": "замысел / план",
     "rth_list": "RSH2-L45: Геркулес, Уголь и Шахматы",
     "lesson": 45,
     "strokes": 11,
@@ -24617,7 +24617,7 @@
   {
     "frame": 2736,
     "hanzi": "欺",
-    "keyword": "обмануть",
+    "keyword": "обводить вокруг пальца",
     "rth_list": "RSH2-L45: Геркулес, Уголь и Шахматы",
     "lesson": 45,
     "strokes": 12,
@@ -24653,7 +24653,7 @@
   {
     "frame": 2740,
     "hanzi": "堪",
-    "keyword": "терпеть",
+    "keyword": "выдерживать",
     "rth_list": "RSH2-L45: Геркулес, Уголь и Шахматы",
     "lesson": 45,
     "strokes": 12,
@@ -24662,7 +24662,7 @@
   {
     "frame": 2741,
     "hanzi": "勘",
-    "keyword": "опрос",
+    "keyword": "разведывать / обследовать",
     "rth_list": "RSH2-L45: Геркулес, Уголь и Шахматы",
     "lesson": 45,
     "strokes": 11,
@@ -24698,7 +24698,7 @@
   {
     "frame": 2745,
     "hanzi": "溃",
-    "keyword": "взрыв",
+    "keyword": "прорываться / рушиться",
     "rth_list": "RSH2-L45: Геркулес, Уголь и Шахматы",
     "lesson": 45,
     "strokes": 12,
@@ -24707,7 +24707,7 @@
   {
     "frame": 2746,
     "hanzi": "宜",
-    "keyword": "примерка",
+    "keyword": "уместный",
     "rth_list": "RSH2-L46: Дружба, шелковица и мотыги",
     "lesson": 46,
     "strokes": 8,
@@ -24734,7 +24734,7 @@
   {
     "frame": 2749,
     "hanzi": "粗",
-    "keyword": "грубый",
+    "keyword": "крупный / грубый",
     "rth_list": "RSH2-L46: Дружба, шелковица и мотыги",
     "lesson": 46,
     "strokes": 11,
@@ -24761,7 +24761,7 @@
   {
     "frame": 2752,
     "hanzi": "嗓",
-    "keyword": "голосовой ящик",
+    "keyword": "голосовой аппарат",
     "rth_list": "RSH2-L46: Дружба, шелковица и мотыги",
     "lesson": 46,
     "strokes": 13,
@@ -24770,7 +24770,7 @@
   {
     "frame": 2753,
     "hanzi": "叠",
-    "keyword": "куча",
+    "keyword": "стопка",
     "rth_list": "RSH2-L46: Дружба, шелковица и мотыги",
     "lesson": 46,
     "strokes": 13,
@@ -24788,7 +24788,7 @@
   {
     "frame": 2755,
     "hanzi": "碰",
-    "keyword": "удар",
+    "keyword": "столкновение",
     "rth_list": "RSH2-L46: Дружба, шелковица и мотыги",
     "lesson": 46,
     "strokes": 13,
@@ -24815,7 +24815,7 @@
   {
     "frame": 2758,
     "hanzi": "凿",
-    "keyword": "проделал дыру",
+    "keyword": "пробивать отверстие",
     "rth_list": "RSH2-L46: Дружба, шелковица и мотыги",
     "lesson": 46,
     "strokes": 12,
@@ -24851,7 +24851,7 @@
   {
     "frame": 2762,
     "hanzi": "哄",
-    "keyword": "дурак",
+    "keyword": "одурачивать",
     "rth_list": "RSH2-L46: Дружба, шелковица и мотыги",
     "lesson": 46,
     "strokes": 9,
@@ -24941,7 +24941,7 @@
   {
     "frame": 2772,
     "hanzi": "暴",
-    "keyword": "жестокий",
+    "keyword": "насильственный",
     "rth_list": "RSH2-L46: Дружба, шелковица и мотыги",
     "lesson": 46,
     "strokes": 15,
@@ -24968,7 +24968,7 @@
   {
     "frame": 2775,
     "hanzi": "拥",
-    "keyword": "обнимать",
+    "keyword": "прижимать к себе",
     "rth_list": "RSH2-L47: Объятия, крабы и палисады",
     "lesson": 47,
     "strokes": 8,
@@ -24977,7 +24977,7 @@
   {
     "frame": 2776,
     "hanzi": "佣",
-    "keyword": "приступить к работе",
+    "keyword": "нанимать на работу",
     "rth_list": "RSH2-L47: Объятия, крабы и палисады",
     "lesson": 47,
     "strokes": 7,
@@ -24986,7 +24986,7 @@
   {
     "frame": 2777,
     "hanzi": "甩",
-    "keyword": "бросать",
+    "keyword": "швырять",
     "rth_list": "RSH2-L47: Объятия, крабы и палисады",
     "lesson": 47,
     "strokes": 5,
@@ -25022,7 +25022,7 @@
   {
     "frame": 2781,
     "hanzi": "懈",
-    "keyword": "слабый",
+    "keyword": "расслабленный",
     "rth_list": "RSH2-L47: Объятия, крабы и палисады",
     "lesson": 47,
     "strokes": 16,
@@ -25040,7 +25040,7 @@
   {
     "frame": 2783,
     "hanzi": "删",
-    "keyword": "удалить",
+    "keyword": "удалять",
     "rth_list": "RSH2-L47: Объятия, крабы и палисады",
     "lesson": 47,
     "strokes": 7,
@@ -25130,7 +25130,7 @@
   {
     "frame": 2793,
     "hanzi": "薄",
-    "keyword": "легкий",
+    "keyword": "малозначительный",
     "rth_list": "RSH2-L48: Хулиганы, Рогозы и магазины",
     "lesson": 48,
     "strokes": 16,
@@ -25139,7 +25139,7 @@
   {
     "frame": 2794,
     "hanzi": "铺",
-    "keyword": "магазин",
+    "keyword": "лавка",
     "rth_list": "RSH2-L48: Хулиганы, Рогозы и магазины",
     "lesson": 48,
     "strokes": 12,
@@ -25148,7 +25148,7 @@
   {
     "frame": 2795,
     "hanzi": "捕",
-    "keyword": "захват",
+    "keyword": "ловить",
     "rth_list": "RSH2-L48: Хулиганы, Рогозы и магазины",
     "lesson": 48,
     "strokes": 10,
@@ -25157,7 +25157,7 @@
   {
     "frame": 2796,
     "hanzi": "敷",
-    "keyword": "применить",
+    "keyword": "наносить",
     "rth_list": "RSH2-L48: Хулиганы, Рогозы и магазины",
     "lesson": 48,
     "strokes": 15,
@@ -25193,7 +25193,7 @@
   {
     "frame": 2800,
     "hanzi": "簿",
-    "keyword": "зарегистрироваться",
+    "keyword": "реестр",
     "rth_list": "RSH2-L48: Хулиганы, Рогозы и магазины",
     "lesson": 48,
     "strokes": 19,
@@ -25256,7 +25256,7 @@
   {
     "frame": 2807,
     "hanzi": "邮",
-    "keyword": "пост",
+    "keyword": "почта",
     "rth_list": "RSH2-L48: Хулиганы, Рогозы и магазины",
     "lesson": 48,
     "strokes": 7,
@@ -25274,7 +25274,7 @@
   {
     "frame": 2809,
     "hanzi": "绑",
-    "keyword": "ферма",
+    "keyword": "связывать",
     "rth_list": "RSH2-L48: Хулиганы, Рогозы и магазины",
     "lesson": 48,
     "strokes": 9,
@@ -25364,7 +25364,7 @@
   {
     "frame": 2819,
     "hanzi": "饲",
-    "keyword": "задний",
+    "keyword": "выращивать / кормить",
     "rth_list": "RSH2-L49: Атлас, Военные корабли и навигация",
     "lesson": 49,
     "strokes": 8,
@@ -25391,7 +25391,7 @@
   {
     "frame": 2822,
     "hanzi": "航",
-    "keyword": "перемещаться",
+    "keyword": "навигация / плавать",
     "rth_list": "RSH2-L49: Атлас, Военные корабли и навигация",
     "lesson": 49,
     "strokes": 10,
@@ -25436,7 +25436,7 @@
   {
     "frame": 2827,
     "hanzi": "铅",
-    "keyword": "вести",
+    "keyword": "свинец",
     "rth_list": "RSH2-L49: Атлас, Военные корабли и навигация",
     "lesson": 49,
     "strokes": 10,
@@ -25472,7 +25472,7 @@
   {
     "frame": 2831,
     "hanzi": "隘",
-    "keyword": "пройти",
+    "keyword": "горный проход",
     "rth_list": "RSH2-L50: Газы, тираны и сапоги",
     "lesson": 50,
     "strokes": 12,
@@ -25589,7 +25589,7 @@
   {
     "frame": 2844,
     "hanzi": "雅",
-    "keyword": "полированный",
+    "keyword": "изысканный",
     "rth_list": "RSH2-L51: Рождественские елки и ростки",
     "lesson": 51,
     "strokes": 12,
@@ -25616,7 +25616,7 @@
   {
     "frame": 2847,
     "hanzi": "毯",
-    "keyword": "одеяло",
+    "keyword": "плед",
     "rth_list": "RSH2-L51: Рождественские елки и ростки",
     "lesson": 51,
     "strokes": 12,
@@ -25643,7 +25643,7 @@
   {
     "frame": 2850,
     "hanzi": "耕",
-    "keyword": "до",
+    "keyword": "пахать",
     "rth_list": "RSH2-L51: Рождественские елки и ростки",
     "lesson": 51,
     "strokes": 10,
@@ -25751,7 +25751,7 @@
   {
     "frame": 2862,
     "hanzi": "签",
-    "keyword": "знак",
+    "keyword": "подписывать",
     "rth_list": "RSH2-L52: Столовые, аисты и сабли",
     "lesson": 52,
     "strokes": 13,
@@ -25760,7 +25760,7 @@
   {
     "frame": 2863,
     "hanzi": "鹏",
-    "keyword": "Рок",
+    "keyword": "птица Пэн",
     "rth_list": "RSH2-L52: Столовые, аисты и сабли",
     "lesson": 52,
     "strokes": 13,
@@ -25769,7 +25769,7 @@
   {
     "frame": 2864,
     "hanzi": "鸣",
-    "keyword": "Твиттер",
+    "keyword": "щебетать / кричать",
     "rth_list": "RSH2-L52: Столовые, аисты и сабли",
     "lesson": 52,
     "strokes": 8,
@@ -25805,7 +25805,7 @@
   {
     "frame": 2868,
     "hanzi": "鹤",
-    "keyword": "кран",
+    "keyword": "журавль",
     "rth_list": "RSH2-L52: Столовые, аисты и сабли",
     "lesson": 52,
     "strokes": 15,
@@ -25985,7 +25985,7 @@
   {
     "frame": 2888,
     "hanzi": "挽",
-    "keyword": "буксир",
+    "keyword": "буксировать / тянуть",
     "rth_list": "RSH2-L52: Столовые, аисты и сабли",
     "lesson": 52,
     "strokes": 10,
@@ -26111,7 +26111,7 @@
   {
     "frame": 2902,
     "hanzi": "驾",
-    "keyword": "ездить",
+    "keyword": "вести машину",
     "rth_list": "RSH2-L53: Цифры, галоп и маневры",
     "lesson": 53,
     "strokes": 8,
@@ -26156,7 +26156,7 @@
   {
     "frame": 2907,
     "hanzi": "闯",
-    "keyword": "спешить",
+    "keyword": "нестись напролом",
     "rth_list": "RSH2-L53: Цифры, галоп и маневры",
     "lesson": 53,
     "strokes": 6,
@@ -26165,7 +26165,7 @@
   {
     "frame": 2908,
     "hanzi": "驱",
-    "keyword": "уезжать",
+    "keyword": "прогонять",
     "rth_list": "RSH2-L53: Цифры, галоп и маневры",
     "lesson": 53,
     "strokes": 7,
@@ -26183,7 +26183,7 @@
   {
     "frame": 2910,
     "hanzi": "骗",
-    "keyword": "обмануть",
+    "keyword": "обманывать",
     "rth_list": "RSH2-L53: Цифры, галоп и маневры",
     "lesson": 53,
     "strokes": 12,
@@ -26219,7 +26219,7 @@
   {
     "frame": 2914,
     "hanzi": "滤",
-    "keyword": "фильтр",
+    "keyword": "фильтровать",
     "rth_list": "RSH2-L53: Цифры, галоп и маневры",
     "lesson": 53,
     "strokes": 13,
@@ -26246,7 +26246,7 @@
   {
     "frame": 2917,
     "hanzi": "磷",
-    "keyword": "фосфористый",
+    "keyword": "фосфор",
     "rth_list": "RSH2-L54: Фонарики Джека и Единороги",
     "lesson": 54,
     "strokes": 17,
@@ -26264,7 +26264,7 @@
   {
     "frame": 2919,
     "hanzi": "辱",
-    "keyword": "позор",
+    "keyword": "унижение",
     "rth_list": "RSH2-L54: Фонарики Джека и Единороги",
     "lesson": 54,
     "strokes": 10,
@@ -26273,7 +26273,7 @@
   {
     "frame": 2920,
     "hanzi": "震",
-    "keyword": "землетрясение",
+    "keyword": "сотрясение",
     "rth_list": "RSH2-L54: Фонарики Джека и Единороги",
     "lesson": 54,
     "strokes": 15,
@@ -26300,7 +26300,7 @@
   {
     "frame": 2923,
     "hanzi": "掷",
-    "keyword": "швырять",
+    "keyword": "метать",
     "rth_list": "RSH2-L54: Фонарики Джека и Единороги",
     "lesson": 54,
     "strokes": 11,
@@ -26309,7 +26309,7 @@
   {
     "frame": 2924,
     "hanzi": "魄",
-    "keyword": "энергия",
+    "keyword": "жизненная сила",
     "rth_list": "RSH2-L54: Фонарики Джека и Единороги",
     "lesson": 54,
     "strokes": 14,
@@ -26318,7 +26318,7 @@
   {
     "frame": 2925,
     "hanzi": "槐",
-    "keyword": "дерево ученого",
+    "keyword": "софора",
     "rth_list": "RSH2-L54: Фонарики Джека и Единороги",
     "lesson": 54,
     "strokes": 13,
@@ -26390,7 +26390,7 @@
   {
     "frame": 2933,
     "hanzi": "宠",
-    "keyword": "обожаю",
+    "keyword": "баловать / обожать",
     "rth_list": "RSH2-L54: Фонарики Джека и Единороги",
     "lesson": 54,
     "strokes": 8,
@@ -26399,7 +26399,7 @@
   {
     "frame": 2934,
     "hanzi": "庞",
-    "keyword": "огромный",
+    "keyword": "громадный",
     "rth_list": "RSH2-L54: Фонарики Джека и Единороги",
     "lesson": 54,
     "strokes": 8,
@@ -26435,7 +26435,7 @@
   {
     "frame": 2938,
     "hanzi": "挪",
-    "keyword": "трансфер",
+    "keyword": "переносить",
     "rth_list": "RSH2-L55: Сшивание, растворы и розетки",
     "lesson": 55,
     "strokes": 9,
@@ -26471,7 +26471,7 @@
   {
     "frame": 2942,
     "hanzi": "蝇",
-    "keyword": "летает",
+    "keyword": "мухи",
     "rth_list": "RSH2-L55: Сшивание, растворы и розетки",
     "lesson": 55,
     "strokes": 14,
@@ -26606,7 +26606,7 @@
   {
     "frame": 2957,
     "hanzi": "肆",
-    "keyword": "четыре",
+    "keyword": "IV (римская четвёрка)",
     "rth_list": "RSH2-L55: Сшивание, растворы и розетки",
     "lesson": 55,
     "strokes": 13,
@@ -26687,7 +26687,7 @@
   {
     "frame": 2966,
     "hanzi": "搜",
-    "keyword": "поиск",
+    "keyword": "обыскивать",
     "rth_list": "RSH2-L55: Сшивание, растворы и розетки",
     "lesson": 55,
     "strokes": 12,
@@ -26705,7 +26705,7 @@
   {
     "frame": 2968,
     "hanzi": "艘",
-    "keyword": "сосуды",
+    "keyword": "суда (счётное слово)",
     "rth_list": "RSH2-L55: Сшивание, растворы и розетки",
     "lesson": 55,
     "strokes": 15,
@@ -26723,7 +26723,7 @@
   {
     "frame": 2970,
     "hanzi": "馅",
-    "keyword": "наполнение",
+    "keyword": "начинка",
     "rth_list": "RSH2-L55: Сшивание, растворы и розетки",
     "lesson": 55,
     "strokes": 11,
@@ -26741,7 +26741,7 @@
   {
     "frame": 2972,
     "hanzi": "爽",
-    "keyword": "откровенный",
+    "keyword": "прямодушный",
     "rth_list": "RSH2-L55: Сшивание, растворы и розетки",
     "lesson": 55,
     "strokes": 11,

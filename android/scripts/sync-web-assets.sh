@@ -1,15 +1,16 @@
 #!/usr/bin/env bash
-# Build rth-agriculture with relative base and copy into Android assets/www.
-# Map/battle art is shipped as WebP so all 15 field backdrop sets fit under
-# GitHub’s 100 MB APK push limit without remote downloads or art dedupe.
+# Build the Memory Garden web app (repo root) with relative base and copy into
+# Android assets/www. Map/battle art is shipped as WebP so all 15 field
+# backdrop sets fit under GitHub’s 100 MB APK push limit without remote
+# downloads or art dedupe.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-WEB="$(cd "$ROOT/../rth-agriculture" && pwd)"
+WEB="$(cd "$ROOT/.." && pwd)"
 OUT="$ROOT/app/src/main/assets/www"
 
 if [[ ! -f "$WEB/package.json" ]]; then
-  echo "rth-agriculture not found at $WEB" >&2
+  echo "web game not found at $WEB (expected repo root next to android/)" >&2
   exit 1
 fi
 
@@ -17,11 +18,11 @@ mkdir -p "$OUT"
 
 cd "$WEB"
 if [[ ! -d node_modules ]]; then
-  echo "Installing rth-agriculture dependencies…"
+  echo "Installing web game dependencies…"
   bun install --frozen-lockfile
 fi
 
-echo "Building rth-agriculture → $OUT"
+echo "Building web game → $OUT"
 # Unset Pages base so Vite emits relative URLs suitable for file:///android_asset/
 env -u GH_PAGES_PUBLIC_PATH bunx tsc -b
 env -u GH_PAGES_PUBLIC_PATH bunx vite build --outDir "$OUT" --emptyOutDir
