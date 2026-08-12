@@ -545,7 +545,7 @@ export default function App() {
     setScreen('battle')
   }
 
-  if (!loaded) return <div className="loading-screen"><Leaf /> Сад пробуждается…</div>
+  if (!loaded) return <div className="loading-screen"><Leaf /> Заходим в сад…</div>
   if (!welcomed) return <Welcome onEnter={() => {
     sessionStorage.setItem('memory-garden-welcomed', 'yes')
     setWelcomed(true)

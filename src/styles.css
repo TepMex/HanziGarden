@@ -880,10 +880,13 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
   height: 1200px;
   transform-origin: 0 0;
   will-change: transform;
-  visibility: hidden;
   overflow: hidden;
 }
-.world-map-world.is-ready { visibility: visible; }
+/* Assemble under the opaque preloader so SVG weed compositing can finish
+   before reveal.  Only hide the world on hard load failure. */
+.world-map-viewport.has-map-error .world-map-world {
+  visibility: hidden;
+}
 .world-map-clean,
 .world-map-weed,
 .world-map-hotspots,
