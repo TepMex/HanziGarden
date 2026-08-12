@@ -40,7 +40,7 @@ cd android
 
 ## GitHub Pages
 
-Workflow [`.github/workflows/deploy.yml`](./.github/workflows/deploy.yml) (когда подключён) собирает веб и при необходимости Android из **этого** репозитория.
+Workflow [`.github/workflows/deploy.yml`](./.github/workflows/deploy.yml) на push в `master` собирает веб и при необходимости Android из **этого** репозитория.
 
 - Веб-игра: `https://<user-or-org>.github.io/<repository>/`
 - Android landing + APK: `https://<user-or-org>.github.io/<repository>/android/` → `rth-agriculture-android.apk`

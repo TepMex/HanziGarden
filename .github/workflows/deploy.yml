@@ -1,0 +1,250 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+    inputs:
+      full_deploy:
+        description: Build and deploy everything (skip change detection)
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    outputs:
+      has_previous: ${{ steps.plan.outputs.has_previous }}
+      full_deploy: ${{ steps.plan.outputs.full_deploy }}
+      build_web: ${{ steps.plan.outputs.build_web }}
+      build_android: ${{ steps.plan.outputs.build_android }}
+      refresh_android_landing: ${{ steps.plan.outputs.refresh_android_landing }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 2
+
+      - name: Detect changed paths
+        uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            web:
+              - 'src/**'
+              - 'public/**'
+              - 'index.html'
+              - 'package.json'
+              - 'bun.lock'
+              - 'vite.config.ts'
+              - 'tsconfig*.json'
+              - 'eslint.config.js'
+            android:
+              - 'android/**'
+            shared-scripts:
+              - 'scripts/**'
+            shared-workflow:
+              - '.github/workflows/deploy.yml'
+
+      - name: Fetch previous gh-pages site
+        id: previous
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: previous-site
+          fetch-depth: 1
+
+      - name: Compute deploy plan
+        id: plan
+        env:
+          FULL_DEPLOY_INPUT: ${{ github.event_name == 'workflow_dispatch' && inputs.full_deploy }}
+          HAS_PREVIOUS: ${{ steps.previous.outcome == 'success' }}
+          CHANGED_WEB: ${{ steps.changes.outputs.web }}
+          CHANGED_ANDROID: ${{ steps.changes.outputs.android }}
+          CHANGED_SCRIPTS: ${{ steps.changes.outputs.shared-scripts }}
+          CHANGED_WORKFLOW: ${{ steps.changes.outputs.shared-workflow }}
+        run: |
+          set -euo pipefail
+
+          is_true() { [[ "${1:-}" == "true" ]]; }
+
+          full_deploy=false
+          if is_true "$FULL_DEPLOY_INPUT"; then
+            full_deploy=true
+          fi
+          if ! is_true "$HAS_PREVIOUS"; then
+            full_deploy=true
+          fi
+          if is_true "$CHANGED_WORKFLOW"; then
+            full_deploy=true
+          fi
+
+          build_web=false
+          build_android=false
+          refresh_android_landing=false
+
+          if $full_deploy; then
+            build_web=true
+            build_android=true
+          else
+            is_true "$CHANGED_WEB" && build_web=true
+            is_true "$CHANGED_ANDROID" && build_android=true
+            # Bundled APK assets must track the web game.
+            is_true "$CHANGED_WEB" && build_android=true
+
+            if is_true "$CHANGED_SCRIPTS"; then
+              refresh_android_landing=true
+            fi
+          fi
+
+          {
+            echo "has_previous=$HAS_PREVIOUS"
+            echo "full_deploy=$full_deploy"
+            echo "build_web=$build_web"
+            echo "build_android=$build_android"
+            echo "refresh_android_landing=$refresh_android_landing"
+          } >> "$GITHUB_OUTPUT"
+
+          echo "Deploy plan:"
+          cat "$GITHUB_OUTPUT"
+
+  build-and-deploy:
+    needs: detect
+    if: needs.detect.outputs.build_web == 'true' || needs.detect.outputs.build_android == 'true' || needs.detect.outputs.refresh_android_landing == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 1
+
+      - name: Fetch previous gh-pages site
+        if: needs.detect.outputs.has_previous == 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: previous-site
+          fetch-depth: 1
+
+      - name: Log deploy plan
+        run: |
+          echo "full_deploy=${{ needs.detect.outputs.full_deploy }}"
+          echo "build_web=${{ needs.detect.outputs.build_web }}"
+          echo "build_android=${{ needs.detect.outputs.build_android }}"
+          echo "refresh_android_landing=${{ needs.detect.outputs.refresh_android_landing }}"
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        if: needs.detect.outputs.build_web == 'true' || needs.detect.outputs.build_android == 'true'
+        run: bun install --frozen-lockfile
+
+      - name: Set deployment timestamp
+        run: echo "DEPLOYED_AT=$(date -u +"%Y-%m-%dT%H:%M:%S UTC")" >> "$GITHUB_ENV"
+
+      - name: Build web game
+        if: needs.detect.outputs.build_web == 'true'
+        env:
+          GH_PAGES_PUBLIC_PATH: /${{ github.event.repository.name }}/
+        run: bun run build
+
+      - name: Setup Java
+        if: needs.detect.outputs.build_android == 'true'
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Setup Android SDK
+        if: needs.detect.outputs.build_android == 'true'
+        uses: android-actions/setup-android@v3
+
+      - name: Sync web game into Android assets
+        if: needs.detect.outputs.build_android == 'true'
+        run: chmod +x android/scripts/sync-web-assets.sh && android/scripts/sync-web-assets.sh
+
+      - name: Build Memory Garden Android APK
+        if: needs.detect.outputs.build_android == 'true'
+        working-directory: android
+        run: chmod +x gradlew && ./gradlew --no-daemon --stacktrace assembleRelease
+
+      - name: Verify APK sideload signing
+        if: needs.detect.outputs.build_android == 'true'
+        run: |
+          set -euo pipefail
+          chmod +x android/verify-apk-sideload-cert.sh
+          android/verify-apk-sideload-cert.sh android/app/build/outputs/apk/release/app-release.apk
+
+      - name: Prepare GitHub Pages site
+        env:
+          HAS_PREVIOUS: ${{ needs.detect.outputs.has_previous }}
+          BUILD_WEB: ${{ needs.detect.outputs.build_web }}
+          BUILD_ANDROID: ${{ needs.detect.outputs.build_android }}
+          REFRESH_ANDROID_LANDING: ${{ needs.detect.outputs.refresh_android_landing }}
+        run: |
+          set -euo pipefail
+
+          is_true() { [[ "${1:-}" == "true" ]]; }
+
+          mkdir -p deploy
+          touch deploy/.nojekyll
+
+          if is_true "$HAS_PREVIOUS" && [[ -d previous-site ]]; then
+            shopt -s dotglob
+            cp -a previous-site/. deploy/
+            shopt -u dotglob
+            # Drop previous-site checkout metadata if copied.
+            rm -rf deploy/.git
+          fi
+
+          if is_true "$BUILD_WEB"; then
+            # Web game is the Pages root for this single-product repo.
+            find deploy -mindepth 1 -maxdepth 1 ! -name android ! -name .nojekyll -exec rm -rf {} +
+            cp -r dist/. deploy/
+          else
+            if [[ ! -f deploy/index.html ]]; then
+              echo "Missing web deploy artifact (not built and no previous gh-pages copy)" >&2
+              exit 1
+            fi
+          fi
+
+          mkdir -p deploy/android
+
+          if is_true "$BUILD_ANDROID"; then
+            cp -r android/site/. deploy/android/
+            cp android/app/build/outputs/apk/release/app-release.apk \
+              deploy/android/rth-agriculture-android.apk
+          elif is_true "$REFRESH_ANDROID_LANDING"; then
+            cp -r android/site/. deploy/android/
+            if [[ ! -f deploy/android/rth-agriculture-android.apk ]]; then
+              echo "Missing APK during android landing refresh" >&2
+              exit 1
+            fi
+          else
+            if [[ ! -f deploy/android/rth-agriculture-android.apk ]]; then
+              echo "Missing APK for android/" >&2
+              exit 1
+            fi
+          fi
+
+      - name: Inject deploy footer (Android landing)
+        if: needs.detect.outputs.build_android == 'true' || needs.detect.outputs.refresh_android_landing == 'true'
+        run: bun run scripts/inject-static-site-footer.ts deploy/android/index.html
+
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./deploy
+          publish_branch: gh-pages

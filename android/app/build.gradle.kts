@@ -6,7 +6,7 @@ plugins {
 }
 
 extra["sideloadPropertyPrefix"] = "rthagricultureandroid"
-apply(from = rootProject.file("../android/sideload-signing.gradle.kts"))
+apply(from = rootProject.file("sideload-signing.gradle.kts"))
 
 val autoVersionCode: Int = extra["autoVersionCode"] as Int
 val useCustomSigning: Boolean = extra["useCustomSigning"] as Boolean
