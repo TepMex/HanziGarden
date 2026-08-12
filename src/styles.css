@@ -490,6 +490,24 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
   cursor: pointer;
 }
 
+.composition-button {
+  position: absolute;
+  z-index: 20;
+  top: 25px;
+  right: 26px;
+  min-height: 52px;
+  padding: 0 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #dfd0ac;
+  border: 1px solid rgba(215, 193, 142, .55);
+  border-radius: 26px;
+  background: rgba(29, 34, 29, .72);
+  box-shadow: 0 5px 15px rgba(14, 17, 14, .45);
+  cursor: pointer;
+}
+
 .prompt-scroll {
   position: absolute;
   z-index: 14;
@@ -523,6 +541,9 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
   text-align: center;
   text-wrap: balance;
 }
+.primitive-prompt { width: 100%; margin: 6px 0 0; text-align: center; line-height: 1.1; }
+.primitive-prompt span { display: block; font-size: .61rem; letter-spacing: .12em; opacity: .56; text-transform: uppercase; }
+.primitive-prompt b { display: block; margin-top: 2px; font-size: .86rem; font-weight: 500; opacity: .68; overflow-wrap: anywhere; }
 .writing-circle {
   position: absolute;
   z-index: 10;
@@ -605,6 +626,38 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
 .field-cleanliness > span { width: 110px; height: 5px; overflow: hidden; border: 1px solid rgba(226, 207, 165, .42); background: rgba(37, 27, 40, .8); }
 .field-cleanliness i { display: block; height: 100%; background: #88996c; transition: width .6s; }
 
+.composition-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(11, 16, 13, .7);
+  backdrop-filter: blur(3px);
+}
+
+.composition-dialog {
+  position: relative;
+  width: min(440px, 100%);
+  max-height: min(620px, calc(100dvh - 48px));
+  overflow: auto;
+  padding: 35px 38px 34px;
+  color: #382f25;
+  background: linear-gradient(135deg, rgba(231, 217, 184, .98), rgba(195, 178, 140, .97));
+  border: 1px solid rgba(244, 226, 185, .72);
+  clip-path: polygon(5% 0, 95% 0, 100% 7%, 100% 93%, 95% 100%, 5% 100%, 0 93%, 0 7%);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .55), inset 0 0 32px rgba(70, 48, 27, .16);
+}
+.composition-dialog::before { content: ''; position: absolute; inset: 9px; border: 1px solid rgba(75, 59, 37, .22); pointer-events: none; }
+.composition-eyebrow { position: relative; margin: 0 0 5px; font-size: .7rem; letter-spacing: .15em; opacity: .64; text-transform: uppercase; }
+.composition-dialog h1 { position: relative; margin: 0 34px 21px 0; font-size: clamp(1.65rem, 5vw, 2.25rem); line-height: 1.05; font-weight: 600; overflow-wrap: anywhere; }
+.composition-dialog h1 span { font-family: 'Songti SC', 'STSong', serif; }
+.composition-close { position: absolute; z-index: 1; top: 20px; right: 21px; width: 34px; height: 34px; display: grid; place-items: center; color: #4b3c2b; border: 1px solid rgba(75, 59, 37, .35); border-radius: 50%; background: rgba(238, 223, 187, .58); cursor: pointer; }
+.composition-list { position: relative; display: grid; gap: 9px; margin: 0; padding: 0; list-style: none; }
+.composition-list li { min-height: 59px; display: flex; align-items: center; gap: 15px; padding: 8px 14px; border: 1px solid rgba(75, 59, 37, .22); background: rgba(245, 231, 197, .38); font-size: 1.13rem; line-height: 1.18; }
+.component-hanzi { width: 34px; flex: none; color: #4d653e; font: 1.8rem/1 'Songti SC', 'STSong', serif; text-align: center; }
+
 .cleared-state {
   position: absolute;
   z-index: 12;
@@ -662,8 +715,11 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
   .welcome-card { padding: 58px 28px 40px; }
   .prompt-scroll { top: max(10px, env(safe-area-inset-top, 0px)); width: min(68vw, calc(100% - 96px)); min-height: 72px; padding: 10px 16px; }
   .back-button { top: max(15px, env(safe-area-inset-top, 0px)); left: 14px; width: 45px; height: 45px; }
+  .composition-button { top: max(15px, env(safe-area-inset-top, 0px)); right: 14px; width: 45px; min-height: 45px; padding: 0; justify-content: center; border-radius: 50%; }
+  .composition-button span { display: none; }
   /* Keep the writer inside the chrome-free middle band on tall phones / WebView. */
   .writing-circle { top: 46%; width: min(78vw, 46vh, calc(100% - 56px)); }
+  .battle-screen.has-primitive .writing-circle { top: 49%; }
   .weed-core { top: 16%; scale: .74; }
   .battle-progress { right: 11px; max-height: 36vh; }
   .hint-button {
@@ -689,12 +745,16 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
     left: 13px;
   }
   .field-cleanliness > span { width: 72px; }
+  .composition-backdrop { padding: 18px; }
+  .composition-dialog { max-height: calc(100dvh - 36px); padding: 31px 27px 27px; }
+  .composition-close { top: 17px; right: 17px; }
 }
 
 @media (max-height: 650px) {
   .prompt-scroll { min-height: 62px; }
   .prompt-scroll strong { font-size: 1.6rem; }
   .writing-circle { top: 48%; width: min(390px, 52vh, calc(100% - 32px)); }
+  .battle-screen.has-primitive .writing-circle { top: 51%; }
   .weed-core { top: 14%; scale: .68; }
   .stroke-feedback {
     left: 12px;

@@ -1,4 +1,5 @@
 import rawCharacters from './rth.json'
+import { requireCharacterStructure, type CharacterStructure } from './rshStructure'
 import {
   cellsForPlotIndex,
   gardenRegions,
@@ -15,6 +16,7 @@ export type CharacterDefinition = {
   plotId: string
   strokeCount: number
   writingDataId: string
+  structure: CharacterStructure
 }
 
 export type PlotDefinition = {
@@ -103,6 +105,7 @@ for (const draft of drafts) {
       plotId: draft.id,
       strokeCount: item.strokes,
       writingDataId: item.hanzi,
+      structure: requireCharacterStructure(item.hanzi),
     }
     characterByPlotAndFrame.set(`${draft.id}:${item.frame}`, character)
   }

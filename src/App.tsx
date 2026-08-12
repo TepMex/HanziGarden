@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import HanziWriter from 'hanzi-writer'
-import { ArrowLeft, BarChart3, Flower2, HelpCircle, Leaf, Sparkles } from 'lucide-react'
+import { ArrowLeft, BarChart3, Flower2, HelpCircle, Layers, Leaf, Sparkles, X } from 'lucide-react'
 import { plots, type CharacterDefinition, type PlotDefinition } from './data/model'
 import { battleArtworkForGarden, battleBackdropStage } from './data/battleFieldArt'
 import { initialSave, loadSave, persistSave, type SaveGame } from './db'
@@ -140,6 +140,7 @@ function BattleScreen({
   const [hitPulse, setHitPulse] = useState(0)
   const [feedback, setFeedback] = useState('Проведите первый штрих')
   const [destroyed, setDestroyed] = useState(false)
+  const [isCompositionOpen, setCompositionOpen] = useState(false)
 
   useLayoutEffect(() => {
     const prompt = promptTextRef.current
@@ -183,6 +184,19 @@ function BattleScreen({
   }, [activeCharacter?.id])
 
   useEffect(() => { saveRef.current = save }, [save])
+
+  useEffect(() => {
+    setCompositionOpen(false)
+  }, [activeCharacter?.id])
+
+  useEffect(() => {
+    if (!isCompositionOpen) return
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setCompositionOpen(false)
+    }
+    window.addEventListener('keydown', closeOnEscape)
+    return () => window.removeEventListener('keydown', closeOnEscape)
+  }, [isCompositionOpen])
 
   const finishCharacter = useCallback((character: CharacterDefinition, totalMistakes: number) => {
     if (completingRef.current) return
@@ -390,7 +404,7 @@ function BattleScreen({
   }, [artwork])
 
   return (
-    <main className={`battle-screen ${destroyed ? 'is-destroyed' : ''}`}>
+    <main className={`battle-screen ${destroyed ? 'is-destroyed' : ''} ${activeCharacter?.structure.primitive ? 'has-primitive' : ''}`}>
       <div
         className="battle-backdrop"
         style={{ backgroundImage: `url(${JSON.stringify(backdropUrl)})` }}
@@ -401,7 +415,19 @@ function BattleScreen({
       <header className="prompt-scroll">
         <span>Целевое значение</span>
         <strong ref={promptTextRef}>{activeCharacter?.keyword.ru.toLocaleUpperCase('ru') ?? 'ПОЛЕ ОЧИЩЕНО'}</strong>
+        {activeCharacter?.structure.primitive && (
+          <p className="primitive-prompt">
+            <span>Примитив</span>
+            <b>{activeCharacter.structure.primitive}</b>
+          </p>
+        )}
       </header>
+
+      {activeCharacter && activeCharacter.structure.components.length > 0 && (
+        <button className="composition-button" onClick={() => setCompositionOpen(true)} aria-label="Показать состав иероглифа">
+          <Layers size={18} /> <span>Состав</span>
+        </button>
+      )}
 
       {activeCharacter ? (
         <>
@@ -437,6 +463,26 @@ function BattleScreen({
       <div className="field-cleanliness" title="Здоровье участка">
         <Leaf size={15} /><span><i style={{ width: `${(1 - infection) * 100}%` }} /></span>
       </div>
+
+      {activeCharacter && isCompositionOpen && (
+        <div className="composition-backdrop" onClick={(event) => {
+          if (event.target === event.currentTarget) setCompositionOpen(false)
+        }}>
+          <section className="composition-dialog" role="dialog" aria-modal="true" aria-labelledby="composition-title">
+            <button className="composition-close" onClick={() => setCompositionOpen(false)} aria-label="Закрыть состав"><X /></button>
+            <p className="composition-eyebrow">Состав иероглифа</p>
+            <h1 id="composition-title"><span>{activeCharacter.hanzi}</span> {activeCharacter.keyword.ru}</h1>
+            <ol className="composition-list">
+              {activeCharacter.structure.components.map((component, index) => (
+                <li key={`${component.hanzi}:${component.keyword}:${index}`}>
+                  <span className="component-hanzi">{component.hanzi}</span>
+                  <span>{component.keyword}</span>
+                </li>
+              ))}
+            </ol>
+          </section>
+        </div>
+      )}
     </main>
   )
 }

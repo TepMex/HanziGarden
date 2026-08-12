@@ -12,6 +12,7 @@ const baseUrl = (process.argv[2] ?? 'http://127.0.0.1:8765').replace(/\/$/, '')
 const cases = [
   { keyword: 'несовершеннолетний', plotId: 'plot-036' },
   { keyword: 'принять меры предосторожности против', plotId: 'plot-153' },
+  { keyword: 'специальность', plotId: 'plot-078', primitive: 'трубка из кукурузного початка' },
 ]
 const viewports = [
   { width: 320, height: 568 },
@@ -89,6 +90,7 @@ try {
         )
         return {
           text: keyword.textContent,
+          primitive: document.querySelector('.primitive-prompt b')?.textContent,
           lines: Math.ceil(keywordRect.height / Number.parseFloat(style.lineHeight) - 0.01),
           fontSize: Number.parseFloat(style.fontSize),
           fits: keyword.scrollWidth <= keyword.clientWidth + 1,
@@ -96,7 +98,8 @@ try {
         }
       })
       const expected = testCase.keyword.toLocaleUpperCase('ru')
-      if (metrics.text !== expected || metrics.lines > 3 || metrics.fontSize < 16 || !metrics.fits || metrics.intersects) {
+      const expectedPrimitive = testCase.primitive
+      if (metrics.text !== expected || metrics.primitive !== expectedPrimitive || metrics.lines > 3 || metrics.fontSize < 16 || !metrics.fits || metrics.intersects) {
         throw new Error(`keyword layout failed for ${JSON.stringify({ viewport, expected, metrics })}`)
       }
       await context.close()
