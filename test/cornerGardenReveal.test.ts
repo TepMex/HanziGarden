@@ -1,38 +1,46 @@
 import { describe, expect, test } from 'bun:test'
 import { gardenRegions } from '../src/data/mapLayout'
-import { cornerGardenExteriorRevealRects, exteriorEdgeProgress } from '../src/map/cornerGardenReveal'
-
-function expectRectsToBeCloseTo(
-  actual: Array<{ x: number; y: number; width: number; height: number }>,
-  expected: Array<{ x: number; y: number; width: number; height: number }>,
-) {
-  expect(actual).toHaveLength(expected.length)
-  actual.forEach((rect, index) => {
-    const target = expected[index]!
-    expect(rect.x).toBeCloseTo(target.x)
-    expect(rect.y).toBeCloseTo(target.y)
-    expect(rect.width).toBeCloseTo(target.width)
-    expect(rect.height).toBeCloseTo(target.height)
-  })
-}
+import {
+  cornerGardenClearedFraction,
+  cornerGardenExteriorRevealEllipses,
+  exteriorEdgeProgress,
+} from '../src/map/cornerGardenReveal'
 
 describe('corner garden exterior reveal', () => {
-  test('early cultivation does not open hairline exterior strips', () => {
+  test('early cultivation does not open exterior scenery', () => {
     expect(exteriorEdgeProgress(0)).toBe(0)
-    expect(exteriorEdgeProgress(0.3)).toBe(0)
-    expect(exteriorEdgeProgress(0.62)).toBe(0)
+    expect(exteriorEdgeProgress(0.5)).toBe(0)
+    expect(exteriorEdgeProgress(0.84)).toBe(0)
     expect(exteriorEdgeProgress(1)).toBeCloseTo(1)
-    expect(cornerGardenExteriorRevealRects(gardenRegions[0]!, 'top-left', 0.4)).toEqual([])
+    expect(cornerGardenExteriorRevealEllipses(gardenRegions[0]!, 'top-left', 0.4)).toEqual([])
   })
 
-  test('fully clearing the top-left garden reveals its adjacent left and top scenery', () => {
+  test('empty plots do not inflate the corner cleared fraction', () => {
+    expect(cornerGardenClearedFraction([
+      { characterCount: 0, cleared: 1 },
+      { characterCount: 8, cleared: 0.2 },
+      { characterCount: 6, cleared: 0.4 },
+    ])).toBeCloseTo(0.3)
+    expect(cornerGardenClearedFraction([{ characterCount: 0, cleared: 1 }])).toBe(0)
+  })
+
+  test('fully clearing the top-left garden opens soft lobes only beside that garden', () => {
     const region = gardenRegions[0]!
     const { x, y, width, height } = region.mapRect
+    const [left, top] = cornerGardenExteriorRevealEllipses(region, 'top-left', 1)
 
-    expectRectsToBeCloseTo(cornerGardenExteriorRevealRects(region, 'top-left', 1), [
-      { x: 0, y: 0, width: x, height: y + height },
-      { x: 0, y: 0, width: x + width, height: y },
-    ])
+    expect(left!.centerX).toBeCloseTo(x * 0.5)
+    expect(left!.centerY).toBeCloseTo((y + height) * 0.48)
+    expect(left!.radiusX).toBeCloseTo(x * 1.08)
+    expect(left!.radiusY).toBeCloseTo((y + height) * 0.62)
+    // Stay on the left margin — do not span the full image height as a hard strip.
+    expect(left!.centerY + left!.radiusY).toBeLessThan(1)
+
+    expect(top!.centerX).toBeCloseTo((x + width) * 0.48)
+    expect(top!.centerY).toBeCloseTo(y * 0.5)
+    expect(top!.radiusX).toBeCloseTo((x + width) * 0.62)
+    expect(top!.radiusY).toBeCloseTo(y * 1.08)
+    expect(top!.centerX + top!.radiusX).toBeLessThan(1)
   })
 
   test('each corner only reveals scenery beside that garden', () => {
@@ -40,37 +48,24 @@ describe('corner garden exterior reveal', () => {
     const bottomLeft = gardenRegions[10]!
     const bottomRight = gardenRegions[14]!
 
-    expectRectsToBeCloseTo(cornerGardenExteriorRevealRects(topRight, 'top-right', 1), [
-      { x: topRight.mapRect.x + topRight.mapRect.width, y: 0, width: 1 - topRight.mapRect.x - topRight.mapRect.width, height: topRight.mapRect.y + topRight.mapRect.height },
-      { x: topRight.mapRect.x, y: 0, width: 1 - topRight.mapRect.x, height: topRight.mapRect.y },
-    ])
-    expectRectsToBeCloseTo(cornerGardenExteriorRevealRects(bottomLeft, 'bottom-left', 1), [
-      { x: 0, y: bottomLeft.mapRect.y, width: bottomLeft.mapRect.x, height: 1 - bottomLeft.mapRect.y },
-      { x: 0, y: bottomLeft.mapRect.y + bottomLeft.mapRect.height, width: bottomLeft.mapRect.x + bottomLeft.mapRect.width, height: 1 - bottomLeft.mapRect.y - bottomLeft.mapRect.height },
-    ])
-    expectRectsToBeCloseTo(cornerGardenExteriorRevealRects(bottomRight, 'bottom-right', 1), [
-      { x: bottomRight.mapRect.x + bottomRight.mapRect.width, y: bottomRight.mapRect.y, width: 1 - bottomRight.mapRect.x - bottomRight.mapRect.width, height: 1 - bottomRight.mapRect.y },
-      { x: bottomRight.mapRect.x, y: bottomRight.mapRect.y + bottomRight.mapRect.height, width: 1 - bottomRight.mapRect.x, height: 1 - bottomRight.mapRect.y - bottomRight.mapRect.height },
-    ])
+    const [trRight] = cornerGardenExteriorRevealEllipses(topRight, 'top-right', 1)
+    expect(trRight!.centerX).toBeGreaterThan(topRight.mapRect.x + topRight.mapRect.width)
+    expect(trRight!.centerX + trRight!.radiusX).toBeGreaterThan(0.95)
+
+    const [blLeft] = cornerGardenExteriorRevealEllipses(bottomLeft, 'bottom-left', 1)
+    expect(blLeft!.centerX).toBeLessThan(bottomLeft.mapRect.x)
+    expect(blLeft!.centerX - blLeft!.radiusX).toBeLessThan(0.05)
+
+    const [brRight] = cornerGardenExteriorRevealEllipses(bottomRight, 'bottom-right', 1)
+    expect(brRight!.centerX).toBeGreaterThan(bottomRight.mapRect.x + bottomRight.mapRect.width)
   })
 
-  test('the exterior grows outward once past the cultivation threshold', () => {
+  test('exterior lobes grow smoothly once past the cultivation threshold', () => {
     const region = gardenRegions[0]!
-    const edge = exteriorEdgeProgress(0.81)
-    const [left, top] = cornerGardenExteriorRevealRects(region, 'top-left', 0.81)
-    const { x, y, width, height } = region.mapRect
-
-    expect(left).toEqual({
-      x: x * (1 - edge),
-      y: 0,
-      width: x * edge,
-      height: y + height,
-    })
-    expect(top).toEqual({
-      x: 0,
-      y: y * (1 - edge),
-      width: x + width,
-      height: y * edge,
-    })
+    const early = cornerGardenExteriorRevealEllipses(region, 'top-left', 0.9)
+    const late = cornerGardenExteriorRevealEllipses(region, 'top-left', 1)
+    expect(early).toHaveLength(2)
+    expect(late[0]!.radiusX).toBeGreaterThan(early[0]!.radiusX)
+    expect(late[1]!.radiusY).toBeGreaterThan(early[1]!.radiusY)
   })
 })
