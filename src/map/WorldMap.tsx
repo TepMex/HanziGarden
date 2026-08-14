@@ -5,7 +5,17 @@ import { plots, type PlotDefinition } from '../data/model'
 import { cellRect, gardenRegions, plotBounds, WORLD_HEIGHT, WORLD_WIDTH, type NormalizedQuad } from '../data/mapLayout'
 import type { SaveGame } from '../db'
 import { plotInfection } from '../garden'
-import { cornerGardenExteriorRevealRects, type CornerGarden } from './cornerGardenReveal'
+import {
+  cornerGardenClearedFraction,
+  cornerGardenExteriorRevealEllipses,
+  type CornerGarden,
+} from './cornerGardenReveal'
+import {
+  clearedFromInfection,
+  plotRevealEllipses,
+  plotRevealQuads,
+  type RevealEllipse,
+} from './plotReveal'
 import {
   baseMapScale,
   cameraForWorldPoint,
@@ -109,19 +119,14 @@ function rectToWorld(rect: { x: number; y: number; width: number; height: number
   return { x: rect.x * WORLD_WIDTH, y: rect.y * WORLD_HEIGHT, width: rect.width * WORLD_WIDTH, height: rect.height * WORLD_HEIGHT }
 }
 
-function seededUnit(seed: number, salt: number): number {
-  let value = (seed + Math.imul(salt, 0x9e3779b9)) >>> 0
-  value = Math.imul(value ^ (value >>> 16), 0x45d9f3b)
-  value = Math.imul(value ^ (value >>> 16), 0x45d9f3b)
-  return ((value ^ (value >>> 16)) >>> 0) / 4294967295
-}
-
-type RevealEllipse = {
-  centerX: number
-  centerY: number
-  radiusX: number
-  radiusY: number
-  rotation: number
+function ellipseToWorld(ellipse: RevealEllipse): RevealEllipse {
+  return {
+    centerX: ellipse.centerX * WORLD_WIDTH,
+    centerY: ellipse.centerY * WORLD_HEIGHT,
+    radiusX: ellipse.radiusX * WORLD_WIDTH,
+    radiusY: ellipse.radiusY * WORLD_HEIGHT,
+    rotation: ellipse.rotation,
+  }
 }
 
 const cornerGardens: Array<{ regionIndex: number; corner: CornerGarden }> = [
@@ -131,59 +136,22 @@ const cornerGardens: Array<{ regionIndex: number; corner: CornerGarden }> = [
   { regionIndex: 14, corner: 'bottom-right' },
 ]
 
-function cornerExteriorRevealRects(save: SaveGame) {
+function plotInfectionForSave(plot: PlotDefinition, save: SaveGame): number {
+  return save.unlockedPlotIds.includes(plot.id) ? plotInfection(plot, save.cards) : 1
+}
+
+function cornerExteriorRevealEllipses(save: SaveGame): RevealEllipse[] {
   return cornerGardens.flatMap(({ regionIndex, corner }) => {
     const region = gardenRegions[regionIndex]!
     const regionPlots = plots.filter((plot) => plot.gardenId === region.id)
-    const cleared = regionPlots.reduce((sum, plot) => {
-      const infection = save.unlockedPlotIds.includes(plot.id) ? plotInfection(plot, save.cards) : 1
-      return sum + (1 - infection)
-    }, 0) / regionPlots.length
-    return cornerGardenExteriorRevealRects(region, corner, cleared).map(rectToWorld)
+    const cleared = cornerGardenClearedFraction(
+      regionPlots.map((plot) => ({
+        characterCount: plot.characters.length,
+        cleared: clearedFromInfection(plotInfectionForSave(plot, save)),
+      })),
+    )
+    return cornerGardenExteriorRevealEllipses(region, corner, cleared).map(ellipseToWorld)
   })
-}
-
-/**
- * Recreate the former soft canvas reveal in fixed world coordinates. Its
- * seeded position means a plot's light patch grows naturally without jumping
- * when the card state changes, and the camera never needs to recalculate it.
- */
-function revealEllipses(plot: PlotDefinition, infection: number): RevealEllipse[] {
-  const cleared = Math.max(0, Math.min(1, 1 - infection))
-  if (cleared === 0) return []
-
-  const bounds = rectToWorld(plotBounds(plot.cells))
-  const growth = cleared ** 0.68
-  const centerX = bounds.x + bounds.width / 2
-  const centerY = bounds.y + bounds.height / 2
-  const rotation = (seededUnit(plot.seed, 1) - 0.5) * 0.34
-  const drift = 1 - cleared
-  const offsetX = (seededUnit(plot.seed, 2) - 0.5) * bounds.width * 0.18 * drift
-  const offsetY = (seededUnit(plot.seed, 3) - 0.5) * bounds.height * 0.18 * drift
-  // The opaque center covers a clean plot; the feathered fringe can extend
-  // into the surrounding garden, avoiding the previous hard cell rectangle.
-  const completePlotReach = 0.76 + 0.29 * cleared ** 4
-  const radiusX = bounds.width * completePlotReach * growth
-  const radiusY = bounds.height * completePlotReach * growth
-  const lobeRadius = 0.44 + cleared * 0.12
-
-  return [
-    { centerX: centerX + offsetX, centerY: centerY + offsetY, radiusX, radiusY, rotation },
-    {
-      centerX: centerX + offsetX + (seededUnit(plot.seed, 4) - 0.5) * radiusX * 0.78,
-      centerY: centerY + offsetY + (seededUnit(plot.seed, 5) - 0.5) * radiusY * 0.68,
-      radiusX: radiusX * lobeRadius,
-      radiusY: radiusY * lobeRadius,
-      rotation: rotation - 0.38,
-    },
-    {
-      centerX: centerX + offsetX + (seededUnit(plot.seed, 6) - 0.5) * radiusX * 0.78,
-      centerY: centerY + offsetY + (seededUnit(plot.seed, 7) - 0.5) * radiusY * 0.68,
-      radiusX: radiusX * lobeRadius,
-      radiusY: radiusY * lobeRadius,
-      rotation: rotation + 0.42,
-    },
-  ]
 }
 
 function quadPoints(quad: NormalizedQuad): string {
@@ -426,17 +394,34 @@ export function WorldMap({ save, camera, onCameraChange, onEnterPlot }: WorldMap
             </radialGradient>
             <mask id="world-weed-mask" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse">
               <rect width={WORLD_WIDTH} height={WORLD_HEIGHT} fill="white" />
-              {cornerExteriorRevealRects(save).map((rect, index) => (
-                <rect key={`corner-exterior:${index}`} {...rect} fill="black" />
+              {/* Soft ellipses only — no hard exterior rects, no mix-blend multiply.
+                  Android WebViews turned multiply + axis-aligned rects into bright seams. */}
+              {cornerExteriorRevealEllipses(save).map((ellipse, index) => (
+                <ellipse
+                  key={`corner-exterior:${index}`}
+                  cx="0"
+                  cy="0"
+                  rx="1"
+                  ry="1"
+                  fill="url(#world-weed-reveal)"
+                  transform={`translate(${ellipse.centerX} ${ellipse.centerY}) rotate(${ellipse.rotation * 180 / Math.PI}) scale(${ellipse.radiusX} ${ellipse.radiusY})`}
+                />
               ))}
-              {/* Multiply keeps soft overlapping plot lobes from punching holes in each other.
-                  Exterior rects stay outside this group so Android cannot turn them into edge seams. */}
-              <g style={{ mixBlendMode: 'multiply' }}>
-                {plots.flatMap((plot) => {
-                  const infection = save.unlockedPlotIds.includes(plot.id) ? plotInfection(plot, save.cards) : 1
-                  return revealEllipses(plot, infection).map((ellipse, index) => (
+              {plots.flatMap((plot) => {
+                const infection = plotInfectionForSave(plot, save)
+                const quads = plotRevealQuads(plot.cells, infection)
+                const ellipses = plotRevealEllipses(plot.cells, plot.seed, infection).map(ellipseToWorld)
+                return [
+                  ...quads.map((quad, index) => (
+                    <polygon
+                      key={`${plot.id}:quad:${index}`}
+                      points={quadPoints(quad)}
+                      fill="black"
+                    />
+                  )),
+                  ...ellipses.map((ellipse, index) => (
                     <ellipse
-                      key={`${plot.id}:${index}`}
+                      key={`${plot.id}:ellipse:${index}`}
                       cx="0"
                       cy="0"
                       rx="1"
@@ -444,9 +429,9 @@ export function WorldMap({ save, camera, onCameraChange, onEnterPlot }: WorldMap
                       fill="url(#world-weed-reveal)"
                       transform={`translate(${ellipse.centerX} ${ellipse.centerY}) rotate(${ellipse.rotation * 180 / Math.PI}) scale(${ellipse.radiusX} ${ellipse.radiusY})`}
                     />
-                  ))
-                })}
-              </g>
+                  )),
+                ]
+              })}
             </mask>
           </defs>
           <image ref={weedImageRef} href={negativeMapUrl} width={WORLD_WIDTH} height={WORLD_HEIGHT} preserveAspectRatio="none" mask="url(#world-weed-mask)" />
