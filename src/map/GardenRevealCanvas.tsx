@@ -14,6 +14,7 @@ import {
 } from '../data/mapLayout'
 import type { SaveGame } from '../db'
 import { plotInfection } from '../garden'
+import { clearedFromInfection } from './plotReveal'
 
 type PixelPoint = { x: number; y: number }
 type GardenSide = { id: string; seed: PixelPoint; adjacentBed: number }
@@ -223,7 +224,7 @@ function plantStates(save: SaveGame): PlantState[] {
       column: firstGarden ? (firstCell.x < 2 ? 0 : 1) : firstCell.x % 3,
       row: firstCell.y % 5,
       center,
-      cleared: unlocked.has(plot.id) ? Math.max(0, Math.min(1, 1 - plotInfection(plot, save.cards))) : 0,
+      cleared: unlocked.has(plot.id) ? clearedFromInfection(plotInfection(plot, save.cards)) : 0,
     }
   })
 }

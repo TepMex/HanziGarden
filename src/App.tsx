@@ -7,6 +7,7 @@ import { initialSave, loadSave, persistSave, type SaveGame } from './db'
 import { plotInfection } from './garden'
 import { loadHanziCharData } from './hanziData'
 import { isCardDue, reviewCard, type ReviewEvent } from './learning'
+import { clearedFromInfection } from './map/plotReveal'
 import { WorldMap } from './map/WorldMap'
 import { initialCamera, type CameraState } from './map/cameraMath'
 import { StatisticsScreen } from './stats/StatisticsScreen'
@@ -386,6 +387,7 @@ function BattleScreen({
   }
 
   const infection = plotInfection(plot, save.cards)
+  const visualCleanliness = clearedFromInfection(infection)
   const remaining = activeCharacter ? Math.max(0, activeCharacter.strokeCount - correctStrokes) : 0
   const weedDamage = activeCharacter ? correctStrokes / activeCharacter.strokeCount : 1
   const artwork = battleArtworkForGarden(plot.gardenId)
@@ -461,7 +463,7 @@ function BattleScreen({
       )}
 
       <div className="field-cleanliness" title="Здоровье участка">
-        <Leaf size={15} /><span><i style={{ width: `${(1 - infection) * 100}%` }} /></span>
+        <Leaf size={15} /><span><i style={{ width: `${visualCleanliness * 100}%` }} /></span>
       </div>
 
       {activeCharacter && isCompositionOpen && (

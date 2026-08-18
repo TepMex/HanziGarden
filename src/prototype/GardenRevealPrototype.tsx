@@ -8,6 +8,7 @@ import './gardenRevealPrototype.css'
 
 const WIDTH = 1600
 const HEIGHT = 1200
+const CLEANING_STEPS = 5
 const GRID_URL = assetUrl('assets/garden-grid.svg')
 
 type Point = { x: number; y: number }
@@ -241,7 +242,7 @@ function lineTouchesRevealedRegion(
 }
 
 function makeRevealLayer(
-  cleared: ReadonlySet<string>,
+  cleanliness: ReadonlyMap<string, number>,
   completeBeds: ReadonlySet<number>,
   exposedSides: ReadonlySet<string>,
   exposedCorners: ReadonlySet<string>,
@@ -253,7 +254,9 @@ function makeRevealLayer(
   const context = reveal.getContext('2d', { willReadFrequently: true })!
 
   for (const plant of plants) {
-    if (!cleared.has(plant.id) || completeBeds.has(plant.bedIndex)) continue
+    const cleaningStep = cleanliness.get(plant.id) ?? 0
+    if (cleaningStep === 0 || completeBeds.has(plant.bedIndex)) continue
+    const revealAmount = cleaningStep / CLEANING_STEPS
     const bedPlants = plantsByBed[plant.bedIndex]!
     const sibling = bedPlants.find((candidate) => candidate.row === plant.row && candidate.column === plant.column + 1)
     const below = bedPlants.find((candidate) => candidate.row === plant.row + 1 && candidate.column === plant.column)
@@ -263,9 +266,9 @@ function makeRevealLayer(
     context.translate(plant.center.x, plant.center.y)
     context.scale(radiusX, radiusY)
     const gradient = context.createRadialGradient(0, 0, 0, 0, 0, 1)
-    gradient.addColorStop(0, 'rgba(0,0,0,1)')
-    gradient.addColorStop(.58, 'rgba(0,0,0,1)')
-    gradient.addColorStop(.82, 'rgba(0,0,0,.55)')
+    gradient.addColorStop(0, `rgba(0,0,0,${revealAmount})`)
+    gradient.addColorStop(.58, `rgba(0,0,0,${revealAmount})`)
+    gradient.addColorStop(.82, `rgba(0,0,0,${revealAmount * .55})`)
     gradient.addColorStop(1, 'rgba(0,0,0,0)')
     context.fillStyle = gradient
     context.fillRect(-1, -1, 2, 2)
@@ -291,14 +294,14 @@ function makeRevealLayer(
 }
 
 function RevealCanvas({
-  cleared,
+  cleanliness,
   completeBeds,
   exposedSides,
   exposedCorners,
   model,
   mode,
 }: {
-  cleared: ReadonlySet<string>
+  cleanliness: ReadonlyMap<string, number>
   completeBeds: ReadonlySet<number>
   exposedSides: ReadonlySet<string>
   exposedCorners: ReadonlySet<string>
@@ -317,7 +320,7 @@ function RevealCanvas({
     ]).then(([clean, negative]) => {
       if (cancelled) return
       const context = canvas.getContext('2d')!
-      const reveal = makeRevealLayer(cleared, completeBeds, exposedSides, exposedCorners, model)
+      const reveal = makeRevealLayer(cleanliness, completeBeds, exposedSides, exposedCorners, model)
       context.clearRect(0, 0, WIDTH, HEIGHT)
       if (mode === 'mask') {
         context.fillStyle = '#f4f0e8'
@@ -369,13 +372,13 @@ function RevealCanvas({
       }
     })
     return () => { cancelled = true }
-  }, [cleared, completeBeds, exposedCorners, exposedSides, mode, model])
+  }, [cleanliness, completeBeds, exposedCorners, exposedSides, mode, model])
 
   return <canvas ref={canvasRef} width={WIDTH} height={HEIGHT} aria-label={mode === 'mask' ? 'Чёрно-белая маска раскрытия' : 'Карта раскрытия сада'} />
 }
 
 function GardenStage({
-  cleared,
+  cleanliness,
   completeBeds,
   exposedSides,
   exposedCorners,
@@ -384,7 +387,7 @@ function GardenStage({
   mode,
   onToggle,
 }: {
-  cleared: ReadonlySet<string>
+  cleanliness: ReadonlyMap<string, number>
   completeBeds: ReadonlySet<number>
   exposedSides: ReadonlySet<string>
   exposedCorners: ReadonlySet<string>
@@ -395,7 +398,7 @@ function GardenStage({
 }) {
   return (
     <div className={`prototype-garden-stage is-${mode}`}>
-      <RevealCanvas cleared={cleared} completeBeds={completeBeds} exposedSides={exposedSides} exposedCorners={exposedCorners} model={model} mode={mode} />
+      <RevealCanvas cleanliness={cleanliness} completeBeds={completeBeds} exposedSides={exposedSides} exposedCorners={exposedCorners} model={model} mode={mode} />
       <img className="prototype-source-grid" src={GRID_URL} alt="" draggable={false} />
       <svg className="prototype-hit-grid" viewBox={`0 0 ${WIDTH} ${HEIGHT}`} role="group" aria-label="Растения на грядках">
         {mode === 'debug' && sides.map((side) => {
@@ -409,7 +412,9 @@ function GardenStage({
           return <text key={corner.id} className={exposedCorners.has(corner.id) ? 'side-label is-clear' : 'side-label'} x={labelX} y={labelY}>C{label ?? '…'}</text>
         })}
         {plants.map((plant) => {
-          const isClear = cleared.has(plant.id)
+          const cleaningStep = cleanliness.get(plant.id) ?? 0
+          const cleanlinessPercent = cleaningStep / CLEANING_STEPS * 100
+          const isClear = cleaningStep === CLEANING_STEPS
           return (
             <g key={plant.id}>
               <polygon
@@ -417,8 +422,7 @@ function GardenStage({
                 points={plant.points}
                 role="button"
                 tabIndex={0}
-                aria-label={`${bedNames[plant.bedIndex]}, растение ${plant.row * (plant.bedIndex === 0 ? 2 : 3) + plant.column + 1}: ${isClear ? 'очищено' : 'заросло'}`}
-                aria-pressed={isClear}
+                aria-label={`${bedNames[plant.bedIndex]}, растение ${plant.row * (plant.bedIndex === 0 ? 2 : 3) + plant.column + 1}: ${cleanlinessPercent === 0 ? 'сорняки' : `очищено на ${cleanlinessPercent}%`}`}
                 onClick={() => onToggle(plant)}
                 onKeyDown={(event) => {
                   if (event.key === 'Enter' || event.key === ' ') {
@@ -447,36 +451,42 @@ function GardenStage({
 }
 
 function StatePanel({
-  cleared,
+  cleanliness,
   completeBeds,
   exposedSides,
   exposedCorners,
   activeBed,
+  activePlantId,
   onReset,
   onCompleteBed,
 }: {
-  cleared: ReadonlySet<string>
+  cleanliness: ReadonlyMap<string, number>
   completeBeds: ReadonlySet<number>
   exposedSides: ReadonlySet<string>
   exposedCorners: ReadonlySet<string>
   activeBed: number
+  activePlantId: string
   onReset: () => void
   onCompleteBed: () => void
 }) {
   const activePlants = plantsByBed[activeBed]!
-  const activeCleared = activePlants.filter((plant) => cleared.has(plant.id)).length
+  const activePlant = activePlants.find((plant) => plant.id === activePlantId) ?? activePlants[0]!
+  const activePlantNumber = activePlant.row * (activePlant.bedIndex === 0 ? 2 : 3) + activePlant.column + 1
+  const activeCleanliness = (cleanliness.get(activePlant.id) ?? 0) / CLEANING_STEPS * 100
+  const totalCleaningSteps = plants.reduce((total, plant) => total + (cleanliness.get(plant.id) ?? 0), 0)
+  const totalCleanliness = Math.round(totalCleaningSteps / (plants.length * CLEANING_STEPS) * 1000) / 10
   return (
     <aside className="prototype-state-panel">
       <div className="prototype-eyebrow"><Bug size={15} /> Только визуальный прототип</div>
       <h1>Раскрытие сада</h1>
-      <p>Клик переключает растение. Полная грядка очищает соседние области и общие линии; угол открывается после обеих смежных сторон.</p>
+      <p>Каждый клик очищает растение ещё на 20%. Пятый клик даёт 100%, шестой возвращает сорняки. Полная грядка очищает соседние области и общие линии.</p>
       <div className="active-bed-card">
-        <span>Активная грядка</span>
-        <strong>{String(activeBed + 1).padStart(2, '0')} · {bedNames[activeBed]}</strong>
-        <div className="progress-row"><i style={{ width: `${activeCleared / activePlants.length * 100}%` }} /><span>{activeCleared}/{activePlants.length}</span></div>
+        <span>Активная клетка</span>
+        <strong>{String(activeBed + 1).padStart(2, '0')} · {bedNames[activeBed]} · {activePlantNumber}</strong>
+        <div className="progress-row"><i style={{ width: `${activeCleanliness}%` }} /><span>{activeCleanliness}%</span></div>
       </div>
       <dl className="prototype-stats">
-        <div><dt>Растения</dt><dd>{cleared.size}/{plants.length}</dd></div>
+        <div><dt>Очищенность</dt><dd>{totalCleanliness}%</dd></div>
         <div><dt>Грядки</dt><dd>{completeBeds.size}/15</dd></div>
         <div><dt>Боковые</dt><dd>{exposedSides.size}/16</dd></div>
         <div><dt>Углы</dt><dd>{exposedCorners.size}/4</dd></div>
@@ -502,8 +512,9 @@ function readVariant(): PrototypeVariant {
 
 export function GardenRevealPrototype() {
   const [variant, setVariant] = useState<PrototypeVariant>(readVariant)
-  const [cleared, setCleared] = useState<Set<string>>(() => new Set())
+  const [cleanliness, setCleanliness] = useState<Map<string, number>>(() => new Map())
   const [activeBed, setActiveBed] = useState(0)
+  const [activePlantId, setActivePlantId] = useState(plants[0]!.id)
   const [model, setModel] = useState<RasterModel | null>(null)
 
   useEffect(() => {
@@ -511,8 +522,8 @@ export function GardenRevealPrototype() {
   }, [])
 
   const completeBeds = useMemo(() => new Set(
-    plantsByBed.flatMap((bedPlants, bedIndex) => bedPlants.every((plant) => cleared.has(plant.id)) ? [bedIndex] : []),
-  ), [cleared])
+    plantsByBed.flatMap((bedPlants, bedIndex) => bedPlants.every((plant) => cleanliness.get(plant.id) === CLEANING_STEPS) ? [bedIndex] : []),
+  ), [cleanliness])
   const exposedSides = useMemo(() => new Set(
     sides.filter((side) => completeBeds.has(side.adjacentBed)).map((side) => side.id),
   ), [completeBeds])
@@ -521,6 +532,7 @@ export function GardenRevealPrototype() {
       .filter((corner) => corner.adjacentSides.every((sideId) => exposedSides.has(sideId)))
       .map((corner) => corner.id),
   ), [exposedSides])
+  const activePlantCleanliness = (cleanliness.get(activePlantId) ?? 0) / CLEANING_STEPS * 100
 
   const changeVariant = useCallback((next: PrototypeVariant) => {
     const url = new URL(window.location.href)
@@ -531,21 +543,23 @@ export function GardenRevealPrototype() {
 
   const togglePlant = useCallback((plant: Plant) => {
     setActiveBed(plant.bedIndex)
-    setCleared((current) => {
-      const next = new Set(current)
-      if (next.has(plant.id)) next.delete(plant.id)
-      else next.add(plant.id)
+    setActivePlantId(plant.id)
+    setCleanliness((current) => {
+      const next = new Map(current)
+      const nextStep = ((current.get(plant.id) ?? 0) + 1) % (CLEANING_STEPS + 1)
+      if (nextStep === 0) next.delete(plant.id)
+      else next.set(plant.id, nextStep)
       return next
     })
   }, [])
 
   const completeActiveBed = useCallback(() => {
-    setCleared((current) => {
-      const next = new Set(current)
+    setCleanliness((current) => {
+      const next = new Map(current)
       const bedPlants = plantsByBed[activeBed]!
-      const shouldClear = !bedPlants.every((plant) => current.has(plant.id))
+      const shouldClear = !bedPlants.every((plant) => current.get(plant.id) === CLEANING_STEPS)
       for (const plant of bedPlants) {
-        if (shouldClear) next.add(plant.id)
+        if (shouldClear) next.set(plant.id, CLEANING_STEPS)
         else next.delete(plant.id)
       }
       return next
@@ -554,12 +568,13 @@ export function GardenRevealPrototype() {
 
   const statePanel = (
     <StatePanel
-      cleared={cleared}
+      cleanliness={cleanliness}
       completeBeds={completeBeds}
       exposedSides={exposedSides}
       exposedCorners={exposedCorners}
       activeBed={activeBed}
-      onReset={() => setCleared(new Set())}
+      activePlantId={activePlantId}
+      onReset={() => setCleanliness(new Map())}
       onCompleteBed={completeActiveBed}
     />
   )
@@ -568,7 +583,7 @@ export function GardenRevealPrototype() {
     <main className={`garden-reveal-prototype variant-${variant.toLowerCase()}`}>
       {variant === 'A' && (
         <>
-          <GardenStage cleared={cleared} completeBeds={completeBeds} exposedSides={exposedSides} exposedCorners={exposedCorners} model={model} activeBed={activeBed} mode="map" onToggle={togglePlant} />
+          <GardenStage cleanliness={cleanliness} completeBeds={completeBeds} exposedSides={exposedSides} exposedCorners={exposedCorners} model={model} activeBed={activeBed} mode="map" onToggle={togglePlant} />
           <div className="map-floating-panel">{statePanel}</div>
         </>
       )}
@@ -577,7 +592,7 @@ export function GardenRevealPrototype() {
           {statePanel}
           <section className="workbench-canvas">
             <header><Grid3X3 size={18} /><span>Garden.svg · синие грядки · красные боковые клетки</span></header>
-            <GardenStage cleared={cleared} completeBeds={completeBeds} exposedSides={exposedSides} exposedCorners={exposedCorners} model={model} activeBed={activeBed} mode="debug" onToggle={togglePlant} />
+            <GardenStage cleanliness={cleanliness} completeBeds={completeBeds} exposedSides={exposedSides} exposedCorners={exposedCorners} model={model} activeBed={activeBed} mode="debug" onToggle={togglePlant} />
           </section>
         </div>
       )}
@@ -585,14 +600,14 @@ export function GardenRevealPrototype() {
         <div className="prototype-mask-layout">
           <header>
             <div><span className="prototype-eyebrow"><Bug size={15} /> Сравнение результата и маски</span><h1>Что именно сейчас раскрыто</h1></div>
-            <button type="button" onClick={() => setCleared(new Set())}><RotateCcw size={17} /> Сбросить</button>
+            <button type="button" onClick={() => setCleanliness(new Map())}><RotateCcw size={17} /> Сбросить</button>
           </header>
           <div className="mask-pair">
-            <figure><GardenStage cleared={cleared} completeBeds={completeBeds} exposedSides={exposedSides} exposedCorners={exposedCorners} model={model} activeBed={activeBed} mode="map" onToggle={togglePlant} /><figcaption>Композиция карты</figcaption></figure>
-            <figure><GardenStage cleared={cleared} completeBeds={completeBeds} exposedSides={exposedSides} exposedCorners={exposedCorners} model={model} activeBed={activeBed} mode="mask" onToggle={togglePlant} /><figcaption>Маска: тёмное раскрыто</figcaption></figure>
+            <figure><GardenStage cleanliness={cleanliness} completeBeds={completeBeds} exposedSides={exposedSides} exposedCorners={exposedCorners} model={model} activeBed={activeBed} mode="map" onToggle={togglePlant} /><figcaption>Композиция карты</figcaption></figure>
+            <figure><GardenStage cleanliness={cleanliness} completeBeds={completeBeds} exposedSides={exposedSides} exposedCorners={exposedCorners} model={model} activeBed={activeBed} mode="mask" onToggle={togglePlant} /><figcaption>Маска: тёмное раскрыто</figcaption></figure>
           </div>
           <div className="mask-state-strip">
-            <span><Check size={16} /> {cleared.size} растений</span>
+            <span><Check size={16} /> Активная клетка: {activePlantCleanliness}%</span>
             <span>{completeBeds.size} полных грядок</span>
             <span>{exposedSides.size} боковых клеток</span>
             <span>{exposedCorners.size} углов</span>

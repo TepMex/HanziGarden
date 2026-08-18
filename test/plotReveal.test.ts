@@ -4,6 +4,7 @@ import {
   clearedFromInfection,
   FULL_CLEAR_AXIS,
   FULL_PLOT_POLYGON_CLEARED,
+  MAX_PARTIAL_CLEARED,
   plotRevealAxisScale,
   plotRevealEllipses,
   plotRevealGrowth,
@@ -14,10 +15,12 @@ const twoCellPlot = [{ x: 0, y: 0 }, { x: 1, y: 0 }] as const
 const singleCell = [{ x: 2, y: 0 }] as const
 
 describe('plot reveal formula', () => {
-  test('maps infection to cleared fraction', () => {
+  test('caps visual cleanliness at 40% while any review is pending', () => {
     expect(clearedFromInfection(1)).toBe(0)
     expect(clearedFromInfection(0)).toBe(1)
-    expect(clearedFromInfection(0.25)).toBeCloseTo(0.75)
+    expect(clearedFromInfection(0.75)).toBeCloseTo(0.25)
+    expect(clearedFromInfection(0.25)).toBe(MAX_PARTIAL_CLEARED)
+    expect(clearedFromInfection(Number.EPSILON)).toBe(MAX_PARTIAL_CLEARED)
     expect(clearedFromInfection(-1)).toBe(1)
     expect(clearedFromInfection(2)).toBe(0)
   })

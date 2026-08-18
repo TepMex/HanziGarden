@@ -19,12 +19,17 @@ function seededUnit(seed: number, salt: number): number {
   return ((value ^ (value >>> 16)) >>> 0) / 4294967295
 }
 
+export const MAX_PARTIAL_CLEARED = 0.4
+
 /**
- * Cleared fraction from infection.  Infection 1 (all due/new) → 0;
- * infection 0 (fully reviewed) → 1.
+ * Visual cleared fraction from infection. Any pending review keeps the plot
+ * visibly dirty (at most 40% clear); only a plot with no pending reviews is
+ * shown as fully clean.
  */
 export function clearedFromInfection(infection: number): number {
-  return clamp01(1 - infection)
+  const normalizedInfection = clamp01(infection)
+  if (normalizedInfection === 0) return 1
+  return Math.min(MAX_PARTIAL_CLEARED, 1 - normalizedInfection)
 }
 
 /**
