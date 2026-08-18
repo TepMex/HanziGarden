@@ -1,21 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Leaf, LockKeyhole } from 'lucide-react'
-import { assetUrl } from '../assetUrl'
 import { plots, type PlotDefinition } from '../data/model'
-import { cellRect, gardenRegions, plotBounds, WORLD_HEIGHT, WORLD_WIDTH, type NormalizedQuad } from '../data/mapLayout'
+import { cellQuad, gardenRegions, plotBounds, plotQuad, WORLD_HEIGHT, WORLD_WIDTH, type NormalizedQuad } from '../data/mapLayout'
 import type { SaveGame } from '../db'
 import { plotInfection } from '../garden'
-import {
-  cornerGardenClearedFraction,
-  cornerGardenExteriorRevealEllipses,
-  type CornerGarden,
-} from './cornerGardenReveal'
-import {
-  clearedFromInfection,
-  plotRevealEllipses,
-  plotRevealQuads,
-  type RevealEllipse,
-} from './plotReveal'
 import {
   baseMapScale,
   cameraForWorldPoint,
@@ -26,6 +14,7 @@ import {
   type Viewport,
   zoomAroundPoint,
 } from './cameraMath'
+import { GardenRevealCanvas } from './GardenRevealCanvas'
 
 type WorldMapProps = {
   save: SaveGame
@@ -40,68 +29,6 @@ type MapLoadState = 'loading' | 'ready' | 'error'
 
 const debugMap = new URLSearchParams(window.location.search).get('debugMap') === '1'
 const DRAG_THRESHOLD = 12
-
-async function loadAndDecodeImage(url: string): Promise<void> {
-  const image = new Image()
-  image.src = url
-
-  await new Promise<void>((resolve, reject) => {
-    image.onload = () => resolve()
-    image.onerror = () => reject(new Error(`Could not load ${url}`))
-    // Cached browser images can already be complete before the handlers above
-    // run.  A zero natural width still means a failed resource.
-    if (image.complete) {
-      if (image.naturalWidth > 0) resolve()
-      else reject(new Error(`Could not load ${url}`))
-    }
-  })
-
-  // decode() waits for pixels, rather than merely the network response.
-  if ('decode' in image) await image.decode()
-}
-
-/** Resolve after `count` animation frames so the covered map can composite. */
-function waitPaintFrames(count: number): Promise<void> {
-  return new Promise((resolve) => {
-    const step = (left: number) => {
-      if (left <= 0) {
-        resolve()
-        return
-      }
-      window.requestAnimationFrame(() => step(left - 1))
-    }
-    step(count)
-  })
-}
-
-/**
- * Wait until the SVG weed <image> has bound its href.  Cached resources may
- * skip a second load event, so we also accept a successful HTML Image decode
- * of the same URL after giving the SVG element one frame to attach.
- */
-async function waitForSvgWeedLayer(image: SVGImageElement, url: string): Promise<void> {
-  await new Promise<void>((resolve, reject) => {
-    let settled = false
-    const succeed = () => {
-      if (settled) return
-      settled = true
-      resolve()
-    }
-    const fail = (error?: unknown) => {
-      if (settled) return
-      settled = true
-      reject(error instanceof Error ? error : new Error('Could not load SVG map layer'))
-    }
-
-    image.addEventListener('load', succeed, { once: true })
-    image.addEventListener('error', () => fail(new Error(`Could not load ${url}`)), { once: true })
-
-    void loadAndDecodeImage(url).then(() => {
-      // One frame for the SVG <image> to adopt the already-decoded resource.
-      window.requestAnimationFrame(() => succeed())
-    }, fail)
-  })
-}
 
 function distance(left: Point, right: Point): number {
   return Math.hypot(left.x - right.x, left.y - right.y)
@@ -119,45 +46,28 @@ function rectToWorld(rect: { x: number; y: number; width: number; height: number
   return { x: rect.x * WORLD_WIDTH, y: rect.y * WORLD_HEIGHT, width: rect.width * WORLD_WIDTH, height: rect.height * WORLD_HEIGHT }
 }
 
-function ellipseToWorld(ellipse: RevealEllipse): RevealEllipse {
-  return {
-    centerX: ellipse.centerX * WORLD_WIDTH,
-    centerY: ellipse.centerY * WORLD_HEIGHT,
-    radiusX: ellipse.radiusX * WORLD_WIDTH,
-    radiusY: ellipse.radiusY * WORLD_HEIGHT,
-    rotation: ellipse.rotation,
-  }
-}
-
-const cornerGardens: Array<{ regionIndex: number; corner: CornerGarden }> = [
-  { regionIndex: 0, corner: 'top-left' },
-  { regionIndex: 4, corner: 'top-right' },
-  { regionIndex: 10, corner: 'bottom-left' },
-  { regionIndex: 14, corner: 'bottom-right' },
-]
-
-function plotInfectionForSave(plot: PlotDefinition, save: SaveGame): number {
-  return save.unlockedPlotIds.includes(plot.id) ? plotInfection(plot, save.cards) : 1
-}
-
-function cornerExteriorRevealEllipses(save: SaveGame): RevealEllipse[] {
-  return cornerGardens.flatMap(({ regionIndex, corner }) => {
-    const region = gardenRegions[regionIndex]!
-    const regionPlots = plots.filter((plot) => plot.gardenId === region.id)
-    const cleared = cornerGardenClearedFraction(
-      regionPlots.map((plot) => ({
-        characterCount: plot.characters.length,
-        cleared: clearedFromInfection(plotInfectionForSave(plot, save)),
-      })),
-    )
-    return cornerGardenExteriorRevealEllipses(region, corner, cleared).map(ellipseToWorld)
-  })
-}
-
 function quadPoints(quad: NormalizedQuad): string {
   return [
     quad.tl, quad.tr, quad.br, quad.bl,
   ].map((point) => `${point.x * WORLD_WIDTH},${point.y * WORLD_HEIGHT}`).join(' ')
+}
+
+function plotClipPath(quad: NormalizedQuad): string {
+  const bounds = plotBoundsFromQuad(quad)
+  const points = [quad.tl, quad.tr, quad.br, quad.bl].map((point) => {
+    const x = (point.x - bounds.x) / bounds.width * 100
+    const y = (point.y - bounds.y) / bounds.height * 100
+    return `${x}% ${y}%`
+  })
+  return `polygon(${points.join(', ')})`
+}
+
+function plotBoundsFromQuad(quad: NormalizedQuad) {
+  const xs = [quad.tl.x, quad.tr.x, quad.bl.x, quad.br.x]
+  const ys = [quad.tl.y, quad.tr.y, quad.bl.y, quad.br.y]
+  const x = Math.min(...xs)
+  const y = Math.min(...ys)
+  return { x, y, width: Math.max(...xs) - x, height: Math.max(...ys) - y }
 }
 
 function MapDebugOverlay() {
@@ -166,15 +76,14 @@ function MapDebugOverlay() {
       {gardenRegions.map((region) => (
         <polygon key={region.id} points={quadPoints(region.mapQuad)} className="debug-region" />
       ))}
-      {plots.flatMap((plot) => plot.cells.map((cell) => {
-        const rect = rectToWorld(cellRect(cell))
-        return <rect key={`${plot.id}:${cell.x}:${cell.y}`} {...rect} className="debug-cell" />
-      }))}
+      {plots.flatMap((plot) => plot.cells.map((cell) => (
+        <polygon key={`${plot.id}:${cell.x}:${cell.y}`} points={quadPoints(cellQuad(cell))} className="debug-cell" />
+      )))}
       {plots.map((plot) => {
         const rect = rectToWorld(plotBounds(plot.cells))
         return (
           <g key={plot.id}>
-            <rect {...rect} className="debug-plot" />
+            <polygon points={quadPoints(plotQuad(plot.cells))} className="debug-plot" />
             <text x={rect.x + 5} y={rect.y + 15}>{plot.id}</text>
           </g>
         )
@@ -196,9 +105,8 @@ export function WorldMap({ save, camera, onCameraChange, onEnterPlot }: WorldMap
   const [lockedPulseId, setLockedPulseId] = useState<string | null>(null)
   const [loadState, setLoadState] = useState<MapLoadState>('loading')
   const [loadAttempt, setLoadAttempt] = useState(0)
-  const weedImageRef = useRef<SVGImageElement>(null)
-  const cleanMapUrl = assetUrl(`assets/garden-map.webp${loadAttempt ? `?map-load-attempt=${loadAttempt}` : ''}`)
-  const negativeMapUrl = assetUrl(`assets/garden-map_negative.webp${loadAttempt ? `?map-load-attempt=${loadAttempt}` : ''}`)
+  const revealReady = useCallback(() => setLoadState('ready'), [])
+  const revealFailed = useCallback(() => setLoadState('error'), [])
 
   const getViewport = useCallback((): Viewport | null => {
     const rect = viewportRef.current?.getBoundingClientRect()
@@ -257,34 +165,6 @@ export function WorldMap({ save, camera, onCameraChange, onEnterPlot }: WorldMap
     element.addEventListener('wheel', onWheel, { passive: false })
     return () => element.removeEventListener('wheel', onWheel)
   }, [commitCamera, getViewport, paintCamera])
-
-  useEffect(() => {
-    let cancelled = false
-
-    setLoadState('loading')
-    // Keep the opaque preloader up while the world paints underneath.  Hiding
-    // the world with visibility:hidden skipped SVG compositing, so removing the
-    // preloader exposed a clean plate for a frame before the weed layer caught up.
-    void (async () => {
-      try {
-        await Promise.all([loadAndDecodeImage(cleanMapUrl), loadAndDecodeImage(negativeMapUrl)])
-        if (cancelled) return
-        const weedImage = weedImageRef.current
-        if (weedImage) await waitForSvgWeedLayer(weedImage, negativeMapUrl)
-        if (cancelled) return
-        // Extra frames after the SVG <image> reports ready: mask + blend still
-        // lag the HTML clean plate on some Android WebViews.
-        await waitPaintFrames(3)
-        if (!cancelled) setLoadState('ready')
-      } catch {
-        if (!cancelled) setLoadState('error')
-      }
-    })()
-
-    return () => {
-      cancelled = true
-    }
-  }, [cleanMapUrl, negativeMapUrl])
 
   const startPinch = () => {
     const viewport = getViewport()
@@ -383,62 +263,11 @@ export function WorldMap({ save, camera, onCameraChange, onEnterPlot }: WorldMap
       onPointerCancel={finishPointer}
     >
       <div className={`world-map-world ${loadState === 'ready' ? 'is-ready' : ''}`} ref={worldRef} aria-hidden={loadState !== 'ready'}>
-        <img className="world-map-clean" src={cleanMapUrl} alt="" draggable={false} />
-        <svg className="world-map-weed" viewBox={`0 0 ${WORLD_WIDTH} ${WORLD_HEIGHT}`} aria-hidden="true">
-          <defs>
-            <radialGradient id="world-weed-reveal" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="black" />
-              <stop offset="68%" stopColor="black" />
-              <stop offset="86%" stopColor="black" stopOpacity=".55" />
-              <stop offset="100%" stopColor="black" stopOpacity="0" />
-            </radialGradient>
-            <mask id="world-weed-mask" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse">
-              <rect width={WORLD_WIDTH} height={WORLD_HEIGHT} fill="white" />
-              {/* Soft ellipses only — no hard exterior rects, no mix-blend multiply.
-                  Android WebViews turned multiply + axis-aligned rects into bright seams. */}
-              {cornerExteriorRevealEllipses(save).map((ellipse, index) => (
-                <ellipse
-                  key={`corner-exterior:${index}`}
-                  cx="0"
-                  cy="0"
-                  rx="1"
-                  ry="1"
-                  fill="url(#world-weed-reveal)"
-                  transform={`translate(${ellipse.centerX} ${ellipse.centerY}) rotate(${ellipse.rotation * 180 / Math.PI}) scale(${ellipse.radiusX} ${ellipse.radiusY})`}
-                />
-              ))}
-              {plots.flatMap((plot) => {
-                const infection = plotInfectionForSave(plot, save)
-                const quads = plotRevealQuads(plot.cells, infection)
-                const ellipses = plotRevealEllipses(plot.cells, plot.seed, infection).map(ellipseToWorld)
-                return [
-                  ...quads.map((quad, index) => (
-                    <polygon
-                      key={`${plot.id}:quad:${index}`}
-                      points={quadPoints(quad)}
-                      fill="black"
-                    />
-                  )),
-                  ...ellipses.map((ellipse, index) => (
-                    <ellipse
-                      key={`${plot.id}:ellipse:${index}`}
-                      cx="0"
-                      cy="0"
-                      rx="1"
-                      ry="1"
-                      fill="url(#world-weed-reveal)"
-                      transform={`translate(${ellipse.centerX} ${ellipse.centerY}) rotate(${ellipse.rotation * 180 / Math.PI}) scale(${ellipse.radiusX} ${ellipse.radiusY})`}
-                    />
-                  )),
-                ]
-              })}
-            </mask>
-          </defs>
-          <image ref={weedImageRef} href={negativeMapUrl} width={WORLD_WIDTH} height={WORLD_HEIGHT} preserveAspectRatio="none" mask="url(#world-weed-mask)" />
-        </svg>
+        <GardenRevealCanvas save={save} loadAttempt={loadAttempt} onReady={revealReady} onError={revealFailed} />
         <div className="world-map-hotspots">
           {plots.map((plot) => {
             const rect = plotBounds(plot.cells)
+            const quad = plotQuad(plot.cells)
             const unlocked = save.unlockedPlotIds.includes(plot.id)
             // Empty second halves can occur for a one-character source list.
             // A locked plot remains visibly overgrown until the player reaches it.
@@ -447,7 +276,13 @@ export function WorldMap({ save, camera, onCameraChange, onEnterPlot }: WorldMap
               <button
                 className={`plot-hotspot ${unlocked ? 'is-unlocked' : 'is-locked'} ${lockedPulseId === plot.id ? 'is-locked-pulse' : ''}`}
                 key={plot.id}
-                style={{ left: `${rect.x * 100}%`, top: `${rect.y * 100}%`, width: `${rect.width * 100}%`, height: `${rect.height * 100}%` }}
+                style={{
+                  left: `${rect.x * 100}%`,
+                  top: `${rect.y * 100}%`,
+                  width: `${rect.width * 100}%`,
+                  height: `${rect.height * 100}%`,
+                  clipPath: plotClipPath(quad),
+                }}
                 data-plot-id={plot.id}
                 onClick={() => activatePlot(plot)}
                 aria-label={`Участок ${plot.id}, зарастание ${Math.ceil(infection * 10)} из 10${unlocked ? '' : ', путь закрыт'}`}
@@ -470,7 +305,10 @@ export function WorldMap({ save, camera, onCameraChange, onEnterPlot }: WorldMap
               <button
                 type="button"
                 onPointerDown={(event) => event.stopPropagation()}
-                onClick={() => setLoadAttempt((attempt) => attempt + 1)}
+                onClick={() => {
+                  setLoadState('loading')
+                  setLoadAttempt((attempt) => attempt + 1)
+                }}
               >
                 Повторить
               </button>

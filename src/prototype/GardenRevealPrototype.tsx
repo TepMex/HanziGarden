@@ -8,7 +8,7 @@ import './gardenRevealPrototype.css'
 
 const WIDTH = 1600
 const HEIGHT = 1200
-const GRID_URL = '/__prototype/garden-grid.svg'
+const GRID_URL = assetUrl('assets/garden-grid.svg')
 
 type Point = { x: number; y: number }
 type Plant = { id: string; bedIndex: number; column: number; row: number; center: Point; points: string }

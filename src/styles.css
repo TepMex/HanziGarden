@@ -887,8 +887,7 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
 .world-map-viewport.has-map-error .world-map-world {
   visibility: hidden;
 }
-.world-map-clean,
-.world-map-weed,
+.world-map-canvas,
 .world-map-hotspots,
 .map-debug-overlay {
   position: absolute;
@@ -896,14 +895,8 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
   width: 100%;
   height: 100%;
 }
-.world-map-clean {
+.world-map-canvas {
   display: block;
-  pointer-events: none;
-  /* Pull the clean plate inward so 1px DPR weed shortfalls cannot flash as bright edge seams.
-     Weed stays pixel-aligned with the world (no CSS overscan stretch). */
-  clip-path: inset(2px);
-}
-.world-map-weed {
   pointer-events: none;
 }
 .world-map-hotspots { z-index: 2; }

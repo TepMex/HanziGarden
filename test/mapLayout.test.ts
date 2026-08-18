@@ -2,7 +2,9 @@ import { describe, expect, test } from 'bun:test'
 import {
   cellRect,
   estatePoint,
+  GARDEN_INTERSECTIONS,
   gardenRegions,
+  plotQuad,
   REGION_COLUMNS,
   REGION_ROWS,
 } from '../src/data/mapLayout'
@@ -39,6 +41,24 @@ describe('perspective estate layout', () => {
         expect(region.mapQuad.tl.y).toBeGreaterThanOrEqual(above.mapQuad.bl.y - 1e-9)
       }
     }
+  })
+
+  test('uses the measured Garden.svg intersections as region corners', () => {
+    expect(gardenRegions[0]!.mapQuad.tl).toEqual(GARDEN_INTERSECTIONS[0]![0]!)
+    expect(gardenRegions[0]!.mapQuad.br).toEqual(GARDEN_INTERSECTIONS[1]![1]!)
+    expect(gardenRegions[14]!.mapQuad.tl).toEqual(GARDEN_INTERSECTIONS[2]![4]!)
+    expect(gardenRegions[14]!.mapQuad.br).toEqual(GARDEN_INTERSECTIONS[3]![5]!)
+  })
+
+  test('subdivides the first bed into the prototype\'s two equal plot columns', () => {
+    const left = plotQuad([{ x: 0, y: 0 }, { x: 1, y: 0 }])
+    const right = plotQuad([{ x: 2, y: 0 }])
+    const bed = gardenRegions[0]!.mapQuad
+
+    expect(left.tl).toEqual(bed.tl)
+    expect(left.tr.x).toBeCloseTo((bed.tl.x + bed.tr.x) / 2)
+    expect(right.tl).toEqual(left.tr)
+    expect(right.tr).toEqual(bed.tr)
   })
 
   test('plot cells stay inside their garden region bounds', () => {
