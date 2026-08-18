@@ -7,8 +7,21 @@ import './styles.css'
 const rootStyle = document.documentElement.style
 rootStyle.setProperty('--bg-garden-map', `url(${JSON.stringify(assetUrl('assets/garden-map.webp'))})`)
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-)
+const root = createRoot(document.getElementById('root')!)
+const isGardenRevealPrototype = import.meta.env.DEV && window.location.pathname === '/prototype/garden-reveal'
+
+if (isGardenRevealPrototype) {
+  import('./prototype/GardenRevealPrototype').then(({ GardenRevealPrototype }) => {
+    root.render(
+      <StrictMode>
+        <GardenRevealPrototype />
+      </StrictMode>,
+    )
+  })
+} else {
+  root.render(
+    <StrictMode>
+      <App />
+    </StrictMode>,
+  )
+}
