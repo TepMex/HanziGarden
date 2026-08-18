@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Leaf, LockKeyhole } from 'lucide-react'
+import { assetUrl } from '../assetUrl'
 import { plots, type PlotDefinition } from '../data/model'
-import { cellQuad, gardenRegions, plotBounds, plotQuad, WORLD_HEIGHT, WORLD_WIDTH, type NormalizedQuad } from '../data/mapLayout'
+import { cellQuad, gardenRegions, plotBounds, plotQuad, quadPoint, WORLD_HEIGHT, WORLD_WIDTH, type NormalizedPoint, type NormalizedQuad } from '../data/mapLayout'
 import type { SaveGame } from '../db'
 import { plotInfection } from '../garden'
 import {
@@ -19,6 +20,7 @@ import { GardenRevealCanvas } from './GardenRevealCanvas'
 type WorldMapProps = {
   save: SaveGame
   camera: CameraState
+  gridVisible: boolean
   onCameraChange: (camera: CameraState) => void
   onEnterPlot: (plot: PlotDefinition) => void
 }
@@ -29,6 +31,8 @@ type MapLoadState = 'loading' | 'ready' | 'error'
 
 const debugMap = new URLSearchParams(window.location.search).get('debugMap') === '1'
 const DRAG_THRESHOLD = 12
+const SMALL_SCREEN_QUERY = '(max-width: 820px)'
+const GRID_URL = assetUrl('assets/garden-grid.svg')
 
 function distance(left: Point, right: Point): number {
   return Math.hypot(left.x - right.x, left.y - right.y)
@@ -50,6 +54,33 @@ function quadPoints(quad: NormalizedQuad): string {
   return [
     quad.tl, quad.tr, quad.br, quad.bl,
   ].map((point) => `${point.x * WORLD_WIDTH},${point.y * WORLD_HEIGHT}`).join(' ')
+}
+
+function worldPoint(point: NormalizedPoint): { x: number; y: number } {
+  return { x: point.x * WORLD_WIDTH, y: point.y * WORLD_HEIGHT }
+}
+
+function FineGridOverlay() {
+  return (
+    <svg className="world-map-cell-grid" viewBox={`0 0 ${WORLD_WIDTH} ${WORLD_HEIGHT}`} aria-hidden="true">
+      {gardenRegions.flatMap((region) => {
+        const columns = region.index === 0 ? 2 : 3
+        const verticalLines = Array.from({ length: columns - 1 }, (_, index) => {
+          const amount = (index + 1) / columns
+          const start = worldPoint(quadPoint(region.mapQuad, amount, 0))
+          const end = worldPoint(quadPoint(region.mapQuad, amount, 1))
+          return <line key={`${region.id}:column:${index}`} x1={start.x} y1={start.y} x2={end.x} y2={end.y} />
+        })
+        const horizontalLines = Array.from({ length: 4 }, (_, index) => {
+          const amount = (index + 1) / 5
+          const start = worldPoint(quadPoint(region.mapQuad, 0, amount))
+          const end = worldPoint(quadPoint(region.mapQuad, 1, amount))
+          return <line key={`${region.id}:row:${index}`} x1={start.x} y1={start.y} x2={end.x} y2={end.y} />
+        })
+        return [...verticalLines, ...horizontalLines]
+      })}
+    </svg>
+  )
 }
 
 function plotClipPath(quad: NormalizedQuad): string {
@@ -93,16 +124,18 @@ function MapDebugOverlay() {
 }
 
 /** A transformed world. Weed mask re-renders only for save changes, never for camera movement. */
-export function WorldMap({ save, camera, onCameraChange, onEnterPlot }: WorldMapProps) {
+export function WorldMap({ save, camera, gridVisible, onCameraChange, onEnterPlot }: WorldMapProps) {
   const viewportRef = useRef<HTMLElement>(null)
   const worldRef = useRef<HTMLDivElement>(null)
   const cameraRef = useRef(camera)
   const pointersRef = useRef(new Map<number, Point>())
+  const touchPointersRef = useRef(new Set<number>())
   const dragRef = useRef<Drag | null>(null)
   const pinchRef = useRef<Pinch | null>(null)
   const movedRef = useRef(false)
   const wheelCommitRef = useRef<number | null>(null)
   const [lockedPulseId, setLockedPulseId] = useState<string | null>(null)
+  const [touchGridVisible, setTouchGridVisible] = useState(false)
   const [loadState, setLoadState] = useState<MapLoadState>('loading')
   const [loadAttempt, setLoadAttempt] = useState(0)
   const revealReady = useCallback(() => setLoadState('ready'), [])
@@ -192,6 +225,7 @@ export function WorldMap({ save, camera, onCameraChange, onEnterPlot }: WorldMap
       viewport.setPointerCapture(event.pointerId)
     }
     pointersRef.current.set(event.pointerId, localPoint(event, viewport.getBoundingClientRect()))
+    if (event.pointerType === 'touch') touchPointersRef.current.add(event.pointerId)
     movedRef.current = false
     if (pointersRef.current.size === 1) {
       dragRef.current = { pointerId: event.pointerId, point: pointersRef.current.get(event.pointerId)!, camera: cameraRef.current }
@@ -213,6 +247,7 @@ export function WorldMap({ save, camera, onCameraChange, onEnterPlot }: WorldMap
       const next = cameraForWorldPoint(pinch.worldPoint, midpoint(pointerValues[0]!, pointerValues[1]!), clampZoom(pinch.camera.zoom * nextDistance / pinch.distance), viewport)
       paintCamera(next)
       movedRef.current = true
+      if (event.pointerType === 'touch' && window.matchMedia(SMALL_SCREEN_QUERY).matches) setTouchGridVisible(true)
       return
     }
     const drag = dragRef.current
@@ -225,6 +260,7 @@ export function WorldMap({ save, camera, onCameraChange, onEnterPlot }: WorldMap
     // compromising intentional map panning.
     if (!movedRef.current && Math.hypot(deltaX, deltaY) <= DRAG_THRESHOLD) return
     movedRef.current = true
+    if (event.pointerType === 'touch' && window.matchMedia(SMALL_SCREEN_QUERY).matches) setTouchGridVisible(true)
     if (!viewportElement.hasPointerCapture(event.pointerId)) viewportElement.setPointerCapture(event.pointerId)
     paintCamera({ ...drag.camera, x: drag.camera.x + deltaX, y: drag.camera.y + deltaY })
   }
@@ -232,6 +268,8 @@ export function WorldMap({ save, camera, onCameraChange, onEnterPlot }: WorldMap
   const finishPointer = (event: React.PointerEvent<HTMLElement>) => {
     const shouldCommit = movedRef.current
     pointersRef.current.delete(event.pointerId)
+    touchPointersRef.current.delete(event.pointerId)
+    if (touchPointersRef.current.size === 0) setTouchGridVisible(false)
     if (pointersRef.current.size === 1) {
       const [pointerId, point] = [...pointersRef.current.entries()][0]!
       dragRef.current = { pointerId, point, camera: cameraRef.current }
@@ -264,6 +302,10 @@ export function WorldMap({ save, camera, onCameraChange, onEnterPlot }: WorldMap
     >
       <div className={`world-map-world ${loadState === 'ready' ? 'is-ready' : ''}`} ref={worldRef} aria-hidden={loadState !== 'ready'}>
         <GardenRevealCanvas save={save} loadAttempt={loadAttempt} onReady={revealReady} onError={revealFailed} />
+        <div className={`world-map-grid ${gridVisible ? 'is-desktop-visible' : ''} ${touchGridVisible ? 'is-touch-visible' : ''}`} aria-hidden="true">
+          <img className="world-map-grid-source" src={GRID_URL} alt="" draggable={false} />
+          <FineGridOverlay />
+        </div>
         <div className="world-map-hotspots">
           {plots.map((plot) => {
             const rect = plotBounds(plot.cells)

@@ -824,6 +824,7 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
 .map-header { pointer-events: none; }
 .map-header > * { pointer-events: auto; }
 .world-summary { gap: 15px; }
+.map-grid-button,
 .map-stats-button,
 .stats-back {
   display: inline-flex;
@@ -837,7 +838,8 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
   box-shadow: 0 3px 14px rgba(7, 15, 11, .32);
   cursor: pointer;
 }
-.map-stats-button:hover, .stats-back:hover { background: rgba(64, 88, 67, .88); }
+.map-grid-button:hover, .map-stats-button:hover, .stats-back:hover { background: rgba(64, 88, 67, .88); }
+.map-grid-button[aria-pressed="true"] { color: #fff6d7; background: rgba(86, 112, 77, .92); }
 
 .world-map-viewport {
   position: absolute;
@@ -888,6 +890,9 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
   visibility: hidden;
 }
 .world-map-canvas,
+.world-map-grid,
+.world-map-grid-source,
+.world-map-cell-grid,
 .world-map-hotspots,
 .map-debug-overlay {
   position: absolute;
@@ -899,6 +904,19 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
   display: block;
   pointer-events: none;
 }
+.world-map-grid {
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .14s ease;
+}
+.world-map-grid-source {
+  display: block;
+  filter: invert(88%) sepia(28%) saturate(645%) hue-rotate(348deg) brightness(104%);
+}
+.world-map-cell-grid { overflow: visible; }
+.world-map-cell-grid line { stroke: #fff0b0; stroke-width: 2px; stroke-opacity: .9; }
+.world-map-grid.is-desktop-visible { opacity: .48; }
 .world-map-hotspots { z-index: 2; }
 .plot-hotspot {
   position: absolute;
@@ -985,7 +1003,10 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
   .map-header { min-height: 58px; padding: max(8px, env(safe-area-inset-top, 0px)) 13px 8px; }
   .brand-mark { font-size: 1.08rem; }
   .world-summary { gap: 7px; font-size: .76rem; }
+  .map-grid-button { display: none; }
   .map-stats-button { min-height: 31px; padding: 0 7px; font-size: .76rem; }
+  .world-map-grid.is-desktop-visible { opacity: 0; }
+  .world-map-grid.is-touch-visible { opacity: .48; }
   .statistics-header { min-height: 58px; padding: max(8px, env(safe-area-inset-top, 0px)) 14px 8px; }
   .statistics-content { width: min(100% - 24px, 1220px); padding: 29px 0 42px; }
   .character-wall { grid-template-columns: repeat(auto-fill, minmax(29px, 1fr)); gap: 3px; }

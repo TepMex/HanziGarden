@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import HanziWriter from 'hanzi-writer'
-import { ArrowLeft, BarChart3, Flower2, HelpCircle, Layers, Leaf, Sparkles, X } from 'lucide-react'
+import { ArrowLeft, BarChart3, Flower2, Grid3X3, HelpCircle, Layers, Leaf, Sparkles, X } from 'lucide-react'
 import { plots, type CharacterDefinition, type PlotDefinition } from './data/model'
 import { battleArtworkForGarden, battleBackdropStage } from './data/battleFieldArt'
 import { initialSave, loadSave, persistSave, type SaveGame } from './db'
@@ -89,6 +89,7 @@ function MapScreen({
   onEnter: (plot: PlotDefinition) => void
   onStatistics: () => void
 }) {
+  const [gridVisible, setGridVisible] = useState(false)
   const learned = save.seenCharacterIds.length
   const due = plots.flatMap((plot) => plot.characters).filter((character) => isCardDue(save.cards[character.id])).length
 
@@ -99,10 +100,24 @@ function MapScreen({
         <div className="world-summary">
           <span>{learned} изучено</span>
           <span>{due} на повторение</span>
+          <button
+            type="button"
+            className="map-grid-button"
+            aria-pressed={gridVisible}
+            onClick={() => setGridVisible((visible) => !visible)}
+          >
+            <Grid3X3 size={17} /> {gridVisible ? 'Скрыть сетку' : 'Показать сетку'}
+          </button>
           <button className="map-stats-button" onClick={onStatistics}><BarChart3 size={17} /> Статистика</button>
         </div>
       </header>
-      <WorldMap save={save} camera={camera} onCameraChange={onCameraChange} onEnterPlot={onEnter} />
+      <WorldMap
+        save={save}
+        camera={camera}
+        gridVisible={gridVisible}
+        onCameraChange={onCameraChange}
+        onEnterPlot={onEnter}
+      />
     </main>
   )
 }
