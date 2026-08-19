@@ -1053,7 +1053,20 @@ Learning applications accumulate valuable long-term history, so save compatibili
 
 ## 41. Debug Tools
 
-The development build should support:
+Every build, including production and Android `file://`, exposes an invisible browser testing API at `window.hanziGardenCheats`. It has no in-game UI and provides:
+
+```ts
+drawCorrectStroke(): Promise<void>;
+drawWrongStroke(): Promise<void>;
+dumpDb(format?: "json" | "object"): Promise<string | SaveGame>;
+loadDb(dump: string | SaveGame): Promise<void>;
+```
+
+Stroke cheats must pass canonical Hanzi medians through the same Hanzi Writer quiz input path as real mouse input. A wrong stroke uses the current median in reverse, so ordinary mistake counts, hints, animations, and review grading remain authoritative. The promises resolve only after the corresponding quiz callback.
+
+`dumpDb()` waits for pending Dexie writes and defaults to formatted JSON suitable for a backup; object mode returns a deep clone. `loadDb()` accepts either form, validates the v3 save structure, restores FSRS dates, persists the exact snapshot, synchronizes live application state, and returns to the map. It intentionally does not enforce domain consistency between IDs or progression fields so tests can load impossible states.
+
+Additional debug tooling may support:
 
 ```text
 select any field

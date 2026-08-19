@@ -88,6 +88,14 @@ const database = new Dexie('memory-garden') as Dexie & {
   saves: EntityTable<StoredSave, 'id'>
 }
 
+let pendingSaveOperation: Promise<void> = Promise.resolve()
+
+function enqueueSaveOperation(operation: () => Promise<void>): Promise<void> {
+  const result = pendingSaveOperation.then(operation)
+  pendingSaveOperation = result.catch(() => undefined)
+  return result
+}
+
 database.version(1).stores({ saves: 'id, version, updatedAt' })
 database.version(2).stores({ saves: 'id, version, updatedAt' }).upgrade((transaction) => {
   return transaction.table('saves').toCollection().modify((stored: StoredSave) => {
@@ -120,6 +128,7 @@ export const initialSave: SaveGame = {
 }
 
 export async function loadSave(): Promise<SaveGame> {
+  await pendingSaveOperation
   const stored = await database.saves.get('main')
   if (!stored) return structuredClone(initialSave)
   if (stored.version === 3) return stored
@@ -129,10 +138,23 @@ export async function loadSave(): Promise<SaveGame> {
 }
 
 export async function persistSave(save: SaveGame): Promise<void> {
-  await database.saves.put({ ...save, updatedAt: Date.now() })
+  const snapshot = structuredClone(save)
+  await enqueueSaveOperation(async () => {
+    await database.saves.put({ ...snapshot, updatedAt: Date.now() })
+  })
+}
+
+/** Restore a debug/backup snapshot exactly, without changing its timestamp. */
+export async function restoreSave(save: SaveGame): Promise<void> {
+  const snapshot = structuredClone(save)
+  await enqueueSaveOperation(async () => {
+    await database.saves.put(snapshot)
+  })
 }
 
 export async function resetSave(): Promise<SaveGame> {
-  await database.saves.delete('main')
+  await enqueueSaveOperation(async () => {
+    await database.saves.delete('main')
+  })
   return structuredClone(initialSave)
 }

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Hanzi Garden Game Cheats"
+  short_description: "Drive strokes and save states in browser tests"
+  default_prompt: "Use $game-cheats to set up and verify a Hanzi Garden browser scenario."

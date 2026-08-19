@@ -13,8 +13,16 @@ import { StatisticsScreen } from './stats/StatisticsScreen'
 import { streakHighlightColor, streakHighlightOpacity, streakIntensity } from './streak'
 import { assetUrl } from './assetUrl'
 import { writingInkForBackdrop } from './battleInk'
+import { dispatchQuizStroke, installGameCheats, registerBattleCheatDriver } from './gameCheats'
 
 type Screen = 'map' | 'battle' | 'stats'
+
+type PendingCheatStroke = {
+  expected: 'correct' | 'wrong'
+  resolve: () => void
+  reject: (error: Error) => void
+  timeoutId: number
+}
 
 const NORMAL_HINT_COLOR = '#6d5269'
 const STREAK_GRADIENT_ID = 'streak-jade-highlight'
@@ -141,8 +149,29 @@ function BattleScreen({
   const correctStrokesRef = useRef(0)
   const streakHighlightRef = useRef(0)
   const clearStreakGradientRef = useRef<(() => void) | null>(null)
+  const pendingCheatStrokeRef = useRef<PendingCheatStroke | null>(null)
   const [correctStrokes, setCorrectStrokes] = useState(0)
   const [isCompositionOpen, setCompositionOpen] = useState(false)
+
+  const settleCheatStroke = useCallback((outcome: 'correct' | 'wrong') => {
+    const pending = pendingCheatStrokeRef.current
+    if (!pending) return
+    pendingCheatStrokeRef.current = null
+    window.clearTimeout(pending.timeoutId)
+    if (pending.expected === outcome) {
+      pending.resolve()
+    } else {
+      pending.reject(new Error(`Ожидался ${pending.expected === 'correct' ? 'правильный' : 'неправильный'} чит-штрих, получен ${outcome}`))
+    }
+  }, [])
+
+  const rejectPendingCheatStroke = useCallback((message: string) => {
+    const pending = pendingCheatStrokeRef.current
+    if (!pending) return
+    pendingCheatStrokeRef.current = null
+    window.clearTimeout(pending.timeoutId)
+    pending.reject(new Error(message))
+  }, [])
 
   useLayoutEffect(() => {
     const prompt = promptTextRef.current
@@ -284,6 +313,7 @@ function BattleScreen({
       showHintAfterMisses: 3,
       highlightOnComplete: false,
       onCorrectStroke: (data) => {
+        settleCheatStroke('correct')
         const completedStrokes = data.strokeNum + 1
         const nextBackdropStage = battleBackdropStage(activeCharacter.strokeCount, completedStrokes)
         const nextInk = writingInkForBackdrop(nextBackdropStage)
@@ -313,6 +343,7 @@ function BattleScreen({
         }
       },
       onMistake: (data) => {
+        settleCheatStroke('wrong')
         const totalMistakes = data.totalMistakes + hintMistakesRef.current
         mistakesRef.current = totalMistakes
       },
@@ -326,6 +357,36 @@ function BattleScreen({
         }
         finishCharacter(activeCharacter, totalMistakes)
       },
+    })
+
+    const drawCheatStroke = (backwards: boolean, expected: PendingCheatStroke['expected']) => {
+      if (pendingCheatStrokeRef.current) {
+        return Promise.reject(new Error('Предыдущий чит-штрих ещё обрабатывается'))
+      }
+      let resolveStroke!: () => void
+      let rejectStroke!: (error: Error) => void
+      const completed = new Promise<void>((resolve, reject) => {
+        resolveStroke = resolve
+        rejectStroke = reject
+      })
+      const timeoutId = window.setTimeout(() => {
+        rejectPendingCheatStroke('Hanzi Writer не обработал чит-штрих за 3 секунды')
+      }, 3_000)
+      pendingCheatStrokeRef.current = {
+        expected,
+        resolve: resolveStroke,
+        reject: rejectStroke,
+        timeoutId,
+      }
+      void dispatchQuizStroke(writer, writerTarget.current!, correctStrokesRef.current, backwards)
+        .catch((error: unknown) => {
+          rejectPendingCheatStroke(error instanceof Error ? error.message : String(error))
+        })
+      return completed
+    }
+    const unregisterBattleCheats = registerBattleCheatDriver({
+      drawCorrectStroke: () => drawCheatStroke(false, 'correct'),
+      drawWrongStroke: () => drawCheatStroke(true, 'wrong'),
     })
 
     const syncWriterSize = () => {
@@ -352,6 +413,8 @@ function BattleScreen({
     window.addEventListener('resize', syncWriterSize)
     window.visualViewport?.addEventListener('resize', syncWriterSize)
     return () => {
+      unregisterBattleCheats()
+      rejectPendingCheatStroke('Бой завершился до обработки чит-штриха')
       window.cancelAnimationFrame(frame)
       resizeObserver?.disconnect()
       window.removeEventListener('resize', syncWriterSize)
@@ -360,7 +423,7 @@ function BattleScreen({
       writerTarget.current?.replaceChildren()
       writerRef.current = null
     }
-  }, [activeCharacter, finishCharacter])
+  }, [activeCharacter, finishCharacter, rejectPendingCheatStroke, settleCheatStroke])
 
   const useHint = () => {
     if (!activeCharacter || !writerRef.current) return
@@ -489,6 +552,17 @@ export default function App() {
       setLoaded(true)
     })
   }, [])
+
+  const applyLoadedSave = useCallback((loadedSave: SaveGame) => {
+    setSave(loadedSave)
+    setActivePlot(null)
+    setScreen('map')
+  }, [])
+
+  useEffect(() => {
+    if (!loaded) return
+    return installGameCheats({ applyLoadedSave })
+  }, [applyLoadedSave, loaded])
 
   const updateSave = useCallback((nextSave: SaveGame) => {
     setSave(nextSave)
