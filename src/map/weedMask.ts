@@ -25,7 +25,7 @@ function valueNoise(seed: number, x: number, y: number, scale: number): number {
   return topValue * (1 - amountY) + bottomValue * amountY
 }
 
-/** Stable low-frequency noise used to shape a plot's organic weed patch. */
+/** Stable low-frequency noise used to shape a bed's organic weed patch. */
 export function organicWeedNoise(seed: number, x: number, y: number, width: number, height: number): number {
   const baseScale = Math.max(5, Math.min(width, height) / 2.8)
   const base = valueNoise(seed, x, y, baseScale)

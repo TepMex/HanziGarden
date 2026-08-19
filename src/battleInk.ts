@@ -1,4 +1,4 @@
-import type { BattleBackdropStage } from './data/battleFieldArt'
+import type { BattleBackdropStage } from './data/battleBiomeArt'
 
 export type BattleInkPalette = {
   drawingColor: string

@@ -4,7 +4,7 @@ Thin Android (Kotlin) WebView wrapper around the **web game in this same reposit
 
 - **Requirements:** Android 14 or newer (min SDK 34), compile SDK 35.
 - **Orientation:** sensor (portrait and landscape).
-- **Upstream:** same V2 garden map, four-stage field-cleaning stroke battles, FSRS, and IndexedDB progress as the web app at the repo root.
+- **Upstream:** same garden, 15 biomes, 220 beds, four-stage battles, FSRS, and IndexedDB progress as the web app at the repo root.
 
 See [SPEC.md](./SPEC.md) for requirements and acceptance criteria. Product design lives in the root [`GAME_SPEC.md`](../GAME_SPEC.md) / [`V2_SPEC.md`](../V2_SPEC.md).
 

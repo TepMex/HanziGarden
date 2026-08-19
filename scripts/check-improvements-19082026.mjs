@@ -19,8 +19,8 @@ async function seedSave(page) {
     await new Promise((resolve, reject) => {
       const transaction = database.transaction('saves', 'readwrite')
       transaction.objectStore('saves').put({
-        id: 'main', version: 3, unlockedPlotIds: ['plot-001'], masteredPlotIds: [],
-        lastActivePlotId: 'plot-001', seenCharacterIds: [], cards: {}, reviewEvents: [], updatedAt: Date.now(),
+        id: 'main', version: 4, unlockedBedIds: ['bed-001'], masteredBedIds: [],
+        lastActiveBedId: 'bed-001', seenCharacterIds: [], cards: {}, reviewEvents: [], updatedAt: Date.now(),
       })
       transaction.oncomplete = () => resolve()
       transaction.onerror = () => reject(transaction.error)
@@ -38,18 +38,18 @@ try {
     await page.getByRole('button', { name: /Войти в сад/i }).waitFor()
     await seedSave(page)
     await page.reload({ waitUntil: 'domcontentloaded' })
-    await page.waitForSelector('.world-map-world.is-ready')
+    await page.waitForSelector('.garden-map-content.is-ready')
 
     const map = await page.evaluate(() => {
       const gridButton = document.querySelector('.map-grid-button')
       const statsLabel = document.querySelector('.map-stats-button span')
-      const plot = document.querySelector('[data-plot-id="plot-001"]')?.getBoundingClientRect()
+      const bed = document.querySelector('[data-bed-id="bed-001"]')?.getBoundingClientRect()
       return {
         gridText: gridButton?.textContent?.trim(),
         gridChildTags: [...(gridButton?.children ?? [])].map((element) => element.tagName),
         statsLabelDisplay: statsLabel ? getComputedStyle(statsLabel).display : null,
         headerText: document.querySelector('.map-header')?.textContent ?? '',
-        plot: plot ? { left: plot.left, right: plot.right } : null,
+        bed: bed ? { left: bed.left, right: bed.right } : null,
       }
     })
     const tolerance = 3
@@ -57,25 +57,25 @@ try {
       throw new Error(`mobile buttons are not icon-only: ${JSON.stringify({ viewport, map })}`)
     }
     if (/изучено|на повторение/i.test(map.headerText)) throw new Error('removed counters are visible')
-    if (!map.plot || Math.abs(map.plot.left - viewport.width * 0.1) > tolerance || Math.abs(map.plot.right - viewport.width * 0.9) > tolerance) {
-      throw new Error(`plot autofocus margin failed: ${JSON.stringify({ viewport, plot: map.plot })}`)
+    if (!map.bed || Math.abs(map.bed.left - viewport.width * 0.1) > tolerance || Math.abs(map.bed.right - viewport.width * 0.9) > tolerance) {
+      throw new Error(`bed autofocus margin failed: ${JSON.stringify({ viewport, bed: map.bed })}`)
     }
 
-    const mapViewport = page.locator('.world-map-viewport')
+    const mapViewport = page.locator('.garden-map-viewport')
     const box = await mapViewport.boundingBox()
     if (!box) throw new Error('missing map viewport')
     await page.mouse.move(box.width * 0.4, box.height * 0.55)
     await page.mouse.down()
     await page.mouse.move(box.width * 0.6, box.height * 0.58, { steps: 4 })
     await page.mouse.up()
-    if (await page.locator('.world-map-grid.is-visible').count()) throw new Error('drag enabled the grid')
+    if (await page.locator('.garden-map-grid.is-visible').count()) throw new Error('drag enabled the grid')
 
     await page.getByRole('button', { name: 'Показать сетку' }).click()
-    if (!await page.locator('.world-map-grid.is-visible').count()) throw new Error('grid button did not enable the grid')
+    if (!await page.locator('.garden-map-grid.is-visible').count()) throw new Error('grid button did not enable the grid')
     if (await page.locator('.map-grid-button').getAttribute('aria-pressed') !== 'true') throw new Error('grid pressed state missing')
     await page.getByRole('button', { name: 'Скрыть сетку' }).click()
 
-    await page.locator('[data-plot-id="plot-001"]').click({ force: true })
+    await page.locator('[data-bed-id="bed-001"]').click({ force: true })
     await page.waitForSelector('.writing-target svg')
     const battle = await page.evaluate(() => {
       const circle = document.querySelector('.writing-circle')?.getBoundingClientRect()

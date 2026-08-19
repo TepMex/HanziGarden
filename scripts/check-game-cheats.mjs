@@ -30,9 +30,9 @@ try {
 
   await page.evaluate(async (json) => {
     const save = JSON.parse(json)
-    save.unlockedPlotIds = ['plot-001']
-    save.masteredPlotIds = []
-    save.lastActivePlotId = null
+    save.unlockedBedIds = ['bed-001']
+    save.masteredBedIds = []
+    save.lastActiveBedId = null
     save.seenCharacterIds = []
     save.cards = {}
     save.reviewEvents = []
@@ -41,11 +41,11 @@ try {
 
   const welcome = page.getByRole('button', { name: /Войти в сад/i })
   if (await welcome.count()) await welcome.click()
-  await page.waitForSelector('.world-map-world.is-ready')
-  const firstPlot = page.locator('[data-plot-id="plot-001"]')
-  await firstPlot.click()
+  await page.waitForSelector('.garden-map-content.is-ready')
+  const firstBed = page.locator('[data-bed-id="bed-001"]')
+  await firstBed.click()
   await page.waitForTimeout(450)
-  if (!await page.locator('.battle-screen').count()) await firstPlot.click()
+  if (!await page.locator('.battle-screen').count()) await firstBed.click()
   await page.waitForSelector('.battle-screen .writing-circle svg')
 
   await page.evaluate(() => window.hanziGardenCheats.drawWrongStroke())
@@ -67,23 +67,23 @@ try {
 
   const imported = await page.evaluate(async () => {
     const save = await window.hanziGardenCheats.dumpDb('object')
-    save.unlockedPlotIds = ['plot-debug-only']
-    save.masteredPlotIds = ['plot-mastered-without-unlock']
-    save.lastActivePlotId = 'plot-not-unlocked'
+    save.unlockedBedIds = ['bed-debug-only']
+    save.masteredBedIds = ['bed-mastered-without-unlock']
+    save.lastActiveBedId = 'bed-not-unlocked'
     save.seenCharacterIds = ['character-debug-only']
     await window.hanziGardenCheats.loadDb(save)
     const loaded = await window.hanziGardenCheats.dumpDb('object')
     return {
       onMap: Boolean(document.querySelector('.map-screen')),
-      unlockedPlotIds: loaded.unlockedPlotIds,
-      masteredPlotIds: loaded.masteredPlotIds,
-      lastActivePlotId: loaded.lastActivePlotId,
+      unlockedBedIds: loaded.unlockedBedIds,
+      masteredBedIds: loaded.masteredBedIds,
+      lastActiveBedId: loaded.lastActiveBedId,
       seenCharacterIds: loaded.seenCharacterIds,
     }
   })
-  if (!imported.onMap || imported.unlockedPlotIds[0] !== 'plot-debug-only' ||
-      imported.masteredPlotIds[0] !== 'plot-mastered-without-unlock' ||
-      imported.lastActivePlotId !== 'plot-not-unlocked' ||
+  if (!imported.onMap || imported.unlockedBedIds[0] !== 'bed-debug-only' ||
+      imported.masteredBedIds[0] !== 'bed-mastered-without-unlock' ||
+      imported.lastActiveBedId !== 'bed-not-unlocked' ||
       imported.seenCharacterIds[0] !== 'character-debug-only') {
     throw new Error(`loadDb did not apply debug state: ${JSON.stringify(imported)}`)
   }
@@ -92,9 +92,9 @@ try {
   await page.waitForFunction(() => Boolean(window.hanziGardenCheats))
   const persisted = await page.evaluate(async () => {
     const save = await window.hanziGardenCheats.dumpDb('object')
-    return save.unlockedPlotIds[0]
+    return save.unlockedBedIds[0]
   })
-  if (persisted !== 'plot-debug-only') throw new Error(`import did not survive reload: ${persisted}`)
+  if (persisted !== 'bed-debug-only') throw new Error(`import did not survive reload: ${persisted}`)
 
   await page.evaluate((json) => window.hanziGardenCheats.loadDb(json), backup)
   if (errors.length) throw new Error(`browser errors: ${errors.slice(0, 5).join(' | ')}`)

@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 /**
  * Regression: with Vite base `./` (Android APK sync), battle backdrop must paint
- * the parchment writing field — not 404 via CSS-resolved `assets/assets/...`.
+ * the parchment writing area — not 404 via CSS-resolved `assets/assets/...`.
  *
  * Usage: bun scripts/check-battle-canvas.mjs [baseUrl]
  * Default baseUrl: http://127.0.0.1:8765
@@ -27,12 +27,12 @@ page.on('requestfailed', (request) => failed.push(request.url()))
 
 await page.goto(`${baseUrl}/`, { waitUntil: 'networkidle' })
 await page.getByRole('button', { name: /Войти в сад/i }).click()
-await page.waitForSelector('.world-map-world.is-ready')
-// V2: the first tap focuses a distant plot; the second enters its battle.
-const firstPlot = page.locator('[data-plot-id="plot-001"]')
-await firstPlot.click()
+await page.waitForSelector('.garden-map-content.is-ready')
+// The first tap focuses a distant bed; the second enters its battle.
+const firstBed = page.locator('[data-bed-id="bed-001"]')
+await firstBed.click()
 await page.waitForTimeout(450)
-if (!await page.locator('.battle-screen').count()) await firstPlot.click()
+if (!await page.locator('.battle-screen').count()) await firstBed.click()
 await page.waitForSelector('.battle-screen .writing-circle')
 await page.waitForTimeout(400)
 
@@ -99,11 +99,11 @@ if (result.status !== 0) {
 const averageMatch = /^lavfi\.signalstats\.YAVG=(.+)$/m.exec(result.stdout)
 const avg = Number(averageMatch?.[1])
 if (!Number.isFinite(avg) || avg < 120) {
-  console.error(`FAIL: writing field too dark (Y=${avg.toFixed(1)}); backdrop not painting`)
+  console.error(`FAIL: writing area too dark (Y=${avg.toFixed(1)}); backdrop not painting`)
   process.exit(1)
 }
 console.log(`OK: battle backdrop ${metrics.url}`)
-console.log(`OK: writing field brightness Y=${avg.toFixed(1)}`)
+console.log(`OK: writing area brightness Y=${avg.toFixed(1)}`)
 if (failed.some((url) => url.includes('cleaning-court') || url.includes('garden-map'))) {
   console.error('FAIL: background asset request failed', failed)
   process.exit(1)

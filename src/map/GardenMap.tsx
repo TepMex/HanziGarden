@@ -1,16 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Leaf, LockKeyhole } from 'lucide-react'
 import { assetUrl } from '../assetUrl'
-import { plots, type PlotDefinition } from '../data/model'
-import { cellQuad, gardenRegions, plotBounds, plotQuad, quadPoint, WORLD_HEIGHT, WORLD_WIDTH, type NormalizedPoint, type NormalizedQuad } from '../data/mapLayout'
+import { beds, type BedDefinition } from '../data/model'
+import { bedBounds, bedQuad, biomes, cellQuad, quadPoint, GARDEN_HEIGHT, GARDEN_WIDTH, type NormalizedPoint, type NormalizedQuad } from '../data/mapLayout'
 import type { SaveGame } from '../db'
-import { plotInfection } from '../garden'
+import { bedInfection } from '../garden'
 import {
   baseMapScale,
-  cameraForWorldPoint,
+  cameraForGardenPoint,
   clampCamera,
   clampZoom,
-  mobileCameraForWorldBounds,
+  mobileCameraForGardenBounds,
   type CameraState,
   type Point,
   type Viewport,
@@ -18,17 +18,17 @@ import {
 } from './cameraMath'
 import { GardenRevealCanvas } from './GardenRevealCanvas'
 
-type WorldMapProps = {
+type GardenMapProps = {
   save: SaveGame
   camera: CameraState
-  focusPlotId: string | null
+  focusBedId: string | null
   gridVisible: boolean
   onCameraChange: (camera: CameraState) => void
-  onEnterPlot: (plot: PlotDefinition) => void
+  onEnterBed: (bed: BedDefinition) => void
 }
 
 type Drag = { pointerId: number; point: Point; camera: CameraState }
-type Pinch = { distance: number; worldPoint: Point; camera: CameraState }
+type Pinch = { distance: number; gardenPoint: Point; camera: CameraState }
 type MapLoadState = 'loading' | 'ready' | 'error'
 
 const debugMap = new URLSearchParams(window.location.search).get('debugMap') === '1'
@@ -47,36 +47,36 @@ function localPoint(event: React.PointerEvent<HTMLElement>, viewport: DOMRect): 
   return { x: event.clientX - viewport.left, y: event.clientY - viewport.top }
 }
 
-function rectToWorld(rect: { x: number; y: number; width: number; height: number }) {
-  return { x: rect.x * WORLD_WIDTH, y: rect.y * WORLD_HEIGHT, width: rect.width * WORLD_WIDTH, height: rect.height * WORLD_HEIGHT }
+function rectToGarden(rect: { x: number; y: number; width: number; height: number }) {
+  return { x: rect.x * GARDEN_WIDTH, y: rect.y * GARDEN_HEIGHT, width: rect.width * GARDEN_WIDTH, height: rect.height * GARDEN_HEIGHT }
 }
 
 function quadPoints(quad: NormalizedQuad): string {
   return [
     quad.tl, quad.tr, quad.br, quad.bl,
-  ].map((point) => `${point.x * WORLD_WIDTH},${point.y * WORLD_HEIGHT}`).join(' ')
+  ].map((point) => `${point.x * GARDEN_WIDTH},${point.y * GARDEN_HEIGHT}`).join(' ')
 }
 
-function worldPoint(point: NormalizedPoint): { x: number; y: number } {
-  return { x: point.x * WORLD_WIDTH, y: point.y * WORLD_HEIGHT }
+function gardenPoint(point: NormalizedPoint): { x: number; y: number } {
+  return { x: point.x * GARDEN_WIDTH, y: point.y * GARDEN_HEIGHT }
 }
 
 function FineGridOverlay() {
   return (
-    <svg className="world-map-cell-grid" viewBox={`0 0 ${WORLD_WIDTH} ${WORLD_HEIGHT}`} aria-hidden="true">
-      {gardenRegions.flatMap((region) => {
-        const columns = region.index === 0 ? 2 : 3
+    <svg className="garden-map-cell-grid" viewBox={`0 0 ${GARDEN_WIDTH} ${GARDEN_HEIGHT}`} aria-hidden="true">
+      {biomes.flatMap((biome) => {
+        const columns = biome.index === 0 ? 2 : 3
         const verticalLines = Array.from({ length: columns - 1 }, (_, index) => {
           const amount = (index + 1) / columns
-          const start = worldPoint(quadPoint(region.mapQuad, amount, 0))
-          const end = worldPoint(quadPoint(region.mapQuad, amount, 1))
-          return <line key={`${region.id}:column:${index}`} x1={start.x} y1={start.y} x2={end.x} y2={end.y} />
+          const start = gardenPoint(quadPoint(biome.mapQuad, amount, 0))
+          const end = gardenPoint(quadPoint(biome.mapQuad, amount, 1))
+          return <line key={`${biome.id}:column:${index}`} x1={start.x} y1={start.y} x2={end.x} y2={end.y} />
         })
         const horizontalLines = Array.from({ length: 4 }, (_, index) => {
           const amount = (index + 1) / 5
-          const start = worldPoint(quadPoint(region.mapQuad, 0, amount))
-          const end = worldPoint(quadPoint(region.mapQuad, 1, amount))
-          return <line key={`${region.id}:row:${index}`} x1={start.x} y1={start.y} x2={end.x} y2={end.y} />
+          const start = gardenPoint(quadPoint(biome.mapQuad, 0, amount))
+          const end = gardenPoint(quadPoint(biome.mapQuad, 1, amount))
+          return <line key={`${biome.id}:row:${index}`} x1={start.x} y1={start.y} x2={end.x} y2={end.y} />
         })
         return [...verticalLines, ...horizontalLines]
       })}
@@ -84,8 +84,8 @@ function FineGridOverlay() {
   )
 }
 
-function plotClipPath(quad: NormalizedQuad): string {
-  const bounds = plotBoundsFromQuad(quad)
+function bedClipPath(quad: NormalizedQuad): string {
+  const bounds = bedBoundsFromQuad(quad)
   const points = [quad.tl, quad.tr, quad.br, quad.bl].map((point) => {
     const x = (point.x - bounds.x) / bounds.width * 100
     const y = (point.y - bounds.y) / bounds.height * 100
@@ -94,7 +94,7 @@ function plotClipPath(quad: NormalizedQuad): string {
   return `polygon(${points.join(', ')})`
 }
 
-function plotBoundsFromQuad(quad: NormalizedQuad) {
+function bedBoundsFromQuad(quad: NormalizedQuad) {
   const xs = [quad.tl.x, quad.tr.x, quad.bl.x, quad.br.x]
   const ys = [quad.tl.y, quad.tr.y, quad.bl.y, quad.br.y]
   const x = Math.min(...xs)
@@ -104,19 +104,19 @@ function plotBoundsFromQuad(quad: NormalizedQuad) {
 
 function MapDebugOverlay() {
   return (
-    <svg className="map-debug-overlay" viewBox={`0 0 ${WORLD_WIDTH} ${WORLD_HEIGHT}`} aria-hidden="true">
-      {gardenRegions.map((region) => (
-        <polygon key={region.id} points={quadPoints(region.mapQuad)} className="debug-region" />
+    <svg className="map-debug-overlay" viewBox={`0 0 ${GARDEN_WIDTH} ${GARDEN_HEIGHT}`} aria-hidden="true">
+      {biomes.map((biome) => (
+        <polygon key={biome.id} points={quadPoints(biome.mapQuad)} className="debug-biome" />
       ))}
-      {plots.flatMap((plot) => plot.cells.map((cell) => (
-        <polygon key={`${plot.id}:${cell.x}:${cell.y}`} points={quadPoints(cellQuad(cell))} className="debug-cell" />
+      {beds.flatMap((bed) => bed.cells.map((cell) => (
+        <polygon key={`${bed.id}:${cell.x}:${cell.y}`} points={quadPoints(cellQuad(cell))} className="debug-cell" />
       )))}
-      {plots.map((plot) => {
-        const rect = rectToWorld(plotBounds(plot.cells))
+      {beds.map((bed) => {
+        const rect = rectToGarden(bedBounds(bed.cells))
         return (
-          <g key={plot.id}>
-            <polygon points={quadPoints(plotQuad(plot.cells))} className="debug-plot" />
-            <text x={rect.x + 5} y={rect.y + 15}>{plot.id}</text>
+          <g key={bed.id}>
+            <polygon points={quadPoints(bedQuad(bed.cells))} className="debug-bed" />
+            <text x={rect.x + 5} y={rect.y + 15}>{bed.id}</text>
           </g>
         )
       })}
@@ -124,10 +124,10 @@ function MapDebugOverlay() {
   )
 }
 
-/** A transformed world. Weed mask re-renders only for save changes, never for camera movement. */
-export function WorldMap({ save, camera, focusPlotId, gridVisible, onCameraChange, onEnterPlot }: WorldMapProps) {
+/** A transformed garden. Weed mask re-renders only for save changes, never for camera movement. */
+export function GardenMap({ save, camera, focusBedId, gridVisible, onCameraChange, onEnterBed }: GardenMapProps) {
   const viewportRef = useRef<HTMLElement>(null)
-  const worldRef = useRef<HTMLDivElement>(null)
+  const gardenRef = useRef<HTMLDivElement>(null)
   const cameraRef = useRef(camera)
   const pointersRef = useRef(new Map<number, Point>())
   const dragRef = useRef<Drag | null>(null)
@@ -147,12 +147,12 @@ export function WorldMap({ save, camera, focusPlotId, gridVisible, onCameraChang
 
   const paintCamera = useCallback((next: CameraState, transition = false): CameraState | null => {
     const viewport = getViewport()
-    const world = worldRef.current
-    if (!viewport || !world) return null
+    const garden = gardenRef.current
+    if (!viewport || !garden) return null
     const clamped = clampCamera(next, viewport)
     cameraRef.current = clamped
-    world.style.transition = transition ? 'transform 360ms cubic-bezier(.2,.75,.2,1)' : 'none'
-    world.style.transform = `translate3d(${viewport.width / 2 + clamped.x}px, ${viewport.height / 2 + clamped.y}px, 0) scale(${baseMapScale(viewport) * clamped.zoom}) translate3d(-${WORLD_WIDTH / 2}px, -${WORLD_HEIGHT / 2}px, 0)`
+    garden.style.transition = transition ? 'transform 360ms cubic-bezier(.2,.75,.2,1)' : 'none'
+    garden.style.transform = `translate3d(${viewport.width / 2 + clamped.x}px, ${viewport.height / 2 + clamped.y}px, 0) scale(${baseMapScale(viewport) * clamped.zoom}) translate3d(-${GARDEN_WIDTH / 2}px, -${GARDEN_HEIGHT / 2}px, 0)`
     return clamped
   }, [getViewport])
 
@@ -164,14 +164,14 @@ export function WorldMap({ save, camera, focusPlotId, gridVisible, onCameraChang
 
   useEffect(() => {
     const viewport = getViewport()
-    const plot = plots.find((candidate) => candidate.id === focusPlotId)
-    if (!viewport || !plot) return
-    const bounds = rectToWorld(plotBounds(plot.cells))
-    const focused = mobileCameraForWorldBounds(bounds, viewport, 0.1)
+    const bed = beds.find((candidate) => candidate.id === focusBedId)
+    if (!viewport || !bed) return
+    const bounds = rectToGarden(bedBounds(bed.cells))
+    const focused = mobileCameraForGardenBounds(bounds, viewport, 0.1)
     if (!focused) return
     const painted = paintCamera(focused, true)
     if (painted) onCameraChange(painted)
-  }, [focusPlotId, getViewport, onCameraChange, paintCamera])
+  }, [focusBedId, getViewport, onCameraChange, paintCamera])
 
   useEffect(() => {
     const viewport = viewportRef.current
@@ -216,9 +216,9 @@ export function WorldMap({ save, camera, focusPlotId, gridVisible, onCameraChang
     const center = midpoint(pointerValues[0]!, pointerValues[1]!)
     pinchRef.current = {
       distance: distance(pointerValues[0]!, pointerValues[1]!),
-      worldPoint: {
-        x: WORLD_WIDTH / 2 + (center.x - viewport.width / 2 - cameraRef.current.x) / (baseMapScale(viewport) * cameraRef.current.zoom),
-        y: WORLD_HEIGHT / 2 + (center.y - viewport.height / 2 - cameraRef.current.y) / (baseMapScale(viewport) * cameraRef.current.zoom),
+      gardenPoint: {
+        x: GARDEN_WIDTH / 2 + (center.x - viewport.width / 2 - cameraRef.current.x) / (baseMapScale(viewport) * cameraRef.current.zoom),
+        y: GARDEN_HEIGHT / 2 + (center.y - viewport.height / 2 - cameraRef.current.y) / (baseMapScale(viewport) * cameraRef.current.zoom),
       },
       camera: cameraRef.current,
     }
@@ -229,9 +229,9 @@ export function WorldMap({ save, camera, focusPlotId, gridVisible, onCameraChang
     const viewport = viewportRef.current
     if (!viewport) return
     // Capturing immediately makes mobile browsers send the resulting click to
-    // the map container instead of the plot button.  A real drag captures
+    // the garden container instead of the bed button.  A real drag captures
     // later, after it crosses the gesture threshold.
-    if (!(event.target instanceof Element && event.target.closest('.plot-hotspot'))) {
+    if (!(event.target instanceof Element && event.target.closest('.bed-hotspot'))) {
       viewport.setPointerCapture(event.pointerId)
     }
     pointersRef.current.set(event.pointerId, localPoint(event, viewport.getBoundingClientRect()))
@@ -253,7 +253,7 @@ export function WorldMap({ save, camera, focusPlotId, gridVisible, onCameraChang
       const pinch = pinchRef.current
       const nextDistance = distance(pointerValues[0]!, pointerValues[1]!)
       if (pinch.distance <= 0) return
-      const next = cameraForWorldPoint(pinch.worldPoint, midpoint(pointerValues[0]!, pointerValues[1]!), clampZoom(pinch.camera.zoom * nextDistance / pinch.distance), viewport)
+      const next = cameraForGardenPoint(pinch.gardenPoint, midpoint(pointerValues[0]!, pointerValues[1]!), clampZoom(pinch.camera.zoom * nextDistance / pinch.distance), viewport)
       paintCamera(next)
       movedRef.current = true
       return
@@ -286,18 +286,18 @@ export function WorldMap({ save, camera, focusPlotId, gridVisible, onCameraChang
     if (shouldCommit) commitCamera()
   }
 
-  const activatePlot = (plot: PlotDefinition) => {
-    if (save.unlockedPlotIds.includes(plot.id)) {
-      onEnterPlot(plot)
+  const activateBed = (bed: BedDefinition) => {
+    if (save.unlockedBedIds.includes(bed.id)) {
+      onEnterBed(bed)
       return
     }
-    setLockedPulseId(plot.id)
-    window.setTimeout(() => setLockedPulseId((current) => current === plot.id ? null : current), 500)
+    setLockedPulseId(bed.id)
+    window.setTimeout(() => setLockedPulseId((current) => current === bed.id ? null : current), 500)
   }
 
   return (
     <section
-      className={`world-map-viewport ${loadState === 'error' ? 'has-map-error' : ''}`}
+      className={`garden-map-viewport ${loadState === 'error' ? 'has-map-error' : ''}`}
       ref={viewportRef}
       aria-label="Карта сада: перетаскивайте для перемещения, используйте колесо или щипок для масштаба"
       onPointerDown={onPointerDown}
@@ -305,36 +305,36 @@ export function WorldMap({ save, camera, focusPlotId, gridVisible, onCameraChang
       onPointerUp={finishPointer}
       onPointerCancel={finishPointer}
     >
-      <div className={`world-map-world ${loadState === 'ready' ? 'is-ready' : ''}`} ref={worldRef} aria-hidden={loadState !== 'ready'}>
+      <div className={`garden-map-content ${loadState === 'ready' ? 'is-ready' : ''}`} ref={gardenRef} aria-hidden={loadState !== 'ready'}>
         <GardenRevealCanvas save={save} loadAttempt={loadAttempt} onReady={revealReady} onError={revealFailed} />
-        <div className={`world-map-grid ${gridVisible ? 'is-visible' : ''}`} aria-hidden="true">
-          <img className="world-map-grid-source" src={GRID_URL} alt="" draggable={false} />
+        <div className={`garden-map-grid ${gridVisible ? 'is-visible' : ''}`} aria-hidden="true">
+          <img className="garden-map-grid-source" src={GRID_URL} alt="" draggable={false} />
           <FineGridOverlay />
         </div>
-        <div className="world-map-hotspots">
-          {plots.map((plot) => {
-            const rect = plotBounds(plot.cells)
-            const quad = plotQuad(plot.cells)
-            const unlocked = save.unlockedPlotIds.includes(plot.id)
+        <div className="garden-map-hotspots">
+          {beds.map((bed) => {
+            const rect = bedBounds(bed.cells)
+            const quad = bedQuad(bed.cells)
+            const unlocked = save.unlockedBedIds.includes(bed.id)
             // Empty second halves can occur for a one-character source list.
-            // A locked plot remains visibly overgrown until the player reaches it.
-            const infection = unlocked ? plotInfection(plot, save.cards) : 1
+            // A locked bed remains visibly overgrown until the player reaches it.
+            const infection = unlocked ? bedInfection(bed, save.cards) : 1
             return (
               <button
-                className={`plot-hotspot ${unlocked ? 'is-unlocked' : 'is-locked'} ${lockedPulseId === plot.id ? 'is-locked-pulse' : ''}`}
-                key={plot.id}
+                className={`bed-hotspot ${unlocked ? 'is-unlocked' : 'is-locked'} ${lockedPulseId === bed.id ? 'is-locked-pulse' : ''}`}
+                key={bed.id}
                 style={{
                   left: `${rect.x * 100}%`,
                   top: `${rect.y * 100}%`,
                   width: `${rect.width * 100}%`,
                   height: `${rect.height * 100}%`,
-                  clipPath: plotClipPath(quad),
+                  clipPath: bedClipPath(quad),
                 }}
-                data-plot-id={plot.id}
-                onClick={() => activatePlot(plot)}
-                aria-label={`Участок ${plot.id}, зарастание ${Math.ceil(infection * 10)} из 10${unlocked ? '' : ', путь закрыт'}`}
+                data-bed-id={bed.id}
+                onClick={() => activateBed(bed)}
+                aria-label={`Грядка ${bed.id}, зарастание ${Math.ceil(infection * 10)} из 10${unlocked ? '' : ', путь закрыт'}`}
               >
-                {!unlocked && <LockKeyhole className="plot-lock" />}
+                {!unlocked && <LockKeyhole className="bed-lock" />}
               </button>
             )
           })}

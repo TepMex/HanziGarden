@@ -6,10 +6,10 @@ import { parseSaveDump, stringifySaveDump } from '../src/gameCheats'
 function saveFixture(): SaveGame {
   return {
     id: 'main',
-    version: 3,
-    unlockedPlotIds: ['plot-unknown'],
-    masteredPlotIds: ['plot-locked-but-mastered'],
-    lastActivePlotId: 'plot-not-unlocked',
+    version: 4,
+    unlockedBedIds: ['bed-unknown'],
+    masteredBedIds: ['bed-locked-but-mastered'],
+    lastActiveBedId: 'bed-not-unlocked',
     seenCharacterIds: ['character-unknown'],
     cards: {
       'character-unknown': {
@@ -54,10 +54,10 @@ describe('game cheat save dumps', () => {
   test('clones object input instead of sharing mutable values', () => {
     const source = saveFixture()
     const restored = parseSaveDump(source)
-    restored.unlockedPlotIds.push('plot-added-after-parse')
+    restored.unlockedBedIds.push('bed-added-after-parse')
     restored.cards['character-unknown']!.due.setUTCFullYear(2100)
 
-    expect(source.unlockedPlotIds).toEqual(['plot-unknown'])
+    expect(source.unlockedBedIds).toEqual(['bed-unknown'])
     expect(source.cards['character-unknown']!.due.getUTCFullYear()).toBe(2099)
   })
 
@@ -71,9 +71,9 @@ describe('game cheat save dumps', () => {
   test('preserves semantically inconsistent debug state', () => {
     const restored = parseSaveDump(saveFixture())
 
-    expect(restored.unlockedPlotIds).toEqual(['plot-unknown'])
-    expect(restored.masteredPlotIds).toEqual(['plot-locked-but-mastered'])
-    expect(restored.lastActivePlotId).toBe('plot-not-unlocked')
+    expect(restored.unlockedBedIds).toEqual(['bed-unknown'])
+    expect(restored.masteredBedIds).toEqual(['bed-locked-but-mastered'])
+    expect(restored.lastActiveBedId).toBe('bed-not-unlocked')
     expect(restored.seenCharacterIds).toEqual(['character-unknown'])
   })
 })

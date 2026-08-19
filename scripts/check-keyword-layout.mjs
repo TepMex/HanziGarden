@@ -6,13 +6,13 @@
  * Usage: bun scripts/check-keyword-layout.mjs [baseUrl]
  */
 import { chromium } from 'playwright'
-import { plots } from '../src/data/model.ts'
+import { beds } from '../src/data/model.ts'
 
 const baseUrl = (process.argv[2] ?? 'http://127.0.0.1:8765').replace(/\/$/, '')
 const cases = [
-  { keyword: 'несовершеннолетний', plotId: 'plot-036' },
-  { keyword: 'принять меры предосторожности против', plotId: 'plot-153' },
-  { keyword: 'специальность', plotId: 'plot-078', primitive: 'трубка из кукурузного початка' },
+  { keyword: 'несовершеннолетний', bedId: 'bed-036' },
+  { keyword: 'принять меры предосторожности против', bedId: 'bed-153' },
+  { keyword: 'специальность', bedId: 'bed-078', primitive: 'трубка из кукурузного початка' },
 ]
 const viewports = [
   { width: 320, height: 568 },
@@ -22,19 +22,19 @@ const viewports = [
   { width: 1280, height: 800 },
 ]
 
-function saveForCase({ keyword, plotId }) {
-  const plot = plots.find((candidate) => candidate.id === plotId)
-  if (!plot) throw new Error(`missing ${plotId}`)
-  const index = plot.characters.findIndex((character) => character.keyword.ru === keyword)
+function saveForCase({ keyword, bedId }) {
+  const bed = beds.find((candidate) => candidate.id === bedId)
+  if (!bed) throw new Error(`missing ${bedId}`)
+  const index = bed.characters.findIndex((character) => character.keyword.ru === keyword)
   if (index < 0) throw new Error(`missing keyword ${keyword}`)
   return {
     id: 'main',
-    version: 3,
-    unlockedPlotIds: [plotId],
-    masteredPlotIds: [],
-    lastActivePlotId: plotId,
+    version: 4,
+    unlockedBedIds: [bedId],
+    masteredBedIds: [],
+    lastActiveBedId: bedId,
     seenCharacterIds: [],
-    cards: Object.fromEntries(plot.characters.slice(0, index).map((character) => [character.id, { due: '2999-01-01T00:00:00.000Z' }])),
+    cards: Object.fromEntries(bed.characters.slice(0, index).map((character) => [character.id, { due: '2999-01-01T00:00:00.000Z' }])),
     reviewEvents: [],
     updatedAt: Date.now(),
   }
@@ -69,11 +69,11 @@ try {
       await page.getByRole('button', { name: /Войти в сад/i }).waitFor()
       await seedSave(page, saveForCase(testCase))
       await page.reload({ waitUntil: 'domcontentloaded' })
-      await page.waitForSelector('.world-map-world.is-ready')
-      const plot = page.locator(`[data-plot-id="${testCase.plotId}"]`)
-      await plot.click({ force: true })
+      await page.waitForSelector('.garden-map-content.is-ready')
+      const bed = page.locator(`[data-bed-id="${testCase.bedId}"]`)
+      await bed.click({ force: true })
       await page.waitForTimeout(450)
-      if (!await page.locator('.battle-screen').count()) await plot.click({ force: true })
+      if (!await page.locator('.battle-screen').count()) await bed.click({ force: true })
       await page.waitForSelector('.battle-screen')
 
       const metrics = await page.evaluate(() => {

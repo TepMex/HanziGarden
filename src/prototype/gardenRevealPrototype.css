@@ -16,13 +16,13 @@
 .prototype-source-grid { z-index: 2; pointer-events: none; opacity: .16; filter: invert(23%) sepia(18%) saturate(1197%) hue-rotate(124deg) brightness(80%); }
 .is-map .prototype-source-grid { opacity: 0; }
 .prototype-hit-grid { z-index: 3; overflow: visible; }
-.prototype-plant { fill: transparent; stroke: transparent; stroke-width: 1.5; cursor: pointer; outline: none; transition: fill .15s, stroke .15s; }
-.prototype-plant:hover,
-.prototype-plant:focus-visible { fill: rgba(255, 236, 157, .2); stroke: #ffe18c; }
-.prototype-plant.is-active-bed { stroke: rgba(255, 244, 190, .18); }
-.plant-marker { pointer-events: none; }
-.plant-marker circle { fill: rgba(24, 42, 39, .7); stroke: rgba(255,255,255,.72); stroke-width: 1.5; }
-.plant-marker path { fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.prototype-bed { fill: transparent; stroke: transparent; stroke-width: 1.5; cursor: pointer; outline: none; transition: fill .15s, stroke .15s; }
+.prototype-bed:hover,
+.prototype-bed:focus-visible { fill: rgba(255, 236, 157, .2); stroke: #ffe18c; }
+.prototype-bed.is-active-biome { stroke: rgba(255, 244, 190, .18); }
+.bed-marker { pointer-events: none; }
+.bed-marker circle { fill: rgba(24, 42, 39, .7); stroke: rgba(255,255,255,.72); stroke-width: 1.5; }
+.bed-marker path { fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .prototype-loading { position: absolute; z-index: 5; inset: 0; display: grid; place-content: center; justify-items: center; gap: 12px; color: white; background: rgba(14, 31, 29, .86); }
 
 .prototype-state-panel { display: flex; flex-direction: column; gap: 16px; }
@@ -30,9 +30,9 @@
 .prototype-mask-layout h1 { margin: 0; font-family: Georgia, serif; font-size: clamp(28px, 3vw, 46px); font-weight: 500; letter-spacing: -.035em; }
 .prototype-state-panel p { margin: 0; color: #536764; font-size: 14px; line-height: 1.55; }
 .prototype-eyebrow { display: flex; align-items: center; gap: 7px; color: #9a5b35; font-size: 11px; font-weight: 800; letter-spacing: .11em; text-transform: uppercase; }
-.active-bed-card { display: grid; gap: 6px; padding: 14px; border: 1px solid rgba(21,54,51,.14); border-radius: 14px; background: rgba(255,255,255,.58); }
-.active-bed-card > span { color: #687c78; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; }
-.active-bed-card strong { font-family: Georgia, serif; font-size: 19px; font-weight: 500; }
+.active-biome-card { display: grid; gap: 6px; padding: 14px; border: 1px solid rgba(21,54,51,.14); border-radius: 14px; background: rgba(255,255,255,.58); }
+.active-biome-card > span { color: #687c78; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; }
+.active-biome-card strong { font-family: Georgia, serif; font-size: 19px; font-weight: 500; }
 .progress-row { position: relative; height: 7px; overflow: visible; margin-top: 6px; border-radius: 9px; background: #d7ddd4; }
 .progress-row i { position: absolute; inset: 0 auto 0 0; border-radius: inherit; background: var(--prototype-jade); transition: width .2s; }
 .progress-row span { position: absolute; right: 0; bottom: 11px; color: #58706a; font-size: 11px; }
@@ -57,9 +57,9 @@
 .workbench-canvas > header { display: flex; align-items: center; gap: 8px; color: #d9e8e3; font-size: 12px; letter-spacing: .04em; }
 .workbench-canvas .prototype-garden-stage { align-self: center; width: 100%; max-height: 100%; border: 1px solid rgba(255,255,255,.18); }
 .is-debug .prototype-source-grid { opacity: .65; filter: invert(38%) sepia(69%) saturate(1047%) hue-rotate(145deg) brightness(96%); }
-.is-debug .prototype-plant { fill: rgba(32, 134, 190, .08); stroke: rgba(44, 173, 236, .62); }
-.is-debug .prototype-plant.is-clear { fill: rgba(38, 184, 129, .17); }
-.is-debug .bed-label { fill: #d8f4ff; stroke: #173531; stroke-width: 5px; paint-order: stroke; text-anchor: middle; font: 700 26px ui-monospace, monospace; pointer-events: none; }
+.is-debug .prototype-bed { fill: rgba(32, 134, 190, .08); stroke: rgba(44, 173, 236, .62); }
+.is-debug .prototype-bed.is-clear { fill: rgba(38, 184, 129, .17); }
+.is-debug .biome-label { fill: #d8f4ff; stroke: #173531; stroke-width: 5px; paint-order: stroke; text-anchor: middle; font: 700 26px ui-monospace, monospace; pointer-events: none; }
 .side-label { fill: #ff827a; text-anchor: middle; font: 800 18px ui-monospace, monospace; paint-order: stroke; stroke: #271d20; stroke-width: 4px; }
 .side-label.is-clear { fill: #75edbd; }
 
@@ -71,7 +71,7 @@
 .mask-pair .prototype-garden-stage { border: 1px solid rgba(26,61,56,.16); border-radius: 11px; box-shadow: 0 12px 35px rgba(20,50,45,.12); }
 .mask-pair figcaption { color: #5d706c; font-size: 12px; }
 .is-mask .prototype-source-grid { opacity: .26; filter: invert(42%) sepia(72%) saturate(870%) hue-rotate(315deg); }
-.is-mask .prototype-plant { stroke: rgba(175, 79, 74, .25); }
+.is-mask .prototype-bed { stroke: rgba(175, 79, 74, .25); }
 .mask-state-strip { display: flex; justify-content: center; gap: 30px; margin-top: 22px; color: #5a6f6a; font-size: 13px; }
 .mask-state-strip span { display: flex; align-items: center; gap: 6px; }
 

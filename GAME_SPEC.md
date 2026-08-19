@@ -18,15 +18,15 @@ The central metaphor is:
 
 > **Memory is a garden that becomes overgrown when it is not maintained.**
 
-Learning progress, spaced repetition, world state, and visual restoration are therefore one system rather than separate game and study modes.
+Learning progress, spaced repetition, garden state, and visual restoration are therefore one system rather than separate game and study modes.
 
-## Version 2 World Update
+## Garden Domain Model
 
-Version 2 replaces the original 110-field presentation with a single zoomable estate. The 110 stable RTH/RSH source lists are still the learning source, but each is split in original frame order into two contiguous halves, creating **220 gameplay plots** while retaining the same character IDs and FSRS cards.
+The garden replaces the original 110-field presentation. The 110 stable RTH/RSH source lists remain the learning source, but each is split in original frame order into two contiguous halves, creating **220 beds** while retaining the same character IDs and FSRS cards.
 
-The estate has 15 visually distinct `GardenRegion`s in a 5×3 layout: bamboo, rice, lotus, tea, blossom, peony, chrysanthemum, pine, persimmon, orchid, berries, rapeseed, wheat, wisteria, and medicinal herbs. Its logical geometry is a 15×15 base-cell grid. The first garden uses five double-width early plots plus five normal plots; all other gardens hold 15 normal plots.
+The garden has 15 visually distinct `Biome`s in a 5 × 3 layout: bamboo, rice, lotus, tea, blossom, peony, chrysanthemum, pine, persimmon, orchid, berries, rapeseed, wheat, wisteria, and medicinal herbs. The first biome contains 10 beds in a 2 × 5 layout; each of the other 14 biomes contains 15 beds in a 3 × 5 layout.
 
-There is no intermediate garden-selection screen. The player pans and zooms the continuous clean/overgrown map, then enters a close, unlocked plot directly into the existing handwriting battle. Plot unlocking is permanent and propagates through base-cell adjacency; infection remains a live, stroke-weighted projection of due/new FSRS cards.
+There is no intermediate garden-selection screen. The player pans and zooms the continuous clean/overgrown map, then enters a close, unlocked bed directly into the existing handwriting battle. Bed unlocking is permanent and propagates through base-cell adjacency; infection remains a live, stroke-weighted projection of due/new FSRS cards.
 
 The main map also links to a statistics screen. It renders every Hanzi in original frame order as a dense colored tile wall. The colors are a human-readable SRS-stage projection derived from each card's scheduled interval; they never alter FSRS scheduling or due dates.
 
@@ -34,10 +34,10 @@ The main map also links to a statistics screen. It renders every Hanzi in origin
 
 1. **Production recall is primary.** The player is shown a meaning/keyword and must independently write the Hanzi.
 2. **Writing is the combat mechanic.** There is no separate “flashcard UI” during play.
-3. **The world is persistent.** The garden is one continuous world, not a sequence of runs.
-4. **World progression and memory state are separate.** Unlocking territory is permanent; visual field health changes according to FSRS.
-5. **The map is a visual memory dashboard.** The player can look at the world and intuitively see what needs attention.
-6. **The game should remain readable without numbers.** Field state is communicated primarily through visuals.
+3. **The garden is persistent.** It is one continuous territory, not a sequence of runs.
+4. **Garden progression and memory state are separate.** Unlocking territory is permanent; visual bed health changes according to FSRS.
+5. **The map is a visual memory dashboard.** The player can look at the garden and intuitively see what needs attention.
+6. **The game should remain readable without numbers.** Bed state is communicated primarily through visuals.
 
 ## 3. Source Learning Structure
 
@@ -69,59 +69,48 @@ Use:
 
 Do not use the book mnemonic stories as part of the core learning mechanic. Long mnemonic prose should not be included in the production bundle.
 
-## 4. World Structure
+## 4. Garden Structure
 
-### 4.1 Fields
+### 4.1 Garden
 
-The full world contains **110 fields**, corresponding to the 110 unique RTH/RSH lists across books 1 and 2.
+The **Garden** is the single main map and contains all playable territory. It is divided into a fixed 5 × 3 grid of 15 biomes.
 
-Each field:
+### 4.2 Biomes
 
-- is a rectangular or square garden plot;
-- contains one visually distinct cultivated plant theme;
-- contains approximately the characters from one RTH list;
-- is connected to neighboring fields;
-- can be unlocked permanently;
-- can become visually overgrown again as reviews become due.
-
-### 4.2 Field Size
-
-The visual area of a field should roughly correspond to the number of Hanzi in that list. Use a compressed scale rather than strict proportionality:
-
-```text
-fieldArea ∝ characterCount ^ 0.75
-```
-
-The exponent is tunable, approximately `0.65–0.85`.
-
-Goals:
-
-- larger lists visibly occupy more land;
-- tiny lists remain clickable;
-- the full map stays spatially coherent.
-
-### 4.3 Field Data
+A **Biome** is one of the 15 large, visually distinct areas of the garden. The first biome has a 2 × 5 layout of 10 beds. Every other biome has a 3 × 5 layout of 15 beds.
 
 ```ts
-type FieldDefinition = {
+type Biome = {
   id: string;
-  rthListId: string;
+  index: number;
+  culture: BiomeCulture;
+  mapQuad: NormalizedQuad;
+  mapRect: NormalizedRect;
+};
+```
+
+### 4.3 Beds
+
+A **Bed** is the smallest territory unit that the player clears of weeds. The full garden contains **220 beds**. Selecting an unlocked bed starts a battle for that bed.
+
+Each of the 110 unique RTH/RSH lists is split at its midpoint into two ordered bed workloads. The first five beds occupy two logical cells each so the first biome still presents exactly 10 beds; every later bed occupies one logical cell.
+
+### 4.4 Bed Data
+
+```ts
+type BedDefinition = {
+  id: string;
+  sourceRthListId: string;
+  sourceHalf: 0 | 1;
+  biomeId: string;
   characterIds: string[];
-
-  mapRect: {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  };
-
-  plantStyle: string;
+  cells: GridCell[];
   seed: number;
   neighbors: string[];
 };
 ```
 
-`rthListId` must be globally unique. Do not identify fields only by numeric lesson number if books 1 and 2 can overlap.
+`sourceRthListId` must be globally unique. Do not identify beds only by numeric lesson number if books 1 and 2 can overlap.
 
 ## 5. Character Data
 
@@ -136,7 +125,7 @@ type CharacterDefinition = {
   };
 
   frame: number;
-  fieldId: string;
+  bedId: string;
   strokeCount: number;
   writingDataId: string;
 };
@@ -153,7 +142,7 @@ Example:
     "en": "cat"
   },
   "frame": 142,
-  "fieldId": "rsh-book1-list-08",
+  "bedId": "rsh-book1-list-08",
   "strokeCount": 11,
   "writingDataId": "猫"
 }
@@ -163,32 +152,25 @@ Example:
 
 Two kinds of progress must remain independent.
 
-### 6.1 World Progress
+### 6.1 Garden Progress
 
-```ts
-type FieldProgress = {
-  unlocked: boolean;
-  initiallyMastered: boolean;
-};
-```
+`unlockedBedIds` and `masteredBedIds` record permanent progression. A bed becomes mastered when every character in it has been successfully produced from memory at least once.
 
-A field may become `initiallyMastered` when every character in it has been successfully produced from memory at least once.
-
-Once unlocked, a field never becomes locked again.
+Once unlocked, a bed never becomes locked again.
 
 ### 6.2 Memory State
 
-Memory state is dynamic and driven by FSRS. A previously mastered field may later become partially or heavily overgrown because characters become due again.
+Memory state is dynamic and driven by FSRS. A previously mastered bed may later become partially or heavily overgrown because characters become due again.
 
 ```text
-world progression != current visual health
+garden progression != current visual health
 ```
 
 This distinction is fundamental.
 
-## 7. Field Infection / Garden Health
+## 7. Bed Infection / Garden Health
 
-The field visually represents unfinished memory work.
+The bed visually represents unfinished memory work.
 
 Simple MVP formula:
 
@@ -222,73 +204,73 @@ Possible states:
 
 The authoritative state is FSRS. `weedLevel` is only a rendering projection.
 
-Field accessibility never changes infection. A locked field contains new
+Bed accessibility never changes infection. A locked bed contains new
 characters and is therefore rendered as overgrown; the lock only prevents the
 player from entering it. The garden map must keep those weeds visible rather
-than replacing the field with fog or an empty disabled state.
+than replacing the bed with fog or an empty disabled state.
 
 ## 8. Map Presentation
 
-The map should look like **one continuous magical garden divided into neighboring plots**, not a UI grid of cards.
+The map should look like **one continuous magical garden divided into neighboring beds**, not a UI grid of cards.
 
 Desired properties:
 
 - top-down or lightly isometric view;
-- fields share borders;
+- beds share borders;
 - stone walls, paths, irrigation channels, hedges, or terrain seams show boundaries;
-- plant life fills plots up to those boundaries;
-- several fields are visible at once;
-- field health is determined visually;
+- plant life fills beds up to those boundaries;
+- several beds are visible at once;
+- bed health is determined visually;
 - no percentages are required;
 - no labels are required during normal play;
-- clicking/tapping a field enters it.
+- clicking/tapping a bed enters it.
 
-The clean-field layer and weed layer should remain technically separable.
+The clean-bed layer and weed layer should remain technically separable.
 
 ### 8.1 Authoritative Map Mask and Exterior Edge Reveal
 
 `garden-map.webp` and `garden-map_negative.webp` are two full-map states of the
-same artwork. They must be scaled once to the same world coordinate system and
+same artwork. They must be scaled once to the same garden coordinate system and
 composited through one global `1600 × 1200` mask. The negative artwork must
-never be cropped and enlarged independently per plot: doing so breaks the 1:1
-registration and exposes plot boundaries as a tile grid.
+never be cropped and enlarged independently per bed: doing so breaks the 1:1
+registration and exposes bed boundaries as a tile grid.
 
-Plot interiors use the due/new coverage formula from section 7 and stable
-organic masks derived from `plot.seed`. Completely overgrown adjacent plots
+Bed interiors use the due/new coverage formula from section 7 and stable
+organic masks derived from `bed.seed`. Completely overgrown adjacent beds
 must be added to the global mask as one compound shape so antialiasing cannot
 create clean seams between them.
 
-The territory outside the 5 × 3 garden-region contour is part of progression;
+The territory outside the 5 × 3 biome contour is part of progression;
 it is **not an always-clean background**. Its reveal rules are:
 
 1. Initially every exterior side and corner remains in the negative state.
-2. A `GardenRegion` is complete only while every plot in that region has zero
-   weed coverage. Locked plots and plots with any due/new characters prevent
+2. A `Biome` is complete only while every bed in that biome has zero
+   weed coverage. Locked beds and beds with any due/new characters prevent
    completion.
-3. Completing a border region reveals only the exterior side component directly
-   adjacent to that region. Completing an interior region reveals no exterior
+3. Completing a border biome reveals only the exterior side component directly
+   adjacent to that biome. Completing an interior biome reveals no exterior
    component.
 4. An exterior corner reveals only when both of its adjacent exterior sides are
    revealed.
 5. Other sides and corners remain negative; revealing one component must not
    leak into another.
-6. When a region, side, or corner reveals, the painted boundary pixels touching
+6. When a biome, side, or corner reveals, the painted boundary pixels touching
    that component also reveal (using the rasterized `garden-grid.svg` connected
-   components, with an 18-world-pixel neighborhood). This prevents a dark line
+   components, with an 18-garden-pixel neighborhood). This prevents a dark line
    from remaining around an otherwise clean component.
 
-These states are a live projection of current FSRS health, like plot infection:
-if reviews become due again and a region stops being complete, its exterior
+These states are a live projection of current FSRS health, like bed infection:
+if reviews become due again and a biome stops being complete, its exterior
 side and dependent corner return to the negative state. Raster labels from the
 painted grid are authoritative for exterior connectivity; rectangular or
 polygon-only approximations are insufficient. Raster-interior perimeter pixels
-that fall outside the straight plot-quad union must inherit the mask alpha of
-the nearest connected plot pixel in the same `GardenRegion`; no clean sliver may
+that fall outside the straight bed-quad union must inherit the mask alpha of
+the nearest connected bed pixel in the same `Biome`; no clean sliver may
 remain between the painted contour and the gameplay geometry.
 
-## 9. Field Art Architecture
+## 9. Bed Art Architecture
 
-Avoid authoring 110 × 11 fully unique field scenes.
+Avoid authoring 220 × 11 fully unique bed scenes. Battle backdrops are grouped into 15 independently replaceable artwork sets, one for each biome.
 
 Use composited layers:
 
@@ -306,10 +288,10 @@ decay / desaturation / fog effects
 decorative props
 ```
 
-Each field can be defined by a recipe:
+Each bed can be defined by a recipe:
 
 ```ts
-type FieldVisualPreset = {
+type BedVisualPreset = {
   id: string;
   ground: string;
   primaryPlant: string;
@@ -321,18 +303,18 @@ type FieldVisualPreset = {
 };
 ```
 
-The field `seed` should produce deterministic placement so a field always looks the same.
+The bed `seed` should produce deterministic placement so a bed always looks the same.
 
 ## 10. Core Gameplay Loop
 
 ```text
 Garden Map
     ↓
-Player notices an overgrown field
+Player notices an overgrown bed
     ↓
-Player selects the field
+Player selects the bed
     ↓
-Cleaning scene opens
+Battle opens for that bed
     ↓
 A weed corresponds to one due/new Hanzi
     ↓
@@ -348,16 +330,16 @@ FSRS is updated
     ↓
 Next weed / character
     ↓
-Field becomes progressively healthier
+Bed becomes progressively healthier
     ↓
 Return to map
 ```
 
-The player may choose between restoring old fields, finishing partially cleaned fields, and advancing into newly unlocked territory.
+The player may choose between restoring old beds, finishing partially cleaned beds, and advancing into newly unlocked territory.
 
-## 11. Battle / Cleaning Scene
+## 11. Battle
 
-The cleaning scene should contain almost no conventional UI.
+The battle should contain almost no conventional UI.
 
 Required elements:
 
@@ -568,7 +550,7 @@ Hanzi Writer should not render the game's weed, particles, camera, or environmen
 ┌───────────────────────────────────────┐
 │ Game Renderer                         │
 │                                       │
-│ field                                 │
+│ bed                                 │
 │ cultivated plants                     │
 │ weed                                  │
 │ particles                             │
@@ -773,7 +755,7 @@ The game layer projects these states into weeds and garden health.
                    │
        ┌───────────┴───────────┐
        │                       │
-   GameWorld               LearningCore
+   GameGarden               LearningCore
        │                       │
        │                 ┌─────┴─────┐
        │                 │           │
@@ -781,15 +763,15 @@ The game layer projects these states into weeds and garden health.
        │                 │           │
  ┌─────┴─────┐       HanziData   ReviewStore
  │           │
-MapScene  CleaningScene
+GardenScene  BattleScene
 ```
 
 Rules:
 
 ```text
-GameWorld must not implement spaced repetition.
+GameGarden must not implement spaced repetition.
 FSRS must not know anything about weeds.
-StrokeEngine must not decide world unlocks.
+StrokeEngine must not decide bed unlocks.
 Renderer must not own learning state.
 ```
 
@@ -984,7 +966,7 @@ Established visual direction:
 
 ## 37. Map Weed Rendering
 
-Weed growth should be composited over the clean cultivated field.
+Weed growth should be composited over the clean cultivated bed.
 
 Avoid treating infection as only a transparent dark filter.
 
@@ -1019,17 +1001,20 @@ This ensures weeds expand from existing patches instead of teleporting randomly 
 
 ```ts
 type SaveGame = {
-  version: number;
-  fields: Record<string, FieldProgress>;
-  cards: Record<string, FsrsCardState>;
+  version: 4;
+  unlockedBedIds: string[];
+  masteredBedIds: string[];
+  lastActiveBedId: string | null;
+  seenCharacterIds: string[];
+  cards: Record<string, CardState>;
   reviewEvents: ReviewEvent[];
-  settings: GameSettings;
+  updatedAt: number;
 };
 ```
 
 Use IndexedDB via Dexie.
 
-Do not persist visual state that can be derived from learning state, such as field darkness or weed percentage.
+Do not persist visual state that can be derived from learning state, such as bed darkness or weed percentage.
 
 ## 40. Versioning and Migration
 
@@ -1064,12 +1049,12 @@ loadDb(dump: string | SaveGame): Promise<void>;
 
 Stroke cheats must pass canonical Hanzi medians through the same Hanzi Writer quiz input path as real mouse input. A wrong stroke uses the current median in reverse, so ordinary mistake counts, hints, animations, and review grading remain authoritative. The promises resolve only after the corresponding quiz callback.
 
-`dumpDb()` waits for pending Dexie writes and defaults to formatted JSON suitable for a backup; object mode returns a deep clone. `loadDb()` accepts either form, validates the v3 save structure, restores FSRS dates, persists the exact snapshot, synchronizes live application state, and returns to the map. It intentionally does not enforce domain consistency between IDs or progression fields so tests can load impossible states.
+`dumpDb()` waits for pending Dexie writes and defaults to formatted JSON suitable for a backup; object mode returns a deep clone. `loadDb()` accepts either form, validates the v4 save structure, restores FSRS dates, persists the exact snapshot, synchronizes live application state, and returns to the garden. It intentionally does not enforce domain consistency between IDs or progression properties so tests can load impossible states.
 
 Additional debug tooling may support:
 
 ```text
-select any field
+select any bed
 set all cards due
 set all cards clean
 jump weed level 0–10
@@ -1111,8 +1096,8 @@ Correctness remains device-independent.
 
 Map:
 
-- zoomable estate with 220 gameplay plots (V2) on a continuous map;
-- avoid independent full-resolution animated scenes per plot;
+- zoomable garden with 220 gameplay beds (V2) on a continuous map;
+- avoid independent full-resolution animated scenes per bed;
 - use atlases, layered map art, and batching where practical;
 - animate only visible/near-visible work during battle.
 
@@ -1149,10 +1134,10 @@ Licensing review should happen before commercial release.
 
 Required:
 
-- 110-field map;
-- one RTH list per field;
-- field sizes roughly based on character count;
-- field unlock graph;
+- one garden divided into 15 biomes in a 5 × 3 grid;
+- 10 beds in the first biome (2 × 5) and 15 in every other biome (3 × 5);
+- 220 beds, with every RTH list split into two ordered bed workloads;
+- bed unlock graph;
 - permanent unlock state;
 - FSRS card for each Hanzi;
 - new/due characters represented as weeds;
@@ -1160,10 +1145,11 @@ Required:
 - stroke-by-stroke validation;
 - correct stroke damages weed;
 - full character destroys weed;
-- field health derived from due/new workload;
-- clean field art plus weed overlay;
+- bed health derived from due/new workload;
+- clean bed art plus weed overlay;
 - local save data;
-- return to map after cleaning.
+- selecting an unlocked bed starts its battle;
+- return to the garden after cleaning.
 
 Explicitly out of MVP:
 
@@ -1185,7 +1171,7 @@ Explicitly out of MVP:
 
 - normalize all RTH/RSH records;
 - verify 110 unique lists;
-- assign stable field IDs;
+- assign stable `bed-*` IDs;
 - verify every required Hanzi has stroke data;
 - report missing or problematic characters.
 
@@ -1229,17 +1215,18 @@ due dates
 review persistence
 ```
 
-### Phase 4 — Single Field
+### Phase 4 — Single Bed
 
-Implement one complete field with multiple weeds and visible restoration.
+Implement one complete bed with multiple weeds and visible restoration.
 
-### Phase 5 — World Map
+### Phase 5 — Garden
 
 Implement:
 
 ```text
-110 fields
-field sizing
+15 biomes
+220 beds
+2 × 5 / 3 × 5 biome layouts
 unlock graph
 visual infection state
 navigation
@@ -1250,7 +1237,7 @@ navigation
 Add:
 
 ```text
-110 cultivated plant identities
+15 biome plant identities
 weed families
 map transitions
 sound
@@ -1324,7 +1311,7 @@ fight
 =
 clean
 =
-restore world
+restore garden
 =
 maintain memory
 ```

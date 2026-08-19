@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * Regression: the clean world must never be exposed while the negative image
+ * Regression: the clean garden must never be exposed while the negative image
  * layer is still loading.  Also check the recoverable error state.
  *
  * Usage: bun scripts/check-map-load.mjs [baseUrl]
@@ -36,7 +36,7 @@ try {
 
   const before = await delayed.page.evaluate(() => ({
     loading: Boolean(document.querySelector('.map-loading-screen')),
-    ready: document.querySelector('.world-map-world')?.classList.contains('is-ready') ?? false,
+    ready: document.querySelector('.garden-map-content')?.classList.contains('is-ready') ?? false,
     loaderOpaque: (() => {
       const loader = document.querySelector('.map-loading-screen')
       if (!loader) return false
@@ -54,16 +54,16 @@ try {
 
   releaseNegative()
   await delayed.page.waitForTimeout(1_000)
-  if (!await delayed.page.locator('.world-map-world.is-ready').count()) {
+  if (!await delayed.page.locator('.garden-map-content.is-ready').count()) {
     const state = await delayed.page.evaluate(() => ({
       loader: document.querySelector('.map-loading-screen')?.textContent,
-      world: document.querySelector('.world-map-world')?.className,
+      garden: document.querySelector('.garden-map-content')?.className,
     }))
     throw new Error(`map did not become ready after releasing the negative layer: ${JSON.stringify(state)}`)
   }
   const after = await delayed.page.evaluate(() => ({
     loading: Boolean(document.querySelector('.map-loading-screen')),
-    canvasVisible: getComputedStyle(document.querySelector('.world-map-canvas')).visibility === 'visible',
+    canvasVisible: getComputedStyle(document.querySelector('.garden-map-canvas')).visibility === 'visible',
   }))
   if (after.loading || !after.canvasVisible) {
     throw new Error(`map did not appear atomically: ${JSON.stringify(after)}`)
@@ -76,9 +76,9 @@ try {
   await enterGarden(failed.page)
   await failed.page.waitForSelector('.map-loading-screen.has-error')
   const errorState = await failed.page.evaluate(() => ({
-    ready: document.querySelector('.world-map-world')?.classList.contains('is-ready') ?? false,
-    canvasVisible: getComputedStyle(document.querySelector('.world-map-canvas')).visibility === 'visible',
-    hasErrorClass: document.querySelector('.world-map-viewport')?.classList.contains('has-map-error') ?? false,
+    ready: document.querySelector('.garden-map-content')?.classList.contains('is-ready') ?? false,
+    canvasVisible: getComputedStyle(document.querySelector('.garden-map-canvas')).visibility === 'visible',
+    hasErrorClass: document.querySelector('.garden-map-viewport')?.classList.contains('has-map-error') ?? false,
   }))
   if (errorState.ready || errorState.canvasVisible || !errorState.hasErrorClass) {
     throw new Error(`failed map exposed a partial layer: ${JSON.stringify(errorState)}`)
@@ -87,11 +87,11 @@ try {
   failNegative = false
   await failed.page.getByRole('button', { name: 'Повторить' }).click()
   await failed.page.waitForTimeout(1_000)
-  if (!await failed.page.locator('.world-map-world.is-ready').count()) {
+  if (!await failed.page.locator('.garden-map-content.is-ready').count()) {
     const state = await failed.page.evaluate(() => ({
       loader: document.querySelector('.map-loading-screen')?.textContent,
-      world: document.querySelector('.world-map-world')?.className,
-      canvas: Boolean(document.querySelector('.world-map-canvas')),
+      garden: document.querySelector('.garden-map-content')?.className,
+      canvas: Boolean(document.querySelector('.garden-map-canvas')),
     }))
     throw new Error(`retry did not make the map ready: ${JSON.stringify(state)}`)
   }

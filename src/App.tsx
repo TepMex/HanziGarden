@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import HanziWriter from 'hanzi-writer'
 import { ArrowLeft, BarChart3, Flower2, Grid3X3, HelpCircle, Layers, Leaf, Plus, Sparkles, X } from 'lucide-react'
-import { type CharacterDefinition, type PlotDefinition } from './data/model'
-import { battleArtworkForGarden, battleBackdropStage } from './data/battleFieldArt'
+import { type BedDefinition, type CharacterDefinition } from './data/model'
+import { battleArtworkForBiome, battleBackdropStage } from './data/battleBiomeArt'
 import { initialSave, loadSave, persistSave, type SaveGame } from './db'
-import { battlePlotCleanliness, plotInfection } from './garden'
+import { battleBedCleanliness, bedInfection } from './garden'
 import { loadHanziCharData } from './hanziData'
 import { isCardDue, reviewCard, type ReviewEvent } from './learning'
-import { WorldMap } from './map/WorldMap'
+import { GardenMap } from './map/GardenMap'
 import { initialCamera, type CameraState } from './map/cameraMath'
 import { StatisticsScreen } from './stats/StatisticsScreen'
 import { streakHighlightColor, streakHighlightOpacity, streakIntensity } from './streak'
@@ -15,7 +15,7 @@ import { assetUrl } from './assetUrl'
 import { writingInkForBackdrop } from './battleInk'
 import { dispatchQuizStroke, installGameCheats, registerBattleCheatDriver } from './gameCheats'
 
-type Screen = 'map' | 'battle' | 'stats'
+type Screen = 'garden' | 'battle' | 'stats'
 
 type PendingCheatStroke = {
   expected: 'correct' | 'wrong'
@@ -77,7 +77,7 @@ function getInputDevice(): ReviewEvent['inputDevice'] {
   return 'mouse'
 }
 
-function MapScreen({
+function GardenScreen({
   save,
   camera,
   onCameraChange,
@@ -87,7 +87,7 @@ function MapScreen({
   save: SaveGame
   camera: CameraState
   onCameraChange: (camera: CameraState) => void
-  onEnter: (plot: PlotDefinition) => void
+  onEnter: (bed: BedDefinition) => void
   onStatistics: () => void
 }) {
   const [gridVisible, setGridVisible] = useState(false)
@@ -95,7 +95,7 @@ function MapScreen({
     <main className="map-screen">
       <header className="map-header">
         <div className="brand-mark"><Leaf size={18} /><span>Сад иероглифов</span></div>
-        <div className="world-summary">
+        <div className="garden-summary">
           <button
             type="button"
             className="map-grid-button"
@@ -108,35 +108,35 @@ function MapScreen({
           <button className="map-stats-button" onClick={onStatistics} aria-label="Статистика"><BarChart3 size={17} /><span>Статистика</span></button>
         </div>
       </header>
-      <WorldMap
+      <GardenMap
         save={save}
         camera={camera}
-        focusPlotId={save.lastActivePlotId ?? save.unlockedPlotIds[0] ?? null}
+        focusBedId={save.lastActiveBedId ?? save.unlockedBedIds[0] ?? null}
         gridVisible={gridVisible}
         onCameraChange={onCameraChange}
-        onEnterPlot={onEnter}
+        onEnterBed={onEnter}
       />
     </main>
   )
 }
 
 function BattleScreen({
-  plot,
+  bed,
   save,
   onSave,
   onExit,
 }: {
-  plot: PlotDefinition
+  bed: BedDefinition
   save: SaveGame
   onSave: (save: SaveGame) => void
   onExit: () => void
 }) {
   const dueCharacters = useMemo(
-    () => plot.characters.filter((character) => isCardDue(save.cards[character.id])),
-    [plot, save],
+    () => bed.characters.filter((character) => isCardDue(save.cards[character.id])),
+    [bed, save],
   )
   const [activeCharacterId, setActiveCharacterId] = useState<string | null>(dueCharacters[0]?.id ?? null)
-  const activeCharacter = plot.characters.find((character) => character.id === activeCharacterId) ?? null
+  const activeCharacter = bed.characters.find((character) => character.id === activeCharacterId) ?? null
   const writerTarget = useRef<HTMLDivElement>(null)
   const promptTextRef = useRef<HTMLElement>(null)
   const writerRef = useRef<HanziWriter | null>(null)
@@ -236,12 +236,12 @@ function BattleScreen({
     const result = reviewCard(current.cards[character.id], totalMistakes, hintUsedRef.current)
     const seen = new Set(current.seenCharacterIds)
     seen.add(character.id)
-    const mastered = new Set(current.masteredPlotIds)
-    const unlocked = new Set(current.unlockedPlotIds)
-    const plotMastered = plot.characterIds.every((id) => seen.has(id))
-    if (plotMastered) {
-      mastered.add(plot.id)
-      plot.neighbors.forEach((id) => unlocked.add(id))
+    const mastered = new Set(current.masteredBedIds)
+    const unlocked = new Set(current.unlockedBedIds)
+    const bedMastered = bed.characterIds.every((id) => seen.has(id))
+    if (bedMastered) {
+      mastered.add(bed.id)
+      bed.neighbors.forEach((id) => unlocked.add(id))
     }
     const event: ReviewEvent = {
       id: crypto.randomUUID(),
@@ -255,8 +255,8 @@ function BattleScreen({
     }
     const nextSave: SaveGame = {
       ...current,
-      unlockedPlotIds: [...unlocked],
-      masteredPlotIds: [...mastered],
+      unlockedBedIds: [...unlocked],
+      masteredBedIds: [...mastered],
       seenCharacterIds: [...seen],
       cards: { ...current.cards, [character.id]: result.card },
       reviewEvents: [...current.reviewEvents.slice(-499), event],
@@ -265,12 +265,12 @@ function BattleScreen({
     saveRef.current = nextSave
     onSave(nextSave)
     window.setTimeout(() => {
-      const nextCharacter = plot.characters.find(
+      const nextCharacter = bed.characters.find(
         (candidate) => candidate.id !== character.id && isCardDue(nextSave.cards[candidate.id]),
       )
       setActiveCharacterId(nextCharacter?.id ?? null)
     }, 1050)
-  }, [plot, onSave])
+  }, [bed, onSave])
 
   useEffect(() => {
     if (!writerTarget.current || !activeCharacter) return
@@ -437,9 +437,9 @@ function BattleScreen({
     writerRef.current.highlightStroke(correctStrokesRef.current)
   }
 
-  const infection = plotInfection(plot, save.cards)
-  const visualCleanliness = battlePlotCleanliness(infection)
-  const artwork = battleArtworkForGarden(plot.gardenId)
+  const infection = bedInfection(bed, save.cards)
+  const visualCleanliness = battleBedCleanliness(infection)
+  const artwork = battleArtworkForBiome(bed.biomeId)
   const backdropStage = activeCharacter
     ? battleBackdropStage(activeCharacter.strokeCount, correctStrokes)
     : 'clean'
@@ -461,10 +461,10 @@ function BattleScreen({
         style={{ backgroundImage: `url(${JSON.stringify(backdropUrl)})` }}
         aria-hidden="true"
       />
-      <button className="back-button" onClick={onExit} aria-label="Вернуться к карте"><ArrowLeft /></button>
+      <button className="back-button" onClick={onExit} aria-label="Вернуться в сад"><ArrowLeft /></button>
 
       <header className="prompt-scroll">
-        <strong ref={promptTextRef}>{activeCharacter?.keyword.ru.toLocaleUpperCase('ru') ?? 'ПОЛЕ ОЧИЩЕНО'}</strong>
+        <strong ref={promptTextRef}>{activeCharacter?.keyword.ru.toLocaleUpperCase('ru') ?? 'ГРЯДКА ОЧИЩЕНА'}</strong>
         {activeCharacter?.structure.primitive && (
           <p className="primitive-prompt">
             <Plus size={13} aria-hidden="true" />
@@ -489,13 +489,13 @@ function BattleScreen({
       ) : (
         <section className="cleared-state">
           <Flower2 />
-          <h1>Сад снова дышит</h1>
-          <p>Все доступные сорняки уничтожены. Новые повторения появятся здесь по расписанию памяти.</p>
-          <button className="primary-button" onClick={onExit}>Вернуться к карте <Sparkles size={17} /></button>
+          <h1>Грядка очищена</h1>
+          <p>Все сорняки на этой грядке уничтожены. Новые повторения появятся здесь по расписанию памяти.</p>
+          <button className="primary-button" onClick={onExit}>Вернуться в сад <Sparkles size={17} /></button>
         </section>
       )}
 
-      <div className="field-cleanliness" title="Здоровье участка">
+      <div className="bed-cleanliness" title="Здоровье грядки">
         <Leaf size={15} /><span><i style={{ width: `${visualCleanliness * 100}%` }} /></span>
       </div>
 
@@ -542,8 +542,8 @@ export default function App() {
   const [save, setSave] = useState<SaveGame>(initialSave)
   const [loaded, setLoaded] = useState(false)
   const [welcomed, setWelcomed] = useState(() => sessionStorage.getItem('memory-garden-welcomed') === 'yes')
-  const [screen, setScreen] = useState<Screen>('map')
-  const [activePlot, setActivePlot] = useState<PlotDefinition | null>(null)
+  const [screen, setScreen] = useState<Screen>('garden')
+  const [activeBed, setActiveBed] = useState<BedDefinition | null>(null)
   const [camera, setCamera] = useState<CameraState>(initialCamera)
 
   useEffect(() => {
@@ -555,8 +555,8 @@ export default function App() {
 
   const applyLoadedSave = useCallback((loadedSave: SaveGame) => {
     setSave(loadedSave)
-    setActivePlot(null)
-    setScreen('map')
+    setActiveBed(null)
+    setScreen('garden')
   }, [])
 
   useEffect(() => {
@@ -569,27 +569,27 @@ export default function App() {
     void persistSave(nextSave)
   }, [])
 
-  const enterPlot = (plot: PlotDefinition) => {
-    if (!save.unlockedPlotIds.includes(plot.id)) return
+  const enterBed = (bed: BedDefinition) => {
+    if (!save.unlockedBedIds.includes(bed.id)) return
     // The source data contains one one-character list. Its second half is an
-    // intentional empty plot under the required midpoint split, so it is
-    // immediately mastered when reached and cannot block world progression.
-    if (plot.characterIds.length === 0) {
-      const mastered = new Set(save.masteredPlotIds)
-      const unlocked = new Set(save.unlockedPlotIds)
-      mastered.add(plot.id)
-      plot.neighbors.forEach((id) => unlocked.add(id))
+    // intentional empty bed under the required midpoint split, so it is
+    // immediately mastered when reached and cannot block garden progression.
+    if (bed.characterIds.length === 0) {
+      const mastered = new Set(save.masteredBedIds)
+      const unlocked = new Set(save.unlockedBedIds)
+      mastered.add(bed.id)
+      bed.neighbors.forEach((id) => unlocked.add(id))
       updateSave({
         ...save,
-        masteredPlotIds: [...mastered],
-        unlockedPlotIds: [...unlocked],
+        masteredBedIds: [...mastered],
+        unlockedBedIds: [...unlocked],
         updatedAt: Date.now(),
       })
       return
     }
-    const nextSave = { ...save, lastActivePlotId: plot.id, updatedAt: Date.now() }
+    const nextSave = { ...save, lastActiveBedId: bed.id, updatedAt: Date.now() }
     updateSave(nextSave)
-    setActivePlot(plot)
+    setActiveBed(bed)
     setScreen('battle')
   }
 
@@ -599,17 +599,17 @@ export default function App() {
     setWelcomed(true)
   }} />
 
-  if (screen === 'battle' && activePlot) {
-    return <BattleScreen plot={activePlot} save={save} onSave={updateSave} onExit={() => setScreen('map')} />
+  if (screen === 'battle' && activeBed) {
+    return <BattleScreen bed={activeBed} save={save} onSave={updateSave} onExit={() => setScreen('garden')} />
   }
 
-  if (screen === 'stats') return <StatisticsScreen save={save} onBack={() => setScreen('map')} />
+  if (screen === 'stats') return <StatisticsScreen save={save} onBack={() => setScreen('garden')} />
 
-  return <MapScreen
+  return <GardenScreen
     save={save}
     camera={camera}
     onCameraChange={setCamera}
-    onEnter={enterPlot}
+    onEnter={enterBed}
     onStatistics={() => setScreen('stats')}
   />
 }

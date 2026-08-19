@@ -27,8 +27,8 @@ awk \
   -v yavg="$battle_background_yavg" \
   'BEGIN {
     if (ylow < 100 || yavg < 145) {
-      printf "Writing field is obstructed (YLOW %.1f, YAVG %.1f)\n", ylow, yavg > "/dev/stderr"
+      printf "Writing area is obstructed (YLOW %.1f, YAVG %.1f)\n", ylow, yavg > "/dev/stderr"
       exit 1
     }
-    printf "Writing field is clear (YLOW %.1f, YAVG %.1f)\n", ylow, yavg
+    printf "Writing area is clear (YLOW %.1f, YAVG %.1f)\n", ylow, yavg
   }'

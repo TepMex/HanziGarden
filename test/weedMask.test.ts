@@ -12,7 +12,7 @@ describe('weed mask formula', () => {
     expect(weedCoverageFromDueFraction(1)).toBe(1)
   })
 
-  test('is stable for a plot seed and changes shape for another seed', () => {
+  test('is stable for a bed seed and changes shape for another seed', () => {
     const first = organicWeedMask(42, 0.37, 64, 48)
     expect(organicWeedMask(42, 0.37, 64, 48)).toEqual(first)
     expect(organicWeedMask(43, 0.37, 64, 48)).not.toEqual(first)

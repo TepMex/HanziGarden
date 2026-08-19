@@ -1,14 +1,14 @@
 import { useEffect, useRef } from 'react'
 import { assetUrl } from '../assetUrl'
-import { plots, type PlotDefinition } from '../data/model'
-import { cellQuad, plotBounds, WORLD_HEIGHT, WORLD_WIDTH, type NormalizedQuad } from '../data/mapLayout'
+import { beds, type BedDefinition } from '../data/model'
+import { bedBounds, cellQuad, GARDEN_HEIGHT, GARDEN_WIDTH, type NormalizedQuad } from '../data/mapLayout'
 import type { SaveGame } from '../db'
-import { plotDueFraction, weedCoverageFromDueFraction } from '../garden'
+import { bedDueFraction, weedCoverageFromDueFraction } from '../garden'
 import {
   buildGardenEdgeRasterModel,
-  completedGardenRegionIndexes,
+  completedBiomeIndexes,
   drawGardenEdgeWeedMask,
-  extendPlotMaskToRasterGardenEdges,
+  extendBedMaskToRasterGardenEdges,
   type GardenEdgeRasterModel,
 } from './gardenEdgeReveal'
 import { organicWeedMask } from './weedMask'
@@ -42,28 +42,28 @@ function edgeRasterModel(): Promise<GardenEdgeRasterModel> {
 }
 
 function traceQuad(context: CanvasRenderingContext2D, quad: NormalizedQuad, offsetX = 0, offsetY = 0): void {
-  context.moveTo(quad.tl.x * WORLD_WIDTH - offsetX, quad.tl.y * WORLD_HEIGHT - offsetY)
-  context.lineTo(quad.tr.x * WORLD_WIDTH - offsetX, quad.tr.y * WORLD_HEIGHT - offsetY)
-  context.lineTo(quad.br.x * WORLD_WIDTH - offsetX, quad.br.y * WORLD_HEIGHT - offsetY)
-  context.lineTo(quad.bl.x * WORLD_WIDTH - offsetX, quad.bl.y * WORLD_HEIGHT - offsetY)
+  context.moveTo(quad.tl.x * GARDEN_WIDTH - offsetX, quad.tl.y * GARDEN_HEIGHT - offsetY)
+  context.lineTo(quad.tr.x * GARDEN_WIDTH - offsetX, quad.tr.y * GARDEN_HEIGHT - offsetY)
+  context.lineTo(quad.br.x * GARDEN_WIDTH - offsetX, quad.br.y * GARDEN_HEIGHT - offsetY)
+  context.lineTo(quad.bl.x * GARDEN_WIDTH - offsetX, quad.bl.y * GARDEN_HEIGHT - offsetY)
   context.closePath()
 }
 
-function plotCoverage(plot: PlotDefinition, save: SaveGame): number {
-  if (!save.unlockedPlotIds.includes(plot.id)) return 1
-  return weedCoverageFromDueFraction(plotDueFraction(plot, save.cards))
+function bedCoverage(bed: BedDefinition, save: SaveGame): number {
+  if (!save.unlockedBedIds.includes(bed.id)) return 1
+  return weedCoverageFromDueFraction(bedDueFraction(bed, save.cards))
 }
 
-function drawPartialPlotMask(
+function drawPartialBedMask(
   target: CanvasRenderingContext2D,
-  plot: PlotDefinition,
+  bed: BedDefinition,
   coverage: number,
 ): void {
-  const normalizedBounds = plotBounds(plot.cells)
-  const left = Math.floor(normalizedBounds.x * WORLD_WIDTH)
-  const top = Math.floor(normalizedBounds.y * WORLD_HEIGHT)
-  const right = Math.ceil((normalizedBounds.x + normalizedBounds.width) * WORLD_WIDTH)
-  const bottom = Math.ceil((normalizedBounds.y + normalizedBounds.height) * WORLD_HEIGHT)
+  const normalizedBounds = bedBounds(bed.cells)
+  const left = Math.floor(normalizedBounds.x * GARDEN_WIDTH)
+  const top = Math.floor(normalizedBounds.y * GARDEN_HEIGHT)
+  const right = Math.ceil((normalizedBounds.x + normalizedBounds.width) * GARDEN_WIDTH)
+  const bottom = Math.ceil((normalizedBounds.y + normalizedBounds.height) * GARDEN_HEIGHT)
   const width = Math.max(1, right - left)
   const height = Math.max(1, bottom - top)
 
@@ -73,7 +73,7 @@ function drawPartialPlotMask(
   const silhouetteContext = silhouette.getContext('2d', { willReadFrequently: true })!
   silhouetteContext.fillStyle = '#fff'
   silhouetteContext.beginPath()
-  plot.cells.forEach((cell) => traceQuad(silhouetteContext, cellQuad(cell), left, top))
+  bed.cells.forEach((cell) => traceQuad(silhouetteContext, cellQuad(cell), left, top))
   silhouetteContext.fill()
   const silhouettePixels = silhouetteContext.getImageData(0, 0, width, height)
   const eligible = new Uint8Array(width * height)
@@ -81,7 +81,7 @@ function drawPartialPlotMask(
     eligible[index] = silhouettePixels.data[index * 4 + 3]! > 127 ? 1 : 0
   }
 
-  const selected = organicWeedMask(plot.seed, coverage, width, height, eligible)
+  const selected = organicWeedMask(bed.seed, coverage, width, height, eligible)
   const mask = document.createElement('canvas')
   mask.width = width
   mask.height = height
@@ -104,7 +104,7 @@ function drawPartialPlotMask(
 
   target.save()
   target.beginPath()
-  plot.cells.forEach((cell) => traceQuad(target, cellQuad(cell)))
+  bed.cells.forEach((cell) => traceQuad(target, cellQuad(cell)))
   target.clip()
   target.drawImage(featheredMask, left, top)
   target.restore()
@@ -116,52 +116,52 @@ function drawWeedLayer(
   save: SaveGame,
   edgeModel: GardenEdgeRasterModel,
 ): void {
-  const coverages = plots.map((plot) => ({ plot, coverage: plotCoverage(plot, save) }))
-  const completedRegions = completedGardenRegionIndexes(coverages.map(({ plot, coverage }) => ({
-    gardenId: plot.gardenId,
+  const coverages = beds.map((bed) => ({ bed, coverage: bedCoverage(bed, save) }))
+  const completedBiomes = completedBiomeIndexes(coverages.map(({ bed, coverage }) => ({
+    biomeId: bed.biomeId,
     coverage,
   })))
   const mask = document.createElement('canvas')
-  mask.width = WORLD_WIDTH
-  mask.height = WORLD_HEIGHT
+  mask.width = GARDEN_WIDTH
+  mask.height = GARDEN_HEIGHT
   const maskContext = mask.getContext('2d', { willReadFrequently: true })!
 
-  drawGardenEdgeWeedMask(maskContext, edgeModel, completedRegions)
+  drawGardenEdgeWeedMask(maskContext, edgeModel, completedBiomes)
 
-  const plotGeometry = document.createElement('canvas')
-  plotGeometry.width = WORLD_WIDTH
-  plotGeometry.height = WORLD_HEIGHT
-  const plotGeometryContext = plotGeometry.getContext('2d', { willReadFrequently: true })!
-  plotGeometryContext.fillStyle = '#fff'
-  plotGeometryContext.beginPath()
-  plots.forEach((plot) => plot.cells.forEach((cell) => traceQuad(plotGeometryContext, cellQuad(cell))))
-  plotGeometryContext.fill()
+  const bedGeometry = document.createElement('canvas')
+  bedGeometry.width = GARDEN_WIDTH
+  bedGeometry.height = GARDEN_HEIGHT
+  const bedGeometryContext = bedGeometry.getContext('2d', { willReadFrequently: true })!
+  bedGeometryContext.fillStyle = '#fff'
+  bedGeometryContext.beginPath()
+  beds.forEach((bed) => bed.cells.forEach((cell) => traceQuad(bedGeometryContext, cellQuad(cell))))
+  bedGeometryContext.fill()
 
-  // Fill all completely overgrown plots as one compound shape. Adjacent plots
+  // Fill all completely overgrown beds as one compound shape. Adjacent beds
   // therefore have no independently antialiased edges that could reveal the
   // clean map as a grid between them.
   maskContext.fillStyle = '#fff'
   maskContext.beginPath()
-  coverages.forEach(({ plot, coverage }) => {
+  coverages.forEach(({ bed, coverage }) => {
     if (coverage < 1) return
-    plot.cells.forEach((cell) => traceQuad(maskContext, cellQuad(cell)))
+    bed.cells.forEach((cell) => traceQuad(maskContext, cellQuad(cell)))
   })
   maskContext.fill()
 
-  coverages.forEach(({ plot, coverage }) => {
-    if (coverage > 0 && coverage < 1) drawPartialPlotMask(maskContext, plot, coverage)
+  coverages.forEach(({ bed, coverage }) => {
+    if (coverage > 0 && coverage < 1) drawPartialBedMask(maskContext, bed, coverage)
   })
 
-  extendPlotMaskToRasterGardenEdges(maskContext, edgeModel, plotGeometry)
+  extendBedMaskToRasterGardenEdges(maskContext, edgeModel, bedGeometry)
 
-  // Scale the negative artwork once into world coordinates, then apply the
-  // global mask. Sampling it independently per plot magnifies unrelated source
-  // fragments and makes every plot boundary visible.
+  // Scale the negative artwork once into garden coordinates, then apply the
+  // global mask. Sampling it independently per bed magnifies unrelated source
+  // fragments and makes every bed boundary visible.
   const weeds = document.createElement('canvas')
-  weeds.width = WORLD_WIDTH
-  weeds.height = WORLD_HEIGHT
+  weeds.width = GARDEN_WIDTH
+  weeds.height = GARDEN_HEIGHT
   const weedsContext = weeds.getContext('2d')!
-  weedsContext.drawImage(negative, 0, 0, WORLD_WIDTH, WORLD_HEIGHT)
+  weedsContext.drawImage(negative, 0, 0, GARDEN_WIDTH, GARDEN_HEIGHT)
   weedsContext.globalCompositeOperation = 'destination-in'
   weedsContext.drawImage(mask, 0, 0)
   target.drawImage(weeds, 0, 0)
@@ -184,7 +184,7 @@ export function GardenRevealCanvas({ save, loadAttempt, onReady, onError }: Gard
       if (cancelled) return
       const context = canvas.getContext('2d', { alpha: false })!
       context.globalCompositeOperation = 'source-over'
-      context.drawImage(clean, 0, 0, WORLD_WIDTH, WORLD_HEIGHT)
+      context.drawImage(clean, 0, 0, GARDEN_WIDTH, GARDEN_HEIGHT)
       drawWeedLayer(context, negative, save, edgeModel)
       window.requestAnimationFrame(() => {
         if (!cancelled) onReady()
@@ -196,5 +196,5 @@ export function GardenRevealCanvas({ save, loadAttempt, onReady, onError }: Gard
     return () => { cancelled = true }
   }, [loadAttempt, onError, onReady, save])
 
-  return <canvas className="world-map-canvas" ref={canvasRef} width={WORLD_WIDTH} height={WORLD_HEIGHT} aria-hidden="true" />
+  return <canvas className="garden-map-canvas" ref={canvasRef} width={GARDEN_WIDTH} height={GARDEN_HEIGHT} aria-hidden="true" />
 }

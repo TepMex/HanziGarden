@@ -122,7 +122,7 @@ function reviewEventAt(value: unknown, path: string): ReviewEvent {
   }
 }
 
-/** Parse a v3 save while deliberately leaving cross-field/domain consistency unchecked. */
+/** Parse a v4 save while deliberately leaving cross-property/domain consistency unchecked. */
 export function parseSaveDump(dump: string | SaveGame): SaveGame {
   let value: unknown = dump
   if (typeof dump === 'string') {
@@ -135,10 +135,10 @@ export function parseSaveDump(dump: string | SaveGame): SaveGame {
 
   const save = recordAt(value, 'save')
   if (save.id !== 'main') return dumpError('save.id', 'строкой "main"')
-  if (save.version !== 3) return dumpError('save.version', 'числом 3')
-  const lastActivePlotId = save.lastActivePlotId === null
+  if (save.version !== 4) return dumpError('save.version', 'числом 4')
+  const lastActiveBedId = save.lastActiveBedId === null
     ? null
-    : stringAt(save.lastActivePlotId, 'save.lastActivePlotId')
+    : stringAt(save.lastActiveBedId, 'save.lastActiveBedId')
   const rawCards = recordAt(save.cards, 'save.cards')
   const cards = Object.fromEntries(
     Object.entries(rawCards).map(([id, card]) => [id, cardAt(card, `save.cards.${id}`)]),
@@ -147,10 +147,10 @@ export function parseSaveDump(dump: string | SaveGame): SaveGame {
 
   return {
     id: 'main',
-    version: 3,
-    unlockedPlotIds: stringArrayAt(save.unlockedPlotIds, 'save.unlockedPlotIds'),
-    masteredPlotIds: stringArrayAt(save.masteredPlotIds, 'save.masteredPlotIds'),
-    lastActivePlotId,
+    version: 4,
+    unlockedBedIds: stringArrayAt(save.unlockedBedIds, 'save.unlockedBedIds'),
+    masteredBedIds: stringArrayAt(save.masteredBedIds, 'save.masteredBedIds'),
+    lastActiveBedId,
     seenCharacterIds: stringArrayAt(save.seenCharacterIds, 'save.seenCharacterIds'),
     cards,
     reviewEvents: save.reviewEvents.map((event, index) => reviewEventAt(event, `save.reviewEvents[${index}]`)),

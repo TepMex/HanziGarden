@@ -1,8 +1,8 @@
 #!/usr/bin/env bun
 /**
- * Regression: fully overgrown plots must sample the negative artwork from the
- * same world coordinates as the clean map. Otherwise each plot looks like a
- * magnified tile and the plot boundaries read as a permanently visible grid.
+ * Regression: fully overgrown beds must sample the negative artwork from the
+ * same garden coordinates as the clean map. Otherwise each bed looks like a
+ * magnified tile and the bed boundaries read as a permanently visible grid.
  *
  * Usage: bun scripts/check-garden-mask-alignment.mjs [baseUrl]
  */
@@ -17,10 +17,10 @@ try {
   page.setDefaultTimeout(8_000)
   await page.goto(`${baseUrl}/`, { waitUntil: 'domcontentloaded' })
   await page.getByRole('button', { name: /Войти в сад/i }).click()
-  await page.waitForSelector('.world-map-world.is-ready')
+  await page.waitForSelector('.garden-map-content.is-ready')
 
   const result = await page.evaluate(async () => {
-    const actual = document.querySelector('.world-map-canvas')
+    const actual = document.querySelector('.garden-map-canvas')
     if (!(actual instanceof HTMLCanvasElement)) throw new Error('missing garden canvas')
     const actualContext = actual.getContext('2d')
     if (!actualContext) throw new Error('missing garden canvas context')
@@ -51,19 +51,19 @@ try {
       return error / channels
     }
 
-    const regressionPlotIds = new Set(['plot-043', 'plot-044'])
-    const samples = [...document.querySelectorAll('.plot-hotspot.is-locked')]
-      .filter((hotspot) => regressionPlotIds.has(hotspot.dataset.plotId ?? ''))
+    const regressionBedIds = new Set(['bed-043', 'bed-044'])
+    const samples = [...document.querySelectorAll('.bed-hotspot.is-locked')]
+      .filter((hotspot) => regressionBedIds.has(hotspot.dataset.bedId ?? ''))
       .map((hotspot) => {
-        if (!(hotspot instanceof HTMLElement)) throw new Error('invalid plot hotspot')
+        if (!(hotspot instanceof HTMLElement)) throw new Error('invalid bed hotspot')
         const centerX = Math.round(Number.parseFloat(hotspot.style.left) * actual.width / 100
           + Number.parseFloat(hotspot.style.width) * actual.width / 200)
         const centerY = Math.round(Number.parseFloat(hotspot.style.top) * actual.height / 100
           + Number.parseFloat(hotspot.style.height) * actual.height / 200)
-        return { id: hotspot.dataset.plotId, meanError: meanPixelError(centerX, centerY) }
+        return { id: hotspot.dataset.bedId, meanError: meanPixelError(centerX, centerY) }
       })
 
-    const [{ plots }, { gardenRegions, plotQuad }, { buildGardenEdgeRasterModel }] = await Promise.all([
+    const [{ beds }, { biomes, bedQuad }, { buildGardenEdgeRasterModel }] = await Promise.all([
       import('/src/data/model.ts'),
       import('/src/data/mapLayout.ts'),
       import('/src/map/gardenEdgeReveal.ts'),
@@ -72,40 +72,40 @@ try {
     grid.src = '/assets/garden-grid.svg'
     await grid.decode()
     const edgeModel = buildGardenEdgeRasterModel(grid)
-    const edgeRegionLabels = new Set(edgeModel.regionLabels)
-    const leftPlot = plots.find((plot) => plot.id === 'plot-042')
-    if (!leftPlot) throw new Error('missing seam regression plot')
-    const leftQuad = plotQuad(leftPlot.cells)
+    const edgeBiomeLabels = new Set(edgeModel.biomeLabels)
+    const leftBed = beds.find((bed) => bed.id === 'bed-042')
+    if (!leftBed) throw new Error('missing seam regression bed')
+    const leftQuad = bedQuad(leftBed.cells)
     const seamX = Math.round((leftQuad.tr.x + leftQuad.br.x) * actual.width / 2)
     const seamY = Math.round((leftQuad.tr.y + leftQuad.br.y) * actual.height / 2)
     const seamError = meanPixelError(seamX, seamY, 3)
     const coveredEdgeError = meanPixelError(actual.width / 2, 40, 3)
 
     // The fourth garden is entirely locked in the initial save. Compare its
-    // whole outer quadrilateral, including every internal plot boundary, with
+    // whole outer quadrilateral, including every internal bed boundary, with
     // the globally scaled negative artwork.
-    const region = gardenRegions[3]
-    if (!region) throw new Error('missing region regression fixture')
-    const regionMask = document.createElement('canvas')
-    regionMask.width = actual.width
-    regionMask.height = actual.height
-    const regionContext = regionMask.getContext('2d')
-    if (!regionContext) throw new Error('missing region mask context')
-    regionContext.fillStyle = '#fff'
-    regionContext.beginPath()
-    regionContext.moveTo(region.mapQuad.tl.x * actual.width, region.mapQuad.tl.y * actual.height)
-    regionContext.lineTo(region.mapQuad.tr.x * actual.width, region.mapQuad.tr.y * actual.height)
-    regionContext.lineTo(region.mapQuad.br.x * actual.width, region.mapQuad.br.y * actual.height)
-    regionContext.lineTo(region.mapQuad.bl.x * actual.width, region.mapQuad.bl.y * actual.height)
-    regionContext.closePath()
-    regionContext.fill()
-    const regionAlpha = regionContext.getImageData(0, 0, actual.width, actual.height).data
+    const biome = biomes[3]
+    if (!biome) throw new Error('missing biome regression fixture')
+    const biomeMask = document.createElement('canvas')
+    biomeMask.width = actual.width
+    biomeMask.height = actual.height
+    const biomeContext = biomeMask.getContext('2d')
+    if (!biomeContext) throw new Error('missing biome mask context')
+    biomeContext.fillStyle = '#fff'
+    biomeContext.beginPath()
+    biomeContext.moveTo(biome.mapQuad.tl.x * actual.width, biome.mapQuad.tl.y * actual.height)
+    biomeContext.lineTo(biome.mapQuad.tr.x * actual.width, biome.mapQuad.tr.y * actual.height)
+    biomeContext.lineTo(biome.mapQuad.br.x * actual.width, biome.mapQuad.br.y * actual.height)
+    biomeContext.lineTo(biome.mapQuad.bl.x * actual.width, biome.mapQuad.bl.y * actual.height)
+    biomeContext.closePath()
+    biomeContext.fill()
+    const biomeAlpha = biomeContext.getImageData(0, 0, actual.width, actual.height).data
     const actualPixels = actualContext.getImageData(0, 0, actual.width, actual.height).data
     const expectedPixels = expectedContext.getImageData(0, 0, actual.width, actual.height).data
-    let regionPixels = 0
-    let mismatchedRegionPixels = 0
+    let biomePixels = 0
+    let mismatchedBiomePixels = 0
     let mismatchedCanvasPixels = 0
-    const mismatchKinds = { region: 0, line: 0, exterior: 0 }
+    const mismatchKinds = { biome: 0, line: 0, exterior: 0 }
     const mismatchBounds = { left: actual.width, top: actual.height, right: 0, bottom: 0 }
     for (let index = 0; index < actual.width * actual.height; index += 1) {
       let pixelError = 0
@@ -117,7 +117,7 @@ try {
         mismatchedCanvasPixels += 1
         const label = edgeModel.labels[index]
         if (label < 0) mismatchKinds.line += 1
-        else if (edgeRegionLabels.has(label)) mismatchKinds.region += 1
+        else if (edgeBiomeLabels.has(label)) mismatchKinds.biome += 1
         else mismatchKinds.exterior += 1
         const x = index % actual.width
         const y = Math.floor(index / actual.width)
@@ -126,18 +126,18 @@ try {
         mismatchBounds.right = Math.max(mismatchBounds.right, x)
         mismatchBounds.bottom = Math.max(mismatchBounds.bottom, y)
       }
-      if (regionAlpha[index * 4 + 3] !== 255) continue
-      regionPixels += 1
-      if (mismatched) mismatchedRegionPixels += 1
+      if (biomeAlpha[index * 4 + 3] !== 255) continue
+      biomePixels += 1
+      if (mismatched) mismatchedBiomePixels += 1
     }
-    const regionMismatch = mismatchedRegionPixels / regionPixels
+    const biomeMismatch = mismatchedBiomePixels / biomePixels
     return {
       sampleCount: samples.length,
       meanError: samples.reduce((sum, sample) => sum + sample.meanError, 0) / samples.length,
       worst: samples.toSorted((left, right) => right.meanError - left.meanError)[0],
       seamError,
       coveredEdgeError,
-      regionMismatch,
+      biomeMismatch,
       mismatchedCanvasPixels,
       mismatchBounds,
       mismatchKinds,
@@ -145,11 +145,11 @@ try {
   })
 
   if (result.sampleCount < 2 || result.meanError > 2 || result.seamError > 2
-    || result.coveredEdgeError > 2 || result.regionMismatch > 0.001 || result.mismatchedCanvasPixels > 0) {
-    throw new Error(`negative artwork is not aligned to world coordinates: ${JSON.stringify(result)}`)
+    || result.coveredEdgeError > 2 || result.biomeMismatch > 0.001 || result.mismatchedCanvasPixels > 0) {
+    throw new Error(`negative artwork is not aligned to garden coordinates: ${JSON.stringify(result)}`)
   }
 
-  console.log(`OK: negative artwork aligns across ${result.sampleCount} plots, has no tile seams, and keeps unearned edges covered`)
+  console.log(`OK: negative artwork aligns across ${result.sampleCount} beds, has no tile seams, and keeps unearned edges covered`)
   await context.close()
 } finally {
   await browser.close()

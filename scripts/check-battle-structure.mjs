@@ -5,17 +5,17 @@
  * Usage: bun scripts/check-battle-structure.mjs [baseUrl]
  */
 import { chromium } from 'playwright'
-import { plots } from '../src/data/model.ts'
+import { beds } from '../src/data/model.ts'
 
 const baseUrl = (process.argv[2] ?? 'http://127.0.0.1:8765').replace(/\/$/, '')
-const plot = plots.find((candidate) => candidate.id === 'plot-001')
-if (!plot) throw new Error('missing plot-001')
+const bed = beds.find((candidate) => candidate.id === 'bed-001')
+if (!bed) throw new Error('missing bed-001')
 
 function saveForFrame(frame) {
-  const index = plot.characters.findIndex((character) => character.frame === frame)
+  const index = bed.characters.findIndex((character) => character.frame === frame)
   return {
-    id: 'main', version: 3, unlockedPlotIds: [plot.id], masteredPlotIds: [], lastActivePlotId: plot.id, seenCharacterIds: [],
-    cards: Object.fromEntries(plot.characters.slice(0, index).map((character) => [character.id, { due: '2999-01-01T00:00:00.000Z' }])),
+    id: 'main', version: 4, unlockedBedIds: [bed.id], masteredBedIds: [], lastActiveBedId: bed.id, seenCharacterIds: [],
+    cards: Object.fromEntries(bed.characters.slice(0, index).map((character) => [character.id, { due: '2999-01-01T00:00:00.000Z' }])),
     reviewEvents: [], updatedAt: Date.now(),
   }
 }
@@ -41,8 +41,8 @@ async function seedSave(page, save) {
 async function enterBattle(page, frame) {
   await seedSave(page, saveForFrame(frame))
   await page.reload({ waitUntil: 'domcontentloaded' })
-  await page.waitForSelector('.world-map-world.is-ready')
-  await page.locator('[data-plot-id="plot-001"]').click({ force: true })
+  await page.waitForSelector('.garden-map-content.is-ready')
+  await page.locator('[data-bed-id="bed-001"]').click({ force: true })
   await page.waitForSelector('.battle-screen .writing-circle')
 }
 

@@ -1,4 +1,4 @@
-GOAL: Memory Garden v2 — zoomable world map, 220 half-RTH plots, 15 garden cultures, SRS statistics
+GOAL: Memory Garden v2 — zoomable garden map, 220 half-RTH beds, 15 biomes, SRS statistics
 
 Repository:
 This single-product repo (web game at repository root; Android WebView wrapper in `android/`).
@@ -21,37 +21,43 @@ IMPORTANT GENERAL RULES
 - The map itself should remain primarily visual.
 
 ============================================================
-1. NEW WORLD MODEL
+1. GARDEN MODEL
 ============================================================
 
 Replace the current model:
 
     110 RTH lists
-    -> 110 gameplay fields
+    -> 110 legacy gameplay units
 
 with:
 
     110 RTH lists
     -> split each list into 2 ordered halves
-    -> 220 gameplay plots
+    -> 220 gameplay beds
 
 Terminology in code:
 
-    GardenRegion
-        one of the 15 large visually distinct garden/culture areas
+    Garden
+        the single main map, divided into a 5 x 3 grid of 15 biomes
 
-    PlotDefinition
-        one gameplay-clearing unit
+    Biome
+        one of the 15 large visually distinct garden/culture areas
+        the first biome contains 10 beds in a 2 x 5 layout
+        every other biome contains 15 beds in a 3 x 5 layout
+
+    BedDefinition
+        the smallest territory unit cleared of weeds
         contains approximately half of one RTH list
+        selecting an unlocked bed starts its battle
 
     CharacterDefinition
         one Hanzi
-        belongs to exactly one PlotDefinition
+        belongs to exactly one BedDefinition
 
 
 Suggested types:
 
-type GardenRegion = {
+type Biome = {
   id: string
   index: number
 
@@ -72,7 +78,7 @@ type GardenRegion = {
     | 'wisteria'
     | 'herbs'
 
-  // location of this large region in normalized map coordinates
+  // location of this large biome in normalized map coordinates
   mapRect: {
     x: number
     y: number
@@ -86,19 +92,19 @@ type GridCell = {
   y: number
 }
 
-type PlotDefinition = {
+type BedDefinition = {
   id: string
 
   sourceRthListId: string
   sourceHalf: 0 | 1
 
-  gardenId: string
+  biomeId: string
 
   characterIds: string[]
   characters: CharacterDefinition[]
 
-  // one normal plot occupies one base cell;
-  // the first five plots occupy two cells each
+  // one normal bed occupies one base cell;
+  // the first five beds occupy two cells each
   cells: GridCell[]
 
   neighbors: string[]
@@ -110,10 +116,10 @@ Update:
 
 type CharacterDefinition = {
   ...
-  plotId: string
+  bedId: string
 }
 
-Remove the gameplay meaning of CharacterDefinition.fieldId.
+Remove the gameplay meaning of the legacy `CharacterDefinition.fieldId` property.
 
 ============================================================
 2. SPLITTING RTH LISTS
@@ -143,29 +149,29 @@ Do NOT:
 Acceptance invariants:
 
 - exactly 110 unique source lists;
-- exactly 220 PlotDefinition objects;
-- every Hanzi belongs to exactly one plot;
+- exactly 220 BedDefinition objects;
+- every Hanzi belongs to exactly one bed;
 - all 2974 current characters remain represented;
 - the two halves of an RTH list differ in character count by at most 1;
 - original frame ordering remains unchanged inside both halves.
 
 ============================================================
-3. WORLD GEOMETRY
+3. GARDEN GEOMETRY
 ============================================================
 
 Use the new reference artwork as ONE continuous map.
 
-The visual world consists of:
+The visual garden consists of:
 
-    5 GardenRegions horizontally
+    5 Biomes horizontally
     x
-    3 GardenRegions vertically
+    3 Biomes vertically
 
 Total:
 
-    15 GardenRegions
+    15 Biomes
 
-Each normal GardenRegion represents:
+Each normal Biome represents:
 
     3 columns
     x
@@ -173,7 +179,7 @@ Each normal GardenRegion represents:
 
 of base gameplay cells.
 
-Therefore the whole estate logically forms:
+Therefore the whole garden logically forms:
 
     15 columns
     x
@@ -185,39 +191,39 @@ Do NOT render 225 visible UI cards.
 These cells exist only for geometry/hit areas/progression.
 
 ------------------------------------------------------------
-SPECIAL FIRST GARDEN
+SPECIAL FIRST BIOME
 ------------------------------------------------------------
 
-There are only 220 gameplay plots but 225 base cells.
+There are only 220 gameplay beds but 225 base cells.
 
-Use the 5 extra cells to make the first five gameplay plots
+Use the 5 extra cells to make the first five gameplay beds
 approximately twice as large.
 
-The first GardenRegion contains 15 base cells but only 10 plots.
+The first Biome contains 15 base cells but only 10 beds.
 
 Recommended layout:
 
 For each of its five rows:
 
-    [ BIG PLOT spanning 2 cells ][ normal plot ]
+    [ WIDE BED spanning 2 cells ][ normal bed ]
 
 Thus:
 
-    plots 001-005:
+    beds 001-005:
         span two adjacent cells each
 
-    plots 006-010:
+    beds 006-010:
         span one cell each
 
 This consumes:
 
     5 * 2 + 5 = 15 cells
 
-All remaining 14 GardenRegions contain exactly 15 normal plots:
+All remaining 14 Biomes contain exactly 15 normal beds:
 
     14 * 15 = 210
 
-Total gameplay plots:
+Total gameplay beds:
 
     10 + 210 = 220
 
@@ -225,14 +231,14 @@ Total occupied base cells:
 
     15 * 15 = 225
 
-The gameplay content of the large plots is NOT doubled.
+The gameplay content of the large beds is NOT doubled.
 They still contain only one half-RTH list.
 
 Their visual territory is doubled so early clearing causes a
 larger and more satisfying visible restoration.
 
 ============================================================
-4. GARDEN CULTURES
+4. BIOMES
 ============================================================
 
 Assign these cultures in map order, left-to-right/top-to-bottom:
@@ -258,7 +264,7 @@ Row 3:
 14. wisteria
 15. medicinal herbs
 
-GardenRegion is visual/world metadata only.
+Biome is visual/garden metadata only.
 
 FSRS does not know anything about cultures.
 
@@ -276,7 +282,7 @@ Expected assets:
 They are two states of the SAME map and must use the same
 coordinate system/aspect ratio.
 
-Do not generate/use separate images per garden or per plot.
+Do not generate/use separate images per biome or per bed.
 
 The implementation must support replacing these files later
 with true high-resolution versions without code changes.
@@ -288,18 +294,18 @@ For close zoom to remain visually useful, target approximately
 Never use CSS background-size: cover for the actual interactive
 map because cropping would break hotspot coordinates.
 
-Instead render the whole artwork inside a fixed world coordinate
+Instead render the whole artwork inside a fixed garden coordinate
 container and transform that container.
 
 Layers:
 
     camera viewport
         |
-        +-- world transform
+        +-- garden transform
               |
               +-- clean map image
               +-- negative/weed layer
-              +-- transparent plot hotspots
+              +-- transparent bed hotspots
               +-- optional debug geometry
 
 Every layer must use exactly the same transform.
@@ -318,12 +324,12 @@ Preserve the current important concept:
 
 The authoritative value remains:
 
-    plotInfection(plot, cards)
+    bedInfection(bed, cards)
 
 using the existing stroke-weighted formula:
 
     totalWeight =
-        sum(strokeCount of all plot characters)
+        sum(strokeCount of all bed characters)
 
     weedWeight =
         sum(strokeCount of characters which are new or due)
@@ -331,17 +337,17 @@ using the existing stroke-weighted formula:
     infection =
         weedWeight / totalWeight
 
-Rename/refactor fieldInfection() to plotInfection().
+Rename/refactor the legacy `fieldInfection()` function to `bedInfection()`.
 
-The negative map should disappear progressively from a plot as
+The negative map should disappear progressively from a bed as
 its infection approaches 0.
 
-A fully clean plot reveals the clean image across its entire
+A fully clean bed reveals the clean image across its entire
 geometry.
 
-A fully infected/new plot shows the negative version.
+A fully infected/new bed shows the negative version.
 
-Large plots 001-005 must reveal both of their base cells together.
+Large beds 001-005 must reveal both of their base cells together.
 
 IMPORTANT PERFORMANCE RULE:
 
@@ -361,17 +367,17 @@ rather than discarded.
 7. CAMERA / RTS MAP NAVIGATION
 ============================================================
 
-Remove the current selected-field UI model.
+Remove the old selected-bed UI model.
 
 There must no longer be:
 
 - selectedId;
-- selected field panel;
-- "click selected field again";
-- separate field-selection state;
+- selected bed panel;
+- "click selected bed again";
+- separate bed-selection state;
 - fixed 11x10 card grid presentation.
 
-The map is now one large freely navigable world.
+The map is now one large freely navigable garden.
 
 Camera state:
 
@@ -413,7 +419,7 @@ One finger:
 Two fingers:
     pinch to zoom.
 
-Pinch zoom must preserve the world point under the gesture
+Pinch zoom must preserve the garden point under the gesture
 midpoint.
 
 Do not allow the handwriting input implementation to interfere
@@ -438,10 +444,10 @@ ZOOM RANGE
 ------------------------------------------------------------
 
 zoom = 1:
-    whole estate visible as bird's-eye overview.
+    whole garden visible as bird's-eye overview.
 
 maximum zoom:
-    enough that one individual gameplay plot can occupy a
+    enough that one individual gameplay bed can occupy a
     significant part of the viewport.
 
 Recommended initial range:
@@ -459,30 +465,30 @@ outside the viewport.
 Allow a small visual overscroll margin if it improves feel.
 
 ============================================================
-8. ENTERING A PLOT
+8. ENTERING A BED
 ============================================================
 
-There is no intermediate GardenRegion screen.
+There is no intermediate Biome screen.
 
 Navigation becomes:
 
     global map
       -> zoom/pan around same map
-      -> interact with individual Plot hotspot
+      -> interact with individual Bed hotspot
       -> existing BattleScreen
 
-At low zoom, individual plot hotspots should not produce noisy UI.
+At low zoom, individual bed hotspots should not produce noisy UI.
 
 Recommended behavior:
 
-If plot is clicked/tapped while camera is far away:
+If bed is clicked/tapped while camera is far away:
 
-    smoothly zoom/focus camera toward that plot.
+    smoothly zoom/focus camera toward that bed.
 
-If plot is clicked/tapped while already sufficiently close:
+If bed is clicked/tapped while already sufficiently close:
 
     if unlocked:
-        enter BattleScreen(plot)
+        enter BattleScreen(bed)
 
     if locked:
         do not enter;
@@ -509,48 +515,49 @@ Optional close-zoom hover feedback:
 
 Preserve the existing distinction:
 
-    permanent world progression
+    permanent garden progression
     !=
     dynamic FSRS garden health
 
-A plot becomes initially mastered when every character in that
-plot has been successfully produced at least once.
+A bed becomes initially mastered when every character in that
+bed has been successfully produced at least once.
 
 Once unlocked, it never becomes locked again.
 
-After mastering a plot, unlock its adjacent PlotDefinition
+After mastering a bed, unlock its adjacent BedDefinition
 neighbors.
 
 Calculate adjacency from occupied base cells.
 
-Two plots are neighbors if at least one cell belonging to plot A
+Two beds are neighbors if at least one cell belonging to bed A
 shares a horizontal or vertical edge with a cell belonging to
-plot B.
+bed B.
 
 Adjacency must be symmetrical.
 
-Large plots use the union of both occupied cells when calculating
+Large beds use the union of both occupied cells when calculating
 neighbors.
 
-Locked plots remain visibly overgrown.
+Locked beds remain visibly overgrown.
 Do not hide them behind fog.
 
 ============================================================
 10. SAVE GAME MIGRATION
 ============================================================
 
-Current saves contain Field-based progress.
+Older saves contain legacy field/plot progress.
 
-Create SaveGame version 2.
+The current save is version 4.
 
 Suggested shape:
 
 type SaveGame = {
   id: 'main'
-  version: 2
+  version: 4
 
-  unlockedPlotIds: string[]
-  masteredPlotIds: string[]
+  unlockedBedIds: string[]
+  masteredBedIds: string[]
+  lastActiveBedId: string | null
 
   seenCharacterIds: string[]
 
@@ -565,17 +572,17 @@ Preserve CardState objects exactly.
 Character IDs must remain stable, therefore existing FSRS data
 must survive migration.
 
-Migration v1 -> v2:
+Migrations v1/v2/v3 -> v4:
 
-For each old field/RTH-list:
+For each legacy field/RTH-list:
 
-    old field -> new half A plot + half B plot
+    legacy field -> new half A bed + half B bed
 
-If old field was unlocked:
-    unlock both new half-plots.
+If the legacy field was unlocked:
+    unlock both new half-beds.
 
-If old field was mastered:
-    mark both new half-plots mastered.
+If the legacy field was mastered:
+    mark both new half-beds mastered.
 
 Preserve:
 - seenCharacterIds;
@@ -586,7 +593,7 @@ Do not wipe an existing user's learning history.
 
 Initial new save:
 
-    unlock plot-001 only.
+    unlock bed-001 only.
 
 ============================================================
 11. STATISTICS SCREEN
@@ -594,7 +601,7 @@ Initial new save:
 
 Add a third main screen:
 
-    type Screen = 'map' | 'battle' | 'stats'
+    type Screen = 'garden' | 'battle' | 'stats'
 
 Add a Statistics button/icon to the persistent map UI.
 
@@ -767,10 +774,10 @@ top-right:
     due count
     Statistics button
 
-Do NOT retain the old selected-field side panel.
+Do NOT retain the old selected-bed side panel.
 
 At close zoom an optional small unobtrusive hint can appear when
-hovering/focusing an available plot, but the artwork should remain
+hovering/focusing an available bed, but the artwork should remain
 dominant.
 
 ============================================================
@@ -810,11 +817,11 @@ Create something similar to:
 It should contain:
 
 - map aspect ratio;
-- 15 GardenRegion normalized rectangles;
+- 15 Biome normalized rectangles;
 - internal 3x5 cell geometry;
-- plot-to-cell assignment;
+- bed-to-cell assignment;
 - zoom constants;
-- optional per-region inset/gap corrections.
+- optional per-biome inset/gap corrections.
 
 The generated artwork has perspective and decorative paths, so
 exact hotspot alignment may require manual tuning.
@@ -825,10 +832,10 @@ Add a development-only debug mode, for example:
 
 that renders:
 
-- GardenRegion outlines;
+- Biome outlines;
 - base cell outlines;
-- plot outlines;
-- plot IDs.
+- bed outlines;
+- bed IDs.
 
 This debug overlay must not appear normally.
 
@@ -842,7 +849,7 @@ src/
   App.tsx
 
   map/
-    WorldMap.tsx
+    GardenMap.tsx
     MapCamera.tsx
     MapWeedOverlay.tsx
     MapDebugOverlay.tsx
@@ -873,18 +880,18 @@ Keep camera math independent from React where possible.
 Functions should be unit-testable:
 
     clampZoom()
-    screenToWorld()
-    worldToScreen()
+    screenToGarden()
+    gardenToScreen()
     zoomAroundPoint()
     clampCamera()
 
 For cursor-centered zoom:
 
 Before zoom:
-    worldPoint = screenToWorld(cursor)
+    gardenPoint = screenToGarden(cursor)
 
 After changing zoom:
-    change translation so the same worldPoint remains under cursor.
+    change translation so the same gardenPoint remains under cursor.
 
 For pinch:
     use the pinch midpoint using the same principle.
@@ -905,33 +912,33 @@ Required unit tests:
 
 DATA MODEL
 
-- produces exactly 220 plots;
-- produces exactly 15 GardenRegions;
+- produces exactly 220 beds;
+- produces exactly 15 Biomes;
 - every character occurs once and only once;
 - source list ordering is preserved;
-- every source RTH list produces exactly 2 plots;
+- every source RTH list produces exactly 2 beds;
 - halves differ by <= 1 character;
 - exactly 225 base cells are occupied;
-- no base cell overlaps two different plots;
+- no base cell overlaps two different beds;
 - no cell is outside the 15x15 grid;
-- plot 001-005 occupy exactly 2 cells each;
-- all other plots occupy exactly 1 cell;
-- first GardenRegion contains 10 plots;
-- every other GardenRegion contains 15;
+- bed 001-005 occupy exactly 2 cells each;
+- all other beds occupy exactly 1 cell;
+- first Biome contains 10 beds;
+- every other Biome contains 15;
 - adjacency is symmetrical.
 
 INFECTION
 
-- plotInfection behaves like previous fieldInfection;
-- new plot is fully infected;
+- `bedInfection` behaves like the legacy `fieldInfection`;
+- new bed is fully infected;
 - no due cards => infection 0;
 - stroke count remains the weight.
 
 SAVE MIGRATION
 
 - v1 CardState data survives untouched;
-- old unlocked field unlocks both halves;
-- old mastered field masters both halves;
+- legacy unlocked field unlocks both halves;
+- legacy mastered field masters both halves;
 - seen IDs and review events survive.
 
 SRS STAGES
@@ -944,7 +951,7 @@ Test:
 - zoom clamping;
 - cursor-centered zoom;
 - pan clamping;
-- screen/world conversions.
+- screen/garden conversions.
 
 ============================================================
 20. E2E / INTERACTION ACCEPTANCE
@@ -959,8 +966,8 @@ DESKTOP
 3. map stays under cursor while zooming;
 4. drag pans;
 5. camera cannot disappear into empty space;
-6. clicking a plot while far away focuses/zooms it;
-7. clicking unlocked close plot opens BattleScreen;
+6. clicking a bed while far away focuses/zooms it;
+7. clicking unlocked close bed opens BattleScreen;
 8. Back returns to the SAME map/camera position;
 9. statistics button opens StatisticsScreen;
 10. Back from statistics preserves map camera position.
@@ -994,7 +1001,7 @@ Do not introduce CDN requirements.
 
 Remove or replace assumptions tied to:
 
-    110 fields
+    110 legacy fields
     11 columns
     10 rows
 
@@ -1004,12 +1011,12 @@ Examples include:
 - repeat(11, ...);
 - repeat(10, ...);
 - "из 110";
-- current FieldDefinition generation;
-- field-selected side panel logic.
+- legacy `FieldDefinition` generation;
+- selected-bed side panel logic.
 
 Search the entire repository (web root + shared assets; keep `android/` in sync via the asset sync script) for these assumptions.
 
-Do not leave two competing world models alive.
+Do not leave two competing garden models alive.
 
 ============================================================
 23. DOCUMENTATION
@@ -1017,11 +1024,11 @@ Do not leave two competing world models alive.
 
 Update GAME_SPEC.md to describe:
 
-- 15 GardenRegions;
-- 220 gameplay plots;
+- 15 Biomes;
+- 220 gameplay beds;
 - half-RTH grouping;
 - 15x15 logical base grid;
-- five double-area starting plots;
+- five double-area starting beds;
 - continuous zoomable map;
 - no intermediate garden selection screen;
 - statistics/SRS stage projection.
@@ -1034,14 +1041,14 @@ Update root README.md "Что реализовано" and keep Android docs unde
 
 The goal is complete when:
 
-- the game contains 220 playable half-RTH plots;
+- the game contains 220 playable half-RTH beds;
 - all 2974 characters remain present exactly once;
-- first five plots clean approximately twice the visual map area;
-- the world uses the 15-culture reference layout;
-- the user can smoothly zoom from whole-world overview to an
-  individual plot without switching map screens;
+- first five beds clean approximately twice the visual map area;
+- the garden uses the 15-culture reference layout;
+- the user can smoothly zoom from whole-garden overview to an
+  individual bed without switching map screens;
 - mouse, touch and trackpad interaction remain practical;
-- plot state is still projected from FSRS;
+- bed state is still projected from FSRS;
 - clean/negative full-map artwork blends according to learning
   state;
 - old saves migrate without losing CardState;

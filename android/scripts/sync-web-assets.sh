@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Build the Memory Garden web app (repo root) with relative base and copy into
-# Android assets/www. Map/battle art is shipped as WebP so all 15 field
+# Android assets/www. Garden/battle art is shipped as WebP so all 15 biome
 # backdrop sets fit under GitHub’s 100 MB APK push limit without remote
 # downloads or art dedupe.
 set -euo pipefail
@@ -33,10 +33,10 @@ required_assets=(
   "$OUT/assets/garden-map_negative.webp"
 )
 
-# V2 ships four cleaning backdrops per garden field (all bundled as WebP).
-for field in {1..15}; do
+# Four cleaning backdrops are bundled per biome.
+for biome in {1..15}; do
   for stage in full_dirty half_dirty quorter_dirty clean; do
-    required_assets+=("$OUT/assets/battle-fields/field${field}/${stage}.webp")
+    required_assets+=("$OUT/assets/battle-biomes/biome${biome}/${stage}.webp")
   done
 done
 

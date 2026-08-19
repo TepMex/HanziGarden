@@ -46,7 +46,7 @@ No deep links, no native plugins, no Play Store listing in v1.
 
 ## Data model
 
-- **No native persistence.** Cards, FSRS state, and plot unlocks remain in the WebView’s IndexedDB (Dexie) under the same schema as the web game.
+- **No native persistence.** Cards, FSRS state, and bed unlocks remain in the WebView’s IndexedDB (Dexie) under the same schema as the web game.
 - Clearing app storage / uninstall wipes progress (same as clearing browser site data).
 - Bundled `www/` is a build artifact of the root web game (not edited by hand).
 
@@ -69,13 +69,13 @@ No deep links, no native plugins, no Play Store listing in v1.
 
 ## Acceptance criteria
 
-1. `./scripts/sync-web-assets.sh` (from `android/`) produces a non-empty `app/src/main/assets/www/index.html` with relative asset URLs and bundled WebP map/battle art for all 15 fields.
+1. `./scripts/sync-web-assets.sh` (from `android/`) produces a non-empty `app/src/main/assets/www/index.html` with relative asset URLs and bundled WebP garden/battle art for all 15 biomes.
 2. `./gradlew assembleRelease` produces a sideload-signed APK under 100 MB (signed with the committed `android/sideload.keystore`).
 3. Installing the APK on API 34+ opens the welcome screen without a network connection.
-4. Completing a battle persists card/plot state across process death (WebView IndexedDB).
+4. Completing a battle persists card/bed state across process death (WebView IndexedDB).
 5. Deploy workflow for this repository rebuilds the APK when the Android wrapper or the root web game changes.
 6. Root `README.md` documents the web and Android Pages paths for this repo.
 7. On a phone-sized WebView, battle chrome does not overlap a clipped circular writer; layout matches mobile web (no overview-scaled desktop CSS).
-8. The V2 garden map (including its negative map layer) and all 60 field-cleaning backdrops load under bundled `file:///android_asset/` (`base: './'`) — writing field stays visibly rendered through dirty, half-clean, quarter-clean, and clean states rather than becoming a blank dark void.
+8. The garden map (including its negative layer) and all 60 biome battle backdrops load under bundled `file:///android_asset/` (`base: './'`) — the writing area stays visibly rendered through dirty, half-clean, quarter-clean, and clean states rather than becoming a blank dark void.
 9. Battle quiz works offline: Hanzi stroke JSON loads via XHR (Fetch is blocked on `file://`), so drawing and «Показать следующий штрих» animate.
 10. `scripts/sync-web-assets.sh` fails if the bundled `www/` tree exceeds 95 MB.

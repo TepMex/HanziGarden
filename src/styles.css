@@ -192,11 +192,11 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
 }
 
 .brand-mark,
-.world-summary,
-.world-summary span { display: flex; align-items: center; }
+.garden-summary,
+.garden-summary span { display: flex; align-items: center; }
 .brand-mark { gap: 9px; font-size: 1.35rem; font-weight: 600; letter-spacing: .04em; }
-.world-summary { gap: 24px; color: #e1d6b9; font-size: .95rem; }
-.world-summary span { gap: 7px; }
+.garden-summary { gap: 24px; color: #e1d6b9; font-size: .95rem; }
+.garden-summary span { gap: 7px; }
 
 .map-stage {
   position: absolute;
@@ -211,7 +211,7 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
   transition: transform .35s ease;
 }
 
-.field-grid {
+.bed-grid {
   position: absolute;
   inset: 7% 7% 5%;
   display: grid;
@@ -221,7 +221,7 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
   transform: perspective(1200px) rotateX(1deg);
 }
 
-.field-hotspot {
+.bed-hotspot-legacy {
   position: relative;
   min-width: 0;
   min-height: 0;
@@ -236,16 +236,16 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
   transition: filter .2s;
 }
 
-.field-shape--0 { clip-path: polygon(2% 6%, 94% 1%, 99% 11%, 97% 91%, 88% 98%, 6% 95%, 0 83%); }
-.field-shape--1 { clip-path: polygon(5% 0, 96% 4%, 100% 18%, 94% 100%, 9% 96%, 1% 83%); }
-.field-shape--2 { clip-path: polygon(0 13%, 8% 2%, 91% 0, 100% 12%, 96% 94%, 80% 100%, 4% 92%); }
-.field-shape--3 { clip-path: polygon(7% 3%, 88% 0, 100% 9%, 98% 84%, 90% 100%, 8% 96%, 1% 14%); }
-.field-shape--4 { clip-path: polygon(1% 8%, 10% 0, 94% 5%, 100% 89%, 91% 100%, 4% 93%); }
-.field-shape--5 { clip-path: polygon(4% 0, 100% 7%, 96% 93%, 84% 100%, 3% 95%, 0 14%); }
-.field-shape--6 { clip-path: polygon(8% 2%, 90% 0, 100% 16%, 93% 96%, 13% 100%, 0 88%); }
-.field-shape--7 { clip-path: polygon(0 5%, 86% 1%, 100% 13%, 96% 90%, 83% 100%, 7% 95%); }
+.bed-shape--0 { clip-path: polygon(2% 6%, 94% 1%, 99% 11%, 97% 91%, 88% 98%, 6% 95%, 0 83%); }
+.bed-shape--1 { clip-path: polygon(5% 0, 96% 4%, 100% 18%, 94% 100%, 9% 96%, 1% 83%); }
+.bed-shape--2 { clip-path: polygon(0 13%, 8% 2%, 91% 0, 100% 12%, 96% 94%, 80% 100%, 4% 92%); }
+.bed-shape--3 { clip-path: polygon(7% 3%, 88% 0, 100% 9%, 98% 84%, 90% 100%, 8% 96%, 1% 14%); }
+.bed-shape--4 { clip-path: polygon(1% 8%, 10% 0, 94% 5%, 100% 89%, 91% 100%, 4% 93%); }
+.bed-shape--5 { clip-path: polygon(4% 0, 100% 7%, 96% 93%, 84% 100%, 3% 95%, 0 14%); }
+.bed-shape--6 { clip-path: polygon(8% 2%, 90% 0, 100% 16%, 93% 96%, 13% 100%, 0 88%); }
+.bed-shape--7 { clip-path: polygon(0 5%, 86% 1%, 100% 13%, 96% 90%, 83% 100%, 7% 95%); }
 
-.field-hotspot::before {
+.bed-hotspot-legacy::before {
   content: '';
   position: absolute;
   inset: 7%;
@@ -257,13 +257,13 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
   transition: opacity .2s;
 }
 
-.field-hotspot::after {
+.bed-hotspot-legacy::after {
   content: none;
 }
 
-/* The map is composed as a small recipe per plot: soil, crop clusters,
+/* The garden is composed as a small recipe per bed: soil, crop clusters,
    deterministic props, then a weed layer whose opacity is infection-driven. */
-.field-art {
+.bed-art {
   position: absolute;
   inset: 2px;
   z-index: 0;
@@ -274,7 +274,7 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
   pointer-events: none;
 }
 
-.field-art::before {
+.bed-art::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -285,7 +285,7 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
   opacity: calc(.35 + (1 - var(--infection)) * .35);
 }
 
-.field-art::after {
+.bed-art::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -293,18 +293,18 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
   opacity: calc(.18 + var(--infection) * .38);
 }
 
-.field-art--jade { --soil: #526344; }
-.field-art--reed-bed { --soil: #647049; }
-.field-art--water-soil { --soil: #4a6d68; }
-.field-art--blue-earth { --soil: #50677a; }
-.field-art--warm-loam { --soil: #806744; }
-.field-art--silver-grass { --soil: #727c69; }
-.field-art--rose-loam { --soil: #795b53; }
-.field-art--tea-earth { --soil: #5e6747; }
-.field-art--pale-earth { --soil: #827661; }
-.field-art--ember-earth { --soil: #755343; }
-.field-art--moss-soil { --soil: #3f6655; }
-.field-art--night-earth { --soil: #48556d; }
+.bed-art--jade { --soil: #526344; }
+.bed-art--reed-bed { --soil: #647049; }
+.bed-art--water-soil { --soil: #4a6d68; }
+.bed-art--blue-earth { --soil: #50677a; }
+.bed-art--warm-loam { --soil: #806744; }
+.bed-art--silver-grass { --soil: #727c69; }
+.bed-art--rose-loam { --soil: #795b53; }
+.bed-art--tea-earth { --soil: #5e6747; }
+.bed-art--pale-earth { --soil: #827661; }
+.bed-art--ember-earth { --soil: #755343; }
+.bed-art--moss-soil { --soil: #3f6655; }
+.bed-art--night-earth { --soil: #48556d; }
 
 .plant-bed {
   position: absolute;
@@ -376,20 +376,20 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
 .plant-cluster--bells { --cluster-fill: #866db8; --cluster-highlight: #d1a8e5; --cluster-radius: 43% 57% 56% 44%; }
 .plant-cluster--secondary { opacity: calc(.27 + (1 - var(--infection)) * .46); }
 
-.plot-decoration {
+.bed-decoration {
   position: absolute;
   inset: 0;
   opacity: calc(.16 + (1 - var(--infection)) * .28);
   mix-blend-mode: screen;
 }
 
-.plot-decoration--stones { background: radial-gradient(ellipse at 12% 16%, rgba(220, 208, 171, .55) 0 3%, transparent 4%), radial-gradient(ellipse at 86% 78%, rgba(220, 208, 171, .5) 0 4%, transparent 5%); }
-.plot-decoration--lanterns { background: radial-gradient(circle at 15% 22%, rgba(242, 198, 111, .9) 0 4%, transparent 5%), radial-gradient(circle at 85% 78%, rgba(242, 198, 111, .78) 0 3%, transparent 4%); }
-.plot-decoration--water { background: repeating-linear-gradient(170deg, transparent 0 11px, rgba(164, 220, 216, .34) 12px 13px); }
-.plot-decoration--terraces { background: repeating-linear-gradient(0deg, transparent 0 14px, rgba(223, 207, 145, .32) 15px 17px); }
-.plot-decoration--paths { background: linear-gradient(135deg, transparent 46%, rgba(222, 207, 161, .34) 47% 51%, transparent 52%); }
-.plot-decoration--stepping-stones { background: radial-gradient(ellipse at 22% 77%, rgba(220, 208, 171, .56) 0 4%, transparent 5%), radial-gradient(ellipse at 45% 61%, rgba(220, 208, 171, .52) 0 4%, transparent 5%), radial-gradient(ellipse at 69% 47%, rgba(220, 208, 171, .46) 0 4%, transparent 5%); }
-.plot-decoration--star-bells { background: radial-gradient(circle at 18% 21%, rgba(192, 177, 245, .7) 0 2%, transparent 3%), radial-gradient(circle at 78% 36%, rgba(192, 177, 245, .7) 0 2%, transparent 3%), radial-gradient(circle at 63% 83%, rgba(192, 177, 245, .55) 0 2%, transparent 3%); }
+.bed-decoration--stones { background: radial-gradient(ellipse at 12% 16%, rgba(220, 208, 171, .55) 0 3%, transparent 4%), radial-gradient(ellipse at 86% 78%, rgba(220, 208, 171, .5) 0 4%, transparent 5%); }
+.bed-decoration--lanterns { background: radial-gradient(circle at 15% 22%, rgba(242, 198, 111, .9) 0 4%, transparent 5%), radial-gradient(circle at 85% 78%, rgba(242, 198, 111, .78) 0 3%, transparent 4%); }
+.bed-decoration--water { background: repeating-linear-gradient(170deg, transparent 0 11px, rgba(164, 220, 216, .34) 12px 13px); }
+.bed-decoration--terraces { background: repeating-linear-gradient(0deg, transparent 0 14px, rgba(223, 207, 145, .32) 15px 17px); }
+.bed-decoration--paths { background: linear-gradient(135deg, transparent 46%, rgba(222, 207, 161, .34) 47% 51%, transparent 52%); }
+.bed-decoration--stepping-stones { background: radial-gradient(ellipse at 22% 77%, rgba(220, 208, 171, .56) 0 4%, transparent 5%), radial-gradient(ellipse at 45% 61%, rgba(220, 208, 171, .52) 0 4%, transparent 5%), radial-gradient(ellipse at 69% 47%, rgba(220, 208, 171, .46) 0 4%, transparent 5%); }
+.bed-decoration--star-bells { background: radial-gradient(circle at 18% 21%, rgba(192, 177, 245, .7) 0 2%, transparent 3%), radial-gradient(circle at 78% 36%, rgba(192, 177, 245, .7) 0 2%, transparent 3%), radial-gradient(circle at 63% 83%, rgba(192, 177, 245, .55) 0 2%, transparent 3%); }
 
 .weed-layer {
   --weed-ink: #301c3e;
@@ -433,16 +433,16 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
 .weed-layer--bramble i { border-radius: 50% 0 50% 0; box-shadow: 5px 15px 0 -1px var(--weed-ink), -5px 28px 0 -1px var(--weed-ink); }
 .weed-layer--shadow-grass i { height: 44%; bottom: 0; border-radius: 100% 0 0 0; }
 
-.field-hotspot:hover,
-.field-hotspot.is-selected { z-index: 2; filter: brightness(1.14); }
-.field-hotspot:hover::before,
-.field-hotspot.is-selected::before { opacity: 1; }
-.field-hotspot.is-locked { cursor: default; }
-.field-status { position: absolute; inset: 0; z-index: 7; display: grid; place-items: center; }
-.field-status svg { width: 15px; filter: drop-shadow(0 2px 2px #14201c); opacity: .9; }
-.field-hotspot:not(.is-selected):not(:hover) .field-status { opacity: .25; }
-.field-hotspot.is-locked:not(.is-selected):not(:hover) .field-status { opacity: .62; }
-.field-hotspot.is-locked .field-status svg {
+.bed-hotspot-legacy:hover,
+.bed-hotspot-legacy.is-selected { z-index: 2; filter: brightness(1.14); }
+.bed-hotspot-legacy:hover::before,
+.bed-hotspot-legacy.is-selected::before { opacity: 1; }
+.bed-hotspot-legacy.is-locked { cursor: default; }
+.bed-status { position: absolute; inset: 0; z-index: 7; display: grid; place-items: center; }
+.bed-status svg { width: 15px; filter: drop-shadow(0 2px 2px #14201c); opacity: .9; }
+.bed-hotspot-legacy:not(.is-selected):not(:hover) .bed-status { opacity: .25; }
+.bed-hotspot-legacy.is-locked:not(.is-selected):not(:hover) .bed-status { opacity: .62; }
+.bed-hotspot-legacy.is-locked .bed-status svg {
   box-sizing: content-box;
   padding: 4px;
   color: #ddd0b4;
@@ -452,7 +452,7 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
 }
 .weed-orb { width: 9px; height: 9px; border-radius: 50%; background: #785378; box-shadow: 0 0 12px 4px rgba(107, 61, 111, .78); }
 
-.field-panel {
+.bed-panel {
   position: absolute;
   z-index: 12;
   top: 50%;
@@ -467,7 +467,7 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
   transform: translateY(-50%);
 }
 
-.field-panel::after {
+.bed-panel::after {
   content: '';
   position: absolute;
   inset: 9px;
@@ -475,12 +475,12 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
   pointer-events: none;
 }
 
-.field-panel h1 { position: relative; z-index: 1; margin: 4px 0 6px; font-size: 2rem; line-height: 1; text-transform: capitalize; }
-.field-subtitle { min-height: 40px; margin: 0 0 18px; font-size: .95rem; line-height: 1.25; opacity: .72; }
+.bed-panel h1 { position: relative; z-index: 1; margin: 4px 0 6px; font-size: 2rem; line-height: 1; text-transform: capitalize; }
+.bed-subtitle { min-height: 40px; margin: 0 0 18px; font-size: .95rem; line-height: 1.25; opacity: .72; }
 .health-line { height: 7px; overflow: hidden; border: 1px solid rgba(47, 55, 42, .32); background: #423747; }
 .health-line span { display: block; height: 100%; background: linear-gradient(90deg, #697e5d, #b49d57); transition: width .5s; }
-.field-meta { display: flex; justify-content: space-between; margin: 9px 0 20px; font-size: .83rem; }
-.field-panel .primary-button { position: relative; z-index: 2; width: 100%; }
+.bed-meta { display: flex; justify-content: space-between; margin: 9px 0 20px; font-size: .83rem; }
+.bed-panel .primary-button { position: relative; z-index: 2; width: 100%; }
 .locked-note { display: flex; align-items: center; gap: 8px; margin-top: 24px; opacity: .65; }
 
 .map-hint { position: absolute; bottom: 22px; left: 50%; z-index: 10; margin: 0; transform: translateX(-50%); color: rgba(239, 226, 196, .72); font-size: .83rem; letter-spacing: .06em; text-shadow: 0 2px 4px #101815; }
@@ -622,9 +622,9 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
   stroke-opacity: var(--streak-ink-opacity) !important;
 }
 .hint-button { position: absolute; z-index: 14; right: 26px; bottom: 28px; display: flex; align-items: center; gap: 7px; padding: 9px 12px; color: #e5d4b0; border: 1px solid rgba(205, 181, 130, .32); background: rgba(26, 32, 27, .75); cursor: pointer; }
-.field-cleanliness { position: absolute; z-index: 14; left: 27px; bottom: 29px; display: flex; align-items: center; gap: 9px; color: #e8d8b6; }
-.field-cleanliness > span { width: 110px; height: 5px; overflow: hidden; border: 1px solid rgba(226, 207, 165, .42); background: rgba(37, 27, 40, .8); }
-.field-cleanliness i { display: block; height: 100%; background: #88996c; transition: width .6s; }
+.bed-cleanliness { position: absolute; z-index: 14; left: 27px; bottom: 29px; display: flex; align-items: center; gap: 9px; color: #e8d8b6; }
+.bed-cleanliness > span { width: 110px; height: 5px; overflow: hidden; border: 1px solid rgba(226, 207, 165, .42); background: rgba(37, 27, 40, .8); }
+.bed-cleanliness i { display: block; height: 100%; background: #88996c; transition: width .6s; }
 
 .composition-backdrop {
   position: absolute;
@@ -680,12 +680,12 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
 @media (max-width: 820px) {
   .map-header { padding: 0 18px; }
   .map-canvas { inset: 6% 2% 30%; }
-  .field-grid { inset: 8% 4%; }
-  .field-panel { top: auto; right: 15px; bottom: max(16px, env(safe-area-inset-bottom, 0px)); left: 15px; width: auto; padding: 19px 23px; transform: none; }
-  .field-panel h1 { font-size: 1.5rem; }
-  .field-subtitle { min-height: auto; margin-bottom: 10px; }
-  .field-panel .health-line, .field-panel .field-meta { display: none; }
-  .field-panel .primary-button { min-height: 39px; }
+  .bed-grid { inset: 8% 4%; }
+  .bed-panel { top: auto; right: 15px; bottom: max(16px, env(safe-area-inset-bottom, 0px)); left: 15px; width: auto; padding: 19px 23px; transform: none; }
+  .bed-panel h1 { font-size: 1.5rem; }
+  .bed-subtitle { min-height: auto; margin-bottom: 10px; }
+  .bed-panel .health-line, .bed-panel .bed-meta { display: none; }
+  .bed-panel .primary-button { min-height: 39px; }
   .map-hint { display: none; }
   .welcome-card { margin-top: 28px; padding: 48px 22px 34px; }
   .welcome-card h1 { font-size: clamp(2.05rem, 9.2vw, 3.1rem); }
@@ -706,12 +706,12 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
     font-size: .78rem;
   }
   /* Keep leaf meter out of the hint row (Android screenshot showed them colliding). */
-  .field-cleanliness {
+  .bed-cleanliness {
     top: max(92px, calc(env(safe-area-inset-top, 0px) + 78px));
     bottom: auto;
     left: 13px;
   }
-  .field-cleanliness > span { width: 72px; }
+  .bed-cleanliness > span { width: 72px; }
   .composition-backdrop { padding: 18px; }
   .composition-dialog { max-height: calc(100dvh - 36px); padding: 31px 27px 27px; }
   .composition-close { top: 17px; right: 17px; }
@@ -728,7 +728,7 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
     left: 12px;
     justify-content: center;
   }
-  .field-cleanliness {
+  .bed-cleanliness {
     top: max(92px, calc(env(safe-area-inset-top, 0px) + 78px));
     bottom: auto;
     left: 13px;
@@ -747,7 +747,7 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
     transform: none;
   }
   .writing-circle { top: 50%; left: 60%; width: min(600px, 92dvh, calc(100vw - 36px)); }
-  .field-cleanliness {
+  .bed-cleanliness {
     top: max(15px, env(safe-area-inset-top, 0px));
     bottom: auto;
     left: 80px;
@@ -758,12 +758,12 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
 
-/* V2 continuous world map ------------------------------------------------ */
+/* V2 continuous garden map ------------------------------------------------ */
 .map-screen { background: #17231f; }
 .map-screen::after { display: none; }
 .map-header { pointer-events: none; }
 .map-header > * { pointer-events: auto; }
-.world-summary { gap: 15px; }
+.garden-summary { gap: 15px; }
 .map-grid-button,
 .map-stats-button,
 .stats-back {
@@ -781,7 +781,7 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
 .map-grid-button:hover, .map-stats-button:hover, .stats-back:hover { background: rgba(64, 88, 67, .88); }
 .map-grid-button[aria-pressed="true"] { color: #fff6d7; background: rgba(86, 112, 77, .92); }
 
-.world-map-viewport {
+.garden-map-viewport {
   position: absolute;
   inset: 0;
   overflow: hidden;
@@ -813,8 +813,8 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
   box-shadow: inset 0 0 0 2px rgba(231, 208, 158, .08), 0 7px 20px rgba(19, 25, 21, .28);
   cursor: pointer;
 }
-.world-map-viewport:active { cursor: grabbing; }
-.world-map-world {
+.garden-map-viewport:active { cursor: grabbing; }
+.garden-map-content {
   position: absolute;
   top: 0;
   left: 0;
@@ -825,40 +825,40 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
   overflow: hidden;
 }
 /* Assemble under the opaque preloader so SVG weed compositing can finish
-   before reveal.  Only hide the world on hard load failure. */
-.world-map-viewport.has-map-error .world-map-world {
+   before reveal.  Only hide the garden on hard load failure. */
+.garden-map-viewport.has-map-error .garden-map-content {
   visibility: hidden;
 }
-.world-map-canvas,
-.world-map-grid,
-.world-map-grid-source,
-.world-map-cell-grid,
-.world-map-hotspots,
+.garden-map-canvas,
+.garden-map-grid,
+.garden-map-grid-source,
+.garden-map-cell-grid,
+.garden-map-hotspots,
 .map-debug-overlay {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
 }
-.world-map-canvas {
+.garden-map-canvas {
   display: block;
   pointer-events: none;
 }
-.world-map-grid {
+.garden-map-grid {
   z-index: 1;
   pointer-events: none;
   opacity: 0;
   transition: opacity .14s ease;
 }
-.world-map-grid-source {
+.garden-map-grid-source {
   display: block;
   filter: invert(88%) sepia(28%) saturate(645%) hue-rotate(348deg) brightness(104%);
 }
-.world-map-cell-grid { overflow: visible; }
-.world-map-cell-grid line { stroke: #fff0b0; stroke-width: 2px; stroke-opacity: .9; }
-.world-map-grid.is-visible { opacity: .48; }
-.world-map-hotspots { z-index: 2; }
-.plot-hotspot {
+.garden-map-cell-grid { overflow: visible; }
+.garden-map-cell-grid line { stroke: #fff0b0; stroke-width: 2px; stroke-opacity: .9; }
+.garden-map-grid.is-visible { opacity: .48; }
+.garden-map-hotspots { z-index: 2; }
+.bed-hotspot {
   position: absolute;
   display: grid;
   place-items: center;
@@ -869,23 +869,23 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
   cursor: pointer;
   transition: border-color .16s ease, background .16s ease, filter .16s ease;
 }
-.plot-hotspot:hover,
-.plot-hotspot:focus-visible {
+.bed-hotspot:hover,
+.bed-hotspot:focus-visible {
   z-index: 4;
   border-color: rgba(246, 229, 175, .82);
   background: radial-gradient(ellipse, rgba(255, 239, 177, .2), transparent 68%);
   filter: brightness(1.1);
 }
-.plot-hotspot.is-locked { cursor: not-allowed; }
-.plot-lock { width: 21px; opacity: 0; filter: drop-shadow(0 2px 2px #111); transition: opacity .16s ease; }
-.plot-hotspot.is-locked:hover .plot-lock,
-.plot-hotspot.is-locked:focus-visible .plot-lock { opacity: .86; }
-.plot-hotspot.is-locked-pulse { animation: locked-pulse .5s ease; }
+.bed-hotspot.is-locked { cursor: not-allowed; }
+.bed-lock { width: 21px; opacity: 0; filter: drop-shadow(0 2px 2px #111); transition: opacity .16s ease; }
+.bed-hotspot.is-locked:hover .bed-lock,
+.bed-hotspot.is-locked:focus-visible .bed-lock { opacity: .86; }
+.bed-hotspot.is-locked-pulse { animation: locked-pulse .5s ease; }
 @keyframes locked-pulse { 50% { background: rgba(164, 92, 112, .38); border-color: #e9b1a2; } }
 .map-debug-overlay { z-index: 5; pointer-events: none; overflow: visible; font: 16px ui-monospace, monospace; fill: #fff; paint-order: stroke; stroke: #17221f; stroke-width: 3px; }
-.debug-region { fill: rgba(120, 255, 160, .05); stroke: #7dff9a; stroke-width: 2.5px; }
+.debug-biome { fill: rgba(120, 255, 160, .05); stroke: #7dff9a; stroke-width: 2.5px; }
 .debug-cell { fill: rgba(72, 204, 249, .1); stroke: #41d6ef; stroke-width: 1.5px; }
-.debug-plot { fill: none; stroke: #f3d458; stroke-width: 3px; }
+.debug-bed { fill: none; stroke: #f3d458; stroke-width: 3px; }
 
 /* V2 statistics ---------------------------------------------------------- */
 .statistics-screen {
@@ -942,7 +942,7 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
 @media (max-width: 820px) {
   .map-header { min-height: 58px; padding: max(8px, env(safe-area-inset-top, 0px)) 13px 8px; }
   .brand-mark { font-size: 1.08rem; }
-  .world-summary { gap: 7px; font-size: .76rem; }
+  .garden-summary { gap: 7px; font-size: .76rem; }
   .map-grid-button,
   .map-stats-button { width: 34px; min-height: 34px; padding: 0; justify-content: center; }
   .map-stats-button span { display: none; }
