@@ -65,7 +65,6 @@ if (!loaded.ok) {
 await page.locator('.hint-button').click()
 await page.waitForTimeout(600)
 const afterHint = await page.evaluate(() => ({
-  feedback: document.querySelector('.stroke-feedback span')?.textContent,
   // Hanzi Writer animates highlight into path elements with non-zero opacity
   animated: [...document.querySelectorAll('.writing-circle svg path')].some((path) => {
     const opacity = getComputedStyle(path).opacity
@@ -75,10 +74,6 @@ const afterHint = await page.evaluate(() => ({
   pathCount: document.querySelectorAll('.writing-circle svg path').length,
 }))
 
-if (afterHint.feedback !== 'Подсказка использована — streak сброшен') {
-  console.error('FAIL: hint feedback missing', afterHint)
-  process.exit(1)
-}
 if (afterHint.pathCount < 1) {
   console.error('FAIL: hint did not create stroke paths (char data not loaded?)', afterHint)
   process.exit(1)
@@ -92,7 +87,8 @@ await page.locator('[data-plot-id="plot-001"]').click()
 await page.waitForSelector('.writing-circle svg')
 await page.waitForTimeout(800)
 
-const box = await page.locator('.writing-circle').boundingBox()
+const beforeKeyword = await page.locator('.prompt-scroll strong').textContent()
+const box = await page.locator('.writing-target').boundingBox()
 if (!box) {
   console.error('FAIL: no writing circle')
   process.exit(1)
@@ -106,15 +102,13 @@ for (let i = 1; i <= 12; i++) {
   await page.mouse.move(x1 + (x2 - x1) * (i / 12), y)
 }
 await page.mouse.up()
-await page.waitForTimeout(800)
+await page.waitForTimeout(1_300)
 
 const afterDraw = await page.evaluate(() => ({
-  feedback: document.querySelector('.stroke-feedback span')?.textContent,
-  cut: document.querySelectorAll('.battle-progress i.is-cut').length,
+  keyword: document.querySelector('.prompt-scroll strong')?.textContent,
 }))
 
-const drawOk =
-  afterDraw.cut >= 1 || /пепел|Точный|отступил|корень/i.test(afterDraw.feedback || '')
+const drawOk = afterDraw.keyword !== beforeKeyword
 if (!drawOk) {
   console.error('FAIL: stroke not accepted under file://', afterDraw)
   console.error('console errors:', errors.slice(0, 10))

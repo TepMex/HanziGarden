@@ -3,6 +3,7 @@ import { MAX_ZOOM, MIN_ZOOM, WORLD_HEIGHT, WORLD_WIDTH } from '../data/mapLayout
 export type CameraState = { x: number; y: number; zoom: number }
 export type Point = { x: number; y: number }
 export type Viewport = { width: number; height: number }
+export type WorldBounds = { x: number; y: number; width: number; height: number }
 
 export const initialCamera: CameraState = { x: 0, y: 0, zoom: MIN_ZOOM }
 
@@ -57,4 +58,30 @@ export function clampCamera(camera: CameraState, viewport: Viewport, overscroll 
 
 export function focusWorldPoint(point: Point, zoom: number, viewport: Viewport): CameraState {
   return clampCamera(cameraForWorldPoint(point, { x: viewport.width / 2, y: viewport.height / 2 }, zoom, viewport), viewport)
+}
+
+/** Center bounds and fit their width with equal horizontal margins. */
+export function cameraForWorldBounds(
+  bounds: WorldBounds,
+  viewport: Viewport,
+  horizontalMargin = 0.1,
+): CameraState {
+  const margin = Math.max(0, Math.min(0.45, horizontalMargin))
+  const availableWidth = viewport.width * (1 - margin * 2)
+  const zoom = clampZoom(availableWidth / Math.max(1, bounds.width) / baseMapScale(viewport))
+  return focusWorldPoint(
+    { x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2 },
+    zoom,
+    viewport,
+  )
+}
+
+/** Desktop deliberately keeps its current camera. */
+export function mobileCameraForWorldBounds(
+  bounds: WorldBounds,
+  viewport: Viewport,
+  horizontalMargin = 0.1,
+): CameraState | null {
+  if (viewport.width > 820) return null
+  return cameraForWorldBounds(bounds, viewport, horizontalMargin)
 }

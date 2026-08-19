@@ -1,16 +1,21 @@
 import Dexie, { type EntityTable } from 'dexie'
-import { plotIdsByLegacyFieldId } from './data/model'
+import { characterById, plotIdsByLegacyFieldId } from './data/model'
 import type { CardState, ReviewEvent } from './learning'
 
 export type SaveGame = {
   id: 'main'
-  version: 2
+  version: 3
   unlockedPlotIds: string[]
   masteredPlotIds: string[]
+  lastActivePlotId: string | null
   seenCharacterIds: string[]
   cards: Record<string, CardState>
   reviewEvents: ReviewEvent[]
   updatedAt: number
+}
+
+export type SaveGameV2 = Omit<SaveGame, 'version' | 'lastActivePlotId'> & {
+  version: 2
 }
 
 export type SaveGameV1 = {
@@ -24,19 +29,40 @@ export type SaveGameV1 = {
   updatedAt: number
 }
 
-type StoredSave = SaveGame | SaveGameV1
+type StoredSave = SaveGame | SaveGameV2 | SaveGameV1
 
 function migrateFieldIds(fieldIds: readonly string[]): string[] {
   return [...new Set(fieldIds.flatMap((fieldId) => plotIdsByLegacyFieldId.get(fieldId) ?? []))]
 }
 
 /** Pure export keeps the data-loss-sensitive migration independently testable. */
+function lastActivePlotId(
+  reviewEvents: readonly ReviewEvent[],
+  unlockedPlotIds: readonly string[],
+): string | null {
+  const latest = [...reviewEvents].sort((left, right) => right.timestamp - left.timestamp)
+    .find((event) => characterById.has(event.characterId))
+  return (latest ? characterById.get(latest.characterId)?.plotId : undefined)
+    ?? unlockedPlotIds[0]
+    ?? null
+}
+
+export function migrateV2Save(save: SaveGameV2): SaveGame {
+  return {
+    ...save,
+    version: 3,
+    lastActivePlotId: lastActivePlotId(save.reviewEvents, save.unlockedPlotIds),
+  }
+}
+
 export function migrateV1Save(save: SaveGameV1): SaveGame {
+  const unlockedPlotIds = migrateFieldIds(save.unlockedFieldIds)
   return {
     id: 'main',
-    version: 2,
-    unlockedPlotIds: migrateFieldIds(save.unlockedFieldIds),
+    version: 3,
+    unlockedPlotIds,
     masteredPlotIds: migrateFieldIds(save.masteredFieldIds),
+    lastActivePlotId: lastActivePlotId(save.reviewEvents, unlockedPlotIds),
     seenCharacterIds: save.seenCharacterIds,
     cards: save.cards,
     reviewEvents: save.reviewEvents,
@@ -46,6 +72,16 @@ export function migrateV1Save(save: SaveGameV1): SaveGame {
 
 function isV1Save(save: StoredSave): save is SaveGameV1 {
   return save.version === 1
+}
+
+function isV2Save(save: StoredSave): save is SaveGameV2 {
+  return save.version === 2
+}
+
+function migrateStoredSave(save: StoredSave): SaveGame {
+  if (isV1Save(save)) return migrateV1Save(save)
+  if (isV2Save(save)) return migrateV2Save(save)
+  return save
 }
 
 const database = new Dexie('memory-garden') as Dexie & {
@@ -62,12 +98,21 @@ database.version(2).stores({ saves: 'id, version, updatedAt' }).upgrade((transac
     delete (stored as Partial<SaveGameV1>).masteredFieldIds
   })
 })
+database.version(3).stores({ saves: 'id, version, updatedAt' }).upgrade((transaction) => {
+  return transaction.table('saves').toCollection().modify((stored: StoredSave) => {
+    const migrated = migrateStoredSave(stored)
+    Object.assign(stored, migrated)
+    delete (stored as Partial<SaveGameV1>).unlockedFieldIds
+    delete (stored as Partial<SaveGameV1>).masteredFieldIds
+  })
+})
 
 export const initialSave: SaveGame = {
   id: 'main',
-  version: 2,
+  version: 3,
   unlockedPlotIds: ['plot-001'],
   masteredPlotIds: [],
+  lastActivePlotId: null,
   seenCharacterIds: [],
   cards: {},
   reviewEvents: [],
@@ -77,8 +122,8 @@ export const initialSave: SaveGame = {
 export async function loadSave(): Promise<SaveGame> {
   const stored = await database.saves.get('main')
   if (!stored) return structuredClone(initialSave)
-  if (!isV1Save(stored)) return stored
-  const migrated = migrateV1Save(stored)
+  if (stored.version === 3) return stored
+  const migrated = migrateStoredSave(stored)
   await database.saves.put(migrated)
   return migrated
 }

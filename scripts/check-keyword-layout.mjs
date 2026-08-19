@@ -29,9 +29,10 @@ function saveForCase({ keyword, plotId }) {
   if (index < 0) throw new Error(`missing keyword ${keyword}`)
   return {
     id: 'main',
-    version: 2,
+    version: 3,
     unlockedPlotIds: [plotId],
     masteredPlotIds: [],
+    lastActivePlotId: plotId,
     seenCharacterIds: [],
     cards: Object.fromEntries(plot.characters.slice(0, index).map((character) => [character.id, { due: '2999-01-01T00:00:00.000Z' }])),
     reviewEvents: [],

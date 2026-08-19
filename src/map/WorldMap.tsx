@@ -10,6 +10,7 @@ import {
   cameraForWorldPoint,
   clampCamera,
   clampZoom,
+  mobileCameraForWorldBounds,
   type CameraState,
   type Point,
   type Viewport,
@@ -20,6 +21,7 @@ import { GardenRevealCanvas } from './GardenRevealCanvas'
 type WorldMapProps = {
   save: SaveGame
   camera: CameraState
+  focusPlotId: string | null
   gridVisible: boolean
   onCameraChange: (camera: CameraState) => void
   onEnterPlot: (plot: PlotDefinition) => void
@@ -31,7 +33,6 @@ type MapLoadState = 'loading' | 'ready' | 'error'
 
 const debugMap = new URLSearchParams(window.location.search).get('debugMap') === '1'
 const DRAG_THRESHOLD = 12
-const SMALL_SCREEN_QUERY = '(max-width: 820px)'
 const GRID_URL = assetUrl('assets/garden-grid.svg')
 
 function distance(left: Point, right: Point): number {
@@ -124,18 +125,16 @@ function MapDebugOverlay() {
 }
 
 /** A transformed world. Weed mask re-renders only for save changes, never for camera movement. */
-export function WorldMap({ save, camera, gridVisible, onCameraChange, onEnterPlot }: WorldMapProps) {
+export function WorldMap({ save, camera, focusPlotId, gridVisible, onCameraChange, onEnterPlot }: WorldMapProps) {
   const viewportRef = useRef<HTMLElement>(null)
   const worldRef = useRef<HTMLDivElement>(null)
   const cameraRef = useRef(camera)
   const pointersRef = useRef(new Map<number, Point>())
-  const touchPointersRef = useRef(new Set<number>())
   const dragRef = useRef<Drag | null>(null)
   const pinchRef = useRef<Pinch | null>(null)
   const movedRef = useRef(false)
   const wheelCommitRef = useRef<number | null>(null)
   const [lockedPulseId, setLockedPulseId] = useState<string | null>(null)
-  const [touchGridVisible, setTouchGridVisible] = useState(false)
   const [loadState, setLoadState] = useState<MapLoadState>('loading')
   const [loadAttempt, setLoadAttempt] = useState(0)
   const revealReady = useCallback(() => setLoadState('ready'), [])
@@ -162,6 +161,17 @@ export function WorldMap({ save, camera, gridVisible, onCameraChange, onEnterPlo
   useEffect(() => {
     paintCamera(camera)
   }, [camera, paintCamera])
+
+  useEffect(() => {
+    const viewport = getViewport()
+    const plot = plots.find((candidate) => candidate.id === focusPlotId)
+    if (!viewport || !plot) return
+    const bounds = rectToWorld(plotBounds(plot.cells))
+    const focused = mobileCameraForWorldBounds(bounds, viewport, 0.1)
+    if (!focused) return
+    const painted = paintCamera(focused, true)
+    if (painted) onCameraChange(painted)
+  }, [focusPlotId, getViewport, onCameraChange, paintCamera])
 
   useEffect(() => {
     const viewport = viewportRef.current
@@ -225,7 +235,6 @@ export function WorldMap({ save, camera, gridVisible, onCameraChange, onEnterPlo
       viewport.setPointerCapture(event.pointerId)
     }
     pointersRef.current.set(event.pointerId, localPoint(event, viewport.getBoundingClientRect()))
-    if (event.pointerType === 'touch') touchPointersRef.current.add(event.pointerId)
     movedRef.current = false
     if (pointersRef.current.size === 1) {
       dragRef.current = { pointerId: event.pointerId, point: pointersRef.current.get(event.pointerId)!, camera: cameraRef.current }
@@ -247,7 +256,6 @@ export function WorldMap({ save, camera, gridVisible, onCameraChange, onEnterPlo
       const next = cameraForWorldPoint(pinch.worldPoint, midpoint(pointerValues[0]!, pointerValues[1]!), clampZoom(pinch.camera.zoom * nextDistance / pinch.distance), viewport)
       paintCamera(next)
       movedRef.current = true
-      if (event.pointerType === 'touch' && window.matchMedia(SMALL_SCREEN_QUERY).matches) setTouchGridVisible(true)
       return
     }
     const drag = dragRef.current
@@ -260,7 +268,6 @@ export function WorldMap({ save, camera, gridVisible, onCameraChange, onEnterPlo
     // compromising intentional map panning.
     if (!movedRef.current && Math.hypot(deltaX, deltaY) <= DRAG_THRESHOLD) return
     movedRef.current = true
-    if (event.pointerType === 'touch' && window.matchMedia(SMALL_SCREEN_QUERY).matches) setTouchGridVisible(true)
     if (!viewportElement.hasPointerCapture(event.pointerId)) viewportElement.setPointerCapture(event.pointerId)
     paintCamera({ ...drag.camera, x: drag.camera.x + deltaX, y: drag.camera.y + deltaY })
   }
@@ -268,8 +275,6 @@ export function WorldMap({ save, camera, gridVisible, onCameraChange, onEnterPlo
   const finishPointer = (event: React.PointerEvent<HTMLElement>) => {
     const shouldCommit = movedRef.current
     pointersRef.current.delete(event.pointerId)
-    touchPointersRef.current.delete(event.pointerId)
-    if (touchPointersRef.current.size === 0) setTouchGridVisible(false)
     if (pointersRef.current.size === 1) {
       const [pointerId, point] = [...pointersRef.current.entries()][0]!
       dragRef.current = { pointerId, point, camera: cameraRef.current }
@@ -302,7 +307,7 @@ export function WorldMap({ save, camera, gridVisible, onCameraChange, onEnterPlo
     >
       <div className={`world-map-world ${loadState === 'ready' ? 'is-ready' : ''}`} ref={worldRef} aria-hidden={loadState !== 'ready'}>
         <GardenRevealCanvas save={save} loadAttempt={loadAttempt} onReady={revealReady} onError={revealFailed} />
-        <div className={`world-map-grid ${gridVisible ? 'is-desktop-visible' : ''} ${touchGridVisible ? 'is-touch-visible' : ''}`} aria-hidden="true">
+        <div className={`world-map-grid ${gridVisible ? 'is-visible' : ''}`} aria-hidden="true">
           <img className="world-map-grid-source" src={GRID_URL} alt="" draggable={false} />
           <FineGridOverlay />
         </div>

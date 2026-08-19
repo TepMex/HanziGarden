@@ -245,6 +245,47 @@ Desired properties:
 
 The clean-field layer and weed layer should remain technically separable.
 
+### 8.1 Authoritative Map Mask and Exterior Edge Reveal
+
+`garden-map.webp` and `garden-map_negative.webp` are two full-map states of the
+same artwork. They must be scaled once to the same world coordinate system and
+composited through one global `1600 × 1200` mask. The negative artwork must
+never be cropped and enlarged independently per plot: doing so breaks the 1:1
+registration and exposes plot boundaries as a tile grid.
+
+Plot interiors use the due/new coverage formula from section 7 and stable
+organic masks derived from `plot.seed`. Completely overgrown adjacent plots
+must be added to the global mask as one compound shape so antialiasing cannot
+create clean seams between them.
+
+The territory outside the 5 × 3 garden-region contour is part of progression;
+it is **not an always-clean background**. Its reveal rules are:
+
+1. Initially every exterior side and corner remains in the negative state.
+2. A `GardenRegion` is complete only while every plot in that region has zero
+   weed coverage. Locked plots and plots with any due/new characters prevent
+   completion.
+3. Completing a border region reveals only the exterior side component directly
+   adjacent to that region. Completing an interior region reveals no exterior
+   component.
+4. An exterior corner reveals only when both of its adjacent exterior sides are
+   revealed.
+5. Other sides and corners remain negative; revealing one component must not
+   leak into another.
+6. When a region, side, or corner reveals, the painted boundary pixels touching
+   that component also reveal (using the rasterized `garden-grid.svg` connected
+   components, with an 18-world-pixel neighborhood). This prevents a dark line
+   from remaining around an otherwise clean component.
+
+These states are a live projection of current FSRS health, like plot infection:
+if reviews become due again and a region stops being complete, its exterior
+side and dependent corner return to the negative state. Raster labels from the
+painted grid are authoritative for exterior connectivity; rectangular or
+polygon-only approximations are insufficient. Raster-interior perimeter pixels
+that fall outside the straight plot-quad union must inherit the mask alpha of
+the nearest connected plot pixel in the same `GardenRegion`; no clean sliver may
+remain between the painted contour and the gameplay geometry.
+
 ## 9. Field Art Architecture
 
 Avoid authoring 110 × 11 fully unique field scenes.

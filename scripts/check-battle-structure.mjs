@@ -14,7 +14,7 @@ if (!plot) throw new Error('missing plot-001')
 function saveForFrame(frame) {
   const index = plot.characters.findIndex((character) => character.frame === frame)
   return {
-    id: 'main', version: 2, unlockedPlotIds: [plot.id], masteredPlotIds: [], seenCharacterIds: [],
+    id: 'main', version: 3, unlockedPlotIds: [plot.id], masteredPlotIds: [], lastActivePlotId: plot.id, seenCharacterIds: [],
     cards: Object.fromEntries(plot.characters.slice(0, index).map((character) => [character.id, { due: '2999-01-01T00:00:00.000Z' }])),
     reviewEvents: [], updatedAt: Date.now(),
   }
@@ -55,9 +55,10 @@ try {
 
   await enterBattle(page, 1)
   if (await page.getByRole('button', { name: /Показать состав/i }).count()) throw new Error('composition button shown for 一')
-  if ((await page.locator('.primitive-prompt').innerText()).replace(/\s+/g, ' ').trim().toLocaleLowerCase('ru') !== 'примитив пол') {
+  if ((await page.locator('.primitive-prompt').innerText()).replace(/\s+/g, ' ').trim().toLocaleLowerCase('ru') !== 'пол') {
     throw new Error('primitive for 一 is missing')
   }
+  if (await page.getByText('Примитив', { exact: true }).count()) throw new Error('removed primitive label is visible')
 
   await page.locator('.back-button').click()
   await page.waitForSelector('.map-screen')
@@ -69,7 +70,7 @@ try {
   if (component.length !== 1 || !/一\s*один/.test(component[0])) throw new Error(`unexpected composition: ${component}`)
   let writingBlocked = false
   try {
-    await page.locator('.writing-circle').click({ timeout: 500 })
+    await page.locator('.writing-target').click({ timeout: 500 })
   } catch {
     writingBlocked = true
   }

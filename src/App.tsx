@@ -1,13 +1,12 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import HanziWriter from 'hanzi-writer'
-import { ArrowLeft, BarChart3, Flower2, Grid3X3, HelpCircle, Layers, Leaf, Sparkles, X } from 'lucide-react'
-import { plots, type CharacterDefinition, type PlotDefinition } from './data/model'
+import { ArrowLeft, BarChart3, Flower2, Grid3X3, HelpCircle, Layers, Leaf, Plus, Sparkles, X } from 'lucide-react'
+import { type CharacterDefinition, type PlotDefinition } from './data/model'
 import { battleArtworkForGarden, battleBackdropStage } from './data/battleFieldArt'
 import { initialSave, loadSave, persistSave, type SaveGame } from './db'
-import { plotInfection } from './garden'
+import { battlePlotCleanliness, plotInfection } from './garden'
 import { loadHanziCharData } from './hanziData'
 import { isCardDue, reviewCard, type ReviewEvent } from './learning'
-import { clearedFromInfection } from './map/plotReveal'
 import { WorldMap } from './map/WorldMap'
 import { initialCamera, type CameraState } from './map/cameraMath'
 import { StatisticsScreen } from './stats/StatisticsScreen'
@@ -70,12 +69,6 @@ function getInputDevice(): ReviewEvent['inputDevice'] {
   return 'mouse'
 }
 
-function strokeLabel(count: number): string {
-  if (count % 10 === 1 && count % 100 !== 11) return `${count} штрих остался`
-  if ([2, 3, 4].includes(count % 10) && ![12, 13, 14].includes(count % 100)) return `${count} штриха осталось`
-  return `${count} штрихов осталось`
-}
-
 function MapScreen({
   save,
   camera,
@@ -90,30 +83,27 @@ function MapScreen({
   onStatistics: () => void
 }) {
   const [gridVisible, setGridVisible] = useState(false)
-  const learned = save.seenCharacterIds.length
-  const due = plots.flatMap((plot) => plot.characters).filter((character) => isCardDue(save.cards[character.id])).length
-
   return (
     <main className="map-screen">
       <header className="map-header">
         <div className="brand-mark"><Leaf size={18} /><span>Сад иероглифов</span></div>
         <div className="world-summary">
-          <span>{learned} изучено</span>
-          <span>{due} на повторение</span>
           <button
             type="button"
             className="map-grid-button"
             aria-pressed={gridVisible}
+            aria-label={gridVisible ? 'Скрыть сетку' : 'Показать сетку'}
             onClick={() => setGridVisible((visible) => !visible)}
           >
-            <Grid3X3 size={17} /> {gridVisible ? 'Скрыть сетку' : 'Показать сетку'}
+            <Grid3X3 size={17} />
           </button>
-          <button className="map-stats-button" onClick={onStatistics}><BarChart3 size={17} /> Статистика</button>
+          <button className="map-stats-button" onClick={onStatistics} aria-label="Статистика"><BarChart3 size={17} /><span>Статистика</span></button>
         </div>
       </header>
       <WorldMap
         save={save}
         camera={camera}
+        focusPlotId={save.lastActivePlotId ?? save.unlockedPlotIds[0] ?? null}
         gridVisible={gridVisible}
         onCameraChange={onCameraChange}
         onEnterPlot={onEnter}
@@ -151,11 +141,7 @@ function BattleScreen({
   const correctStrokesRef = useRef(0)
   const streakHighlightRef = useRef(0)
   const clearStreakGradientRef = useRef<(() => void) | null>(null)
-  const [mistakes, setMistakes] = useState(0)
   const [correctStrokes, setCorrectStrokes] = useState(0)
-  const [hitPulse, setHitPulse] = useState(0)
-  const [feedback, setFeedback] = useState('Проведите первый штрих')
-  const [destroyed, setDestroyed] = useState(false)
   const [isCompositionOpen, setCompositionOpen] = useState(false)
 
   useLayoutEffect(() => {
@@ -249,15 +235,11 @@ function BattleScreen({
     }
     saveRef.current = nextSave
     onSave(nextSave)
-    setDestroyed(true)
-    setFeedback(result.rating === 'good' ? 'Сорняк рассыпается в пепел' : 'Сорняк отступил, но вернётся скорее')
-
     window.setTimeout(() => {
       const nextCharacter = plot.characters.find(
         (candidate) => candidate.id !== character.id && isCardDue(nextSave.cards[candidate.id]),
       )
       setActiveCharacterId(nextCharacter?.id ?? null)
-      setDestroyed(false)
     }, 1050)
   }, [plot, onSave])
 
@@ -273,10 +255,7 @@ function BattleScreen({
     clearStreakGradientRef.current = null
     startedAtRef.current = Date.now()
     completingRef.current = false
-    setMistakes(0)
     setCorrectStrokes(0)
-    setFeedback('Проведите первый штрих')
-    setDestroyed(false)
     writerTarget.current.replaceChildren()
 
     const writer = HanziWriter.create(writerTarget.current, activeCharacter.hanzi, {
@@ -332,14 +311,10 @@ function BattleScreen({
             },
           })
         }
-        setHitPulse((value) => value + 1)
-        setFeedback(data.strokesRemaining ? 'Точный удар' : 'Последний корень перерублен')
       },
       onMistake: (data) => {
         const totalMistakes = data.totalMistakes + hintMistakesRef.current
         mistakesRef.current = totalMistakes
-        setMistakes(totalMistakes)
-        setFeedback(totalMistakes >= 3 ? 'Чернила показывают следующий след' : 'Чернила рассеялись — попробуйте ещё')
       },
       onComplete: (summary) => {
         const totalMistakes = summary.totalMistakes + hintMistakesRef.current
@@ -392,19 +367,15 @@ function BattleScreen({
     hintUsedRef.current = true
     hintMistakesRef.current += 1
     mistakesRef.current += 1
-    setMistakes(mistakesRef.current)
     streakHighlightRef.current += 1
     clearStreakGradientRef.current?.()
     clearStreakGradientRef.current = null
     writerRef.current.updateColor('highlightColor', NORMAL_HINT_COLOR, { duration: 0 })
     writerRef.current.highlightStroke(correctStrokesRef.current)
-    setFeedback('Подсказка использована — streak сброшен')
   }
 
   const infection = plotInfection(plot, save.cards)
-  const visualCleanliness = clearedFromInfection(infection)
-  const remaining = activeCharacter ? Math.max(0, activeCharacter.strokeCount - correctStrokes) : 0
-  const weedDamage = activeCharacter ? correctStrokes / activeCharacter.strokeCount : 1
+  const visualCleanliness = battlePlotCleanliness(infection)
   const artwork = battleArtworkForGarden(plot.gardenId)
   const backdropStage = activeCharacter
     ? battleBackdropStage(activeCharacter.strokeCount, correctStrokes)
@@ -421,7 +392,7 @@ function BattleScreen({
   }, [artwork])
 
   return (
-    <main className={`battle-screen ${destroyed ? 'is-destroyed' : ''} ${activeCharacter?.structure.primitive ? 'has-primitive' : ''}`}>
+    <main className={`battle-screen ${activeCharacter?.structure.primitive ? 'has-primitive' : ''}`}>
       <div
         className="battle-backdrop"
         style={{ backgroundImage: `url(${JSON.stringify(backdropUrl)})` }}
@@ -430,11 +401,10 @@ function BattleScreen({
       <button className="back-button" onClick={onExit} aria-label="Вернуться к карте"><ArrowLeft /></button>
 
       <header className="prompt-scroll">
-        <span>Целевое значение</span>
         <strong ref={promptTextRef}>{activeCharacter?.keyword.ru.toLocaleUpperCase('ru') ?? 'ПОЛЕ ОЧИЩЕНО'}</strong>
         {activeCharacter?.structure.primitive && (
           <p className="primitive-prompt">
-            <span>Примитив</span>
+            <Plus size={13} aria-hidden="true" />
             <b>{activeCharacter.structure.primitive}</b>
           </p>
         )}
@@ -448,25 +418,10 @@ function BattleScreen({
 
       {activeCharacter ? (
         <>
-          <div
-            className="weed-core"
-            key={hitPulse}
-            style={{ '--damage': weedDamage } as React.CSSProperties}
-            aria-hidden="true"
-          >
-            <span /><span /><span />
-          </div>
-          <div className="writing-circle" ref={writerTarget} aria-label={`Напишите иероглиф со значением ${activeCharacter.keyword.ru}`} />
-          <div className="battle-progress" aria-label={strokeLabel(remaining)}>
-            {Array.from({ length: activeCharacter.strokeCount }, (_, index) => (
-              <i key={index} className={index < correctStrokes ? 'is-cut' : ''} />
-            ))}
+          <div className="writing-circle">
+            <div className="writing-target" ref={writerTarget} aria-label={`Напишите иероглиф со значением ${activeCharacter.keyword.ru}`} />
           </div>
           <button className="hint-button" onClick={useHint}><HelpCircle size={16} /> Показать следующий штрих</button>
-          <div className={`stroke-feedback ${mistakes ? 'has-mistake' : ''}`}>
-            <span>{feedback}</span>
-            <small>{mistakes ? `Ошибок: ${mistakes}` : strokeLabel(remaining)}</small>
-          </div>
         </>
       ) : (
         <section className="cleared-state">
@@ -558,6 +513,8 @@ export default function App() {
       })
       return
     }
+    const nextSave = { ...save, lastActivePlotId: plot.id, updatedAt: Date.now() }
+    updateSave(nextSave)
     setActivePlot(plot)
     setScreen('battle')
   }

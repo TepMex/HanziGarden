@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * Regression: the clean world must never be exposed while the negative SVG
+ * Regression: the clean world must never be exposed while the negative image
  * layer is still loading.  Also check the recoverable error state.
  *
  * Usage: bun scripts/check-map-load.mjs [baseUrl]
@@ -63,10 +63,9 @@ try {
   }
   const after = await delayed.page.evaluate(() => ({
     loading: Boolean(document.querySelector('.map-loading-screen')),
-    cleanVisible: getComputedStyle(document.querySelector('.world-map-clean').parentElement).visibility === 'visible',
-    weedPresent: Boolean(document.querySelector('.world-map-weed image')),
+    canvasVisible: getComputedStyle(document.querySelector('.world-map-canvas')).visibility === 'visible',
   }))
-  if (after.loading || !after.cleanVisible || !after.weedPresent) {
+  if (after.loading || !after.canvasVisible) {
     throw new Error(`map did not appear atomically: ${JSON.stringify(after)}`)
   }
   await delayed.context.close()
@@ -78,10 +77,10 @@ try {
   await failed.page.waitForSelector('.map-loading-screen.has-error')
   const errorState = await failed.page.evaluate(() => ({
     ready: document.querySelector('.world-map-world')?.classList.contains('is-ready') ?? false,
-    cleanVisible: getComputedStyle(document.querySelector('.world-map-clean').parentElement).visibility === 'visible',
+    canvasVisible: getComputedStyle(document.querySelector('.world-map-canvas')).visibility === 'visible',
     hasErrorClass: document.querySelector('.world-map-viewport')?.classList.contains('has-map-error') ?? false,
   }))
-  if (errorState.ready || errorState.cleanVisible || !errorState.hasErrorClass) {
+  if (errorState.ready || errorState.canvasVisible || !errorState.hasErrorClass) {
     throw new Error(`failed map exposed a partial layer: ${JSON.stringify(errorState)}`)
   }
 
@@ -92,7 +91,7 @@ try {
     const state = await failed.page.evaluate(() => ({
       loader: document.querySelector('.map-loading-screen')?.textContent,
       world: document.querySelector('.world-map-world')?.className,
-      negative: document.querySelector('.world-map-weed image')?.getAttribute('href'),
+      canvas: Boolean(document.querySelector('.world-map-canvas')),
     }))
     throw new Error(`retry did not make the map ready: ${JSON.stringify(state)}`)
   }
