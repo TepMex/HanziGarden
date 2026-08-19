@@ -112,6 +112,12 @@ type BedDefinition = {
 
 `sourceRthListId` must be globally unique. Do not identify beds only by numeric lesson number if books 1 and 2 can overlap.
 
+### 4.5 Map Camera
+
+The player may zoom out only to the viewport's **cover** scale: the rendered garden must never become smaller than the viewport along either axis. Outside green space may appear along only the orientation's permitted axis—at the left/right sides on a landscape viewport, or at the top/bottom on a portrait viewport—never along both axes at once. Camera overscroll applies only to that permitted axis; panning must not expose a side edge in portrait orientation or a top/bottom edge in landscape orientation at any zoom level.
+
+When the map automatically focuses the last active (or initial unlocked) bed on a viewport where auto-focus is enabled, it frames the bed's containing biome rather than the individual bed. This keeps the opening view oriented around the relevant biome without an excessively close zoom.
+
 ## 5. Character Data
 
 ```ts

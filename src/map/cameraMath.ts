@@ -11,8 +11,15 @@ export function baseMapScale(viewport: Viewport): number {
   return Math.min(viewport.width / GARDEN_WIDTH, viewport.height / GARDEN_HEIGHT)
 }
 
-export function clampZoom(zoom: number): number {
-  return Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, zoom))
+/** The cover scale expressed in camera zoom units for this viewport. */
+export function minimumZoomForViewport(viewport: Viewport): number {
+  const coverScale = Math.max(viewport.width / GARDEN_WIDTH, viewport.height / GARDEN_HEIGHT)
+  return Math.max(MIN_ZOOM, coverScale / baseMapScale(viewport))
+}
+
+export function clampZoom(zoom: number, viewport?: Viewport): number {
+  const minimum = viewport ? minimumZoomForViewport(viewport) : MIN_ZOOM
+  return Math.min(MAX_ZOOM, Math.max(minimum, zoom))
 }
 
 export function screenToGarden(point: Point, camera: CameraState, viewport: Viewport): Point {
@@ -32,9 +39,10 @@ export function gardenToScreen(point: Point, camera: CameraState, viewport: View
 }
 
 export function cameraForGardenPoint(gardenPoint: Point, screenPoint: Point, zoom: number, viewport: Viewport): CameraState {
-  const scale = baseMapScale(viewport) * clampZoom(zoom)
+  const clampedZoom = clampZoom(zoom, viewport)
+  const scale = baseMapScale(viewport) * clampedZoom
   return {
-    zoom: clampZoom(zoom),
+    zoom: clampedZoom,
     x: screenPoint.x - viewport.width / 2 - (gardenPoint.x - GARDEN_WIDTH / 2) * scale,
     y: screenPoint.y - viewport.height / 2 - (gardenPoint.y - GARDEN_HEIGHT / 2) * scale,
   }
@@ -45,10 +53,11 @@ export function zoomAroundPoint(camera: CameraState, screenPoint: Point, zoom: n
 }
 
 export function clampCamera(camera: CameraState, viewport: Viewport, overscroll = 48): CameraState {
-  const zoom = clampZoom(camera.zoom)
+  const zoom = clampZoom(camera.zoom, viewport)
   const scale = baseMapScale(viewport) * zoom
-  const rangeX = Math.max(0, (GARDEN_WIDTH * scale - viewport.width) / 2) + overscroll
-  const rangeY = Math.max(0, (GARDEN_HEIGHT * scale - viewport.height) / 2) + overscroll
+  const portrait = viewport.height >= viewport.width
+  const rangeX = Math.max(0, (GARDEN_WIDTH * scale - viewport.width) / 2) + (portrait ? 0 : overscroll)
+  const rangeY = Math.max(0, (GARDEN_HEIGHT * scale - viewport.height) / 2) + (portrait ? overscroll : 0)
   return {
     zoom,
     x: Math.min(rangeX, Math.max(-rangeX, camera.x)),
@@ -68,7 +77,7 @@ export function cameraForGardenBounds(
 ): CameraState {
   const margin = Math.max(0, Math.min(0.45, horizontalMargin))
   const availableWidth = viewport.width * (1 - margin * 2)
-  const zoom = clampZoom(availableWidth / Math.max(1, bounds.width) / baseMapScale(viewport))
+  const zoom = clampZoom(availableWidth / Math.max(1, bounds.width) / baseMapScale(viewport), viewport)
   return focusGardenPoint(
     { x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2 },
     zoom,

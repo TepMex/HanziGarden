@@ -194,3 +194,8 @@ export function bedQuad(cells: readonly GridCell[]): NormalizedQuad {
 export function bedBounds(cells: readonly GridCell[]): NormalizedRect {
   return rectFromQuad(bedQuad(cells))
 }
+
+/** Bounds used when the map automatically focuses the player's active bed. */
+export function automaticFocusBoundsForCells(cells: readonly GridCell[]): NormalizedRect {
+  return biomeForCell(cells[0]!).mapRect
+}

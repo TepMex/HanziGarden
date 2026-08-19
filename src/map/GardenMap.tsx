@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Leaf, LockKeyhole } from 'lucide-react'
 import { assetUrl } from '../assetUrl'
 import { beds, type BedDefinition } from '../data/model'
-import { bedBounds, bedQuad, biomes, cellQuad, quadPoint, GARDEN_HEIGHT, GARDEN_WIDTH, type NormalizedPoint, type NormalizedQuad } from '../data/mapLayout'
+import { automaticFocusBoundsForCells, bedBounds, bedQuad, biomes, cellQuad, quadPoint, GARDEN_HEIGHT, GARDEN_WIDTH, type NormalizedPoint, type NormalizedQuad } from '../data/mapLayout'
 import type { SaveGame } from '../db'
 import { bedInfection } from '../garden'
 import {
@@ -166,7 +166,7 @@ export function GardenMap({ save, camera, focusBedId, gridVisible, onCameraChang
     const viewport = getViewport()
     const bed = beds.find((candidate) => candidate.id === focusBedId)
     if (!viewport || !bed) return
-    const bounds = rectToGarden(bedBounds(bed.cells))
+    const bounds = rectToGarden(automaticFocusBoundsForCells(bed.cells))
     const focused = mobileCameraForGardenBounds(bounds, viewport, 0.1)
     if (!focused) return
     const painted = paintCamera(focused, true)
@@ -197,7 +197,7 @@ export function GardenMap({ save, camera, focusBedId, gridVisible, onCameraChang
       const viewport = getViewport()
       if (!viewport) return
       const intensity = event.deltaMode === 1 ? 0.045 : 0.0015
-      const targetZoom = clampZoom(cameraRef.current.zoom * Math.exp(-event.deltaY * intensity))
+      const targetZoom = clampZoom(cameraRef.current.zoom * Math.exp(-event.deltaY * intensity), viewport)
       const point = { x: event.clientX - element.getBoundingClientRect().left, y: event.clientY - element.getBoundingClientRect().top }
       paintCamera(zoomAroundPoint(cameraRef.current, point, targetZoom, viewport))
       if (wheelCommitRef.current) window.clearTimeout(wheelCommitRef.current)
@@ -253,7 +253,7 @@ export function GardenMap({ save, camera, focusBedId, gridVisible, onCameraChang
       const pinch = pinchRef.current
       const nextDistance = distance(pointerValues[0]!, pointerValues[1]!)
       if (pinch.distance <= 0) return
-      const next = cameraForGardenPoint(pinch.gardenPoint, midpoint(pointerValues[0]!, pointerValues[1]!), clampZoom(pinch.camera.zoom * nextDistance / pinch.distance), viewport)
+      const next = cameraForGardenPoint(pinch.gardenPoint, midpoint(pointerValues[0]!, pointerValues[1]!), clampZoom(pinch.camera.zoom * nextDistance / pinch.distance, viewport), viewport)
       paintCamera(next)
       movedRef.current = true
       return
