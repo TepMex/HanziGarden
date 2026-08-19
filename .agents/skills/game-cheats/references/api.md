@@ -15,18 +15,35 @@ await cheats.loadDb(jsonOrSave)
 
 ## Save shape
 
-`loadDb` accepts formatted JSON or an object with the current v3 shape:
+`loadDb` accepts formatted JSON or an object with the current v6 shape:
 
 ```ts
 type SaveGame = {
   id: 'main'
-  version: 3
-  unlockedPlotIds: string[]
-  masteredPlotIds: string[]
-  lastActivePlotId: string | null
+  version: 6
+  unlockedBedIds: string[]
+  masteredBedIds: string[]
+  lastActiveBedId: string | null
   seenCharacterIds: string[]
   cards: Record<string, CardState>
   reviewEvents: ReviewEvent[]
+  playerProgress: {
+    totalXp: number
+    lifetimeCorrectStrokes: number
+    lifetimeErrors: number
+    lifetimeCompletedKanji: number
+    lifetimeCompletedBeds: number
+    bestComboEver: number
+    perfectComplexKanjiCount: number
+    completedBiomeIds: string[]
+  }
+  achievements: {
+    unlockedAchievements: { id: string; unlockedAt: string }[]
+    currentDailyStreak: number
+    bestDailyStreak: number
+    lastActiveDate?: string
+    perfectBedsToday: { date?: string; count: number }
+  }
   updatedAt: number
 }
 ```
@@ -46,17 +63,17 @@ try {
 }
 ```
 
-Mark one plot as unlocked/mastered or clear its visible progress:
+Mark one bed as unlocked/mastered or clear its visible progress:
 
 ```js
 const cheats = window.hanziGardenCheats
 const save = await cheats.dumpDb('object')
-save.unlockedPlotIds = [...new Set([...save.unlockedPlotIds, 'plot-001'])]
-save.masteredPlotIds = [...new Set([...save.masteredPlotIds, 'plot-001'])]
-save.lastActivePlotId = 'plot-001'
+save.unlockedBedIds = [...new Set([...save.unlockedBedIds, 'bed-001'])]
+save.masteredBedIds = [...new Set([...save.masteredBedIds, 'bed-001'])]
+save.lastActiveBedId = 'bed-001'
 await cheats.loadDb(save)
 ```
 
-To make a plot unstudied, remove its ID from `masteredPlotIds`, remove its character IDs from `seenCharacterIds`, and delete those keys from `cards`. To model all characters as studied, derive the complete plot and character ID lists from `src/data/model.ts`, populate the three progress collections, and give every character a structurally valid FSRS card. Copying an existing card and changing its date is less error-prone than inventing FSRS fields.
+To make a bed unstudied, remove its ID from `masteredBedIds`, remove its character IDs from `seenCharacterIds`, and delete those keys from `cards`. To model all characters as studied, derive the complete bed and character ID lists from `src/data/model.ts`, populate the three progress collections, and give every character a structurally valid FSRS card. Copying an existing card and changing its date is less error-prone than inventing FSRS fields.
 
 After loading any dump, expect the app to return to the map. Re-enter a battle before invoking stroke cheats.

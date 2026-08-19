@@ -1,5 +1,7 @@
 # Memory Garden — Game & Technical Specification
 
+> This document is the current source of truth. The XP/level/Combo and achievement requirements below supersede any older implementation notes that omit those systems.
+
 ## 1. Product Summary
 
 **Working title:** Memory Garden / Сад иероглифов
@@ -1321,3 +1323,87 @@ restore garden
 =
 maintain memory
 ```
+
+## 50. XP, Levels, and Combo
+
+Every completed Hanzi awards permanent XP. XP is not spendable, never resets,
+has no hard cap, and does not gate reviews or other learning actions.
+
+```text
+kanjiXp = max(1, correctStrokeCount - errorCount)
+earnedXp = kanjiXp + comboMilestoneBonus
+```
+
+`Combo` is session state and counts consecutive fully completed Hanzi with zero
+stroke errors. Any error in a Hanzi resets Combo when that Hanzi completes.
+Milestones award a small one-time bonus:
+
+```text
+3  → +1 XP
+5  → +2 XP
+10 → +3 XP
+20 → +5 XP
+50 → +8 XP
+100 → +12 XP
+150 and every further multiple of 50 → +10 XP
+```
+
+Combo bonuses use short jade/gold glow, particle, pulse, and synthesized sound
+cues. Gameplay shows only a transient XP/Combo toast. The map permanently
+shows a compact level medallion, thin progress bar, and in-level XP count.
+
+The XP cost from level `L` to `L + 1` is linear:
+
+```text
+xpForNextLevel(L) = 100 + 20 × (L - 1)
+totalXpForLevel(L) = 10n² + 90n, where n = L - 1
+```
+
+`totalXp` is the persistent source of truth; level and in-level progress are
+derived. A single reward may cross multiple level thresholds, and every crossed
+level is presented as its own reward beat. The cleared-bed screen shows correct
+strokes, errors, Combo bonus, total XP, in-level progress, and sequential
+level-up beats.
+
+Persistence also retains lifetime correct strokes, errors, completed Hanzi,
+completed bed runs, best Combo, perfect complex Hanzi, and permanently completed
+biome IDs. Save version 5 introduced progression and reconstructs provable
+historical progress from retained review events.
+
+## 51. Achievements
+
+Achievements are permanent offline unlocks and never award XP. The centralized
+achievement engine consumes domain events (`kanji.completed`,
+`gardenBed.completed`, `session.activeTime`, and migration events); React UI
+components do not contain eligibility rules. Unlock is idempotent and stores an
+ISO `unlockedAt` timestamp.
+
+The collection contains 61 deduplicated achievements across daily practice,
+Combo, the 15 real biomes, session duration, writing, lifetime statistics,
+recovery, and secrets. It includes:
+
+- daily streak milestones at 3, 7, 14, 30, 90, 180, and 365 local calendar days;
+- return after at least 30 absent days;
+- shared Combo milestones at 5, 10, 20, 50, 100, and secret 250;
+- one achievement for each biome plus 1/5/10/15-biome milestones;
+- active-session milestones at 15/30/60/90/120 minutes;
+- perfect complex writing, correct-stroke, and completed-Hanzi milestones;
+- perfect bed, three perfect beds in one local day, and ten beds in one session;
+- error/recovery stories, exact 100 XP for a bed, and a one-XP Hanzi.
+
+A calendar day becomes active only after a completed Hanzi. Active session time
+pauses while the document is hidden or after 150 seconds without pointer,
+keyboard, wheel, or touch interaction. Secret cards hide both title and exact
+condition until unlock. Counter cards expose progress only when doing so does
+not reveal a secret.
+
+Simultaneous unlocks enter a queue and appear one at a time as short, skippable
+parchment cards over a dimmed game. The collection is a tab of Statistics, so
+the garden map receives no additional navigation control. Badge art uses two
+generated, internally consistent sprite atlases: one eight-category family and
+one 15-biome family. Both use aged gold, dark jade, parchment, cinnabar accents,
+and the garden's botanical motifs.
+
+Save version 6 adds achievement persistence. Migration grants only achievements
+that existing review history or durable counters can prove; event-specific
+secrets such as a final-stroke error or exact bed XP are never guessed.

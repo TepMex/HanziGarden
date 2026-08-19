@@ -18,6 +18,7 @@
     "test:map-mask": "bun scripts/check-garden-mask-alignment.mjs",
     "test:keyword-layout": "bun scripts/check-keyword-layout.mjs",
     "test:improvements": "bun scripts/check-improvements-19082026.mjs",
+    "test:progression-achievements": "bun scripts/check-progression-achievements.mjs",
     "test:unit": "bun test"
   },
   "dependencies": {

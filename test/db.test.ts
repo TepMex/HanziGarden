@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import { migrateV1Save, migrateV2Save, migrateV3Save, type SaveGameV1, type SaveGameV2, type SaveGameV3 } from '../src/db'
+import { migrateV1Save, migrateV2Save, migrateV3Save, migrateV4Save, type SaveGameV1, type SaveGameV2, type SaveGameV3, type SaveGameV4 } from '../src/db'
 import type { CardState } from '../src/learning'
 
 describe('v1 save migration', () => {
@@ -61,5 +61,21 @@ describe('v3 save migration', () => {
       masteredBedIds: ['bed-001'],
       lastActiveBedId: 'bed-004',
     })
+  })
+})
+
+describe('v4 progression migration', () => {
+  test('reconstructs provable XP and lifetime counters from reviews', () => {
+    const v4: SaveGameV4 = {
+      id: 'main', version: 4, unlockedBedIds: ['bed-001'], masteredBedIds: [], lastActiveBedId: 'bed-001',
+      seenCharacterIds: ['rsh-0001'], cards: {}, reviewEvents: [
+        { id: 'event', characterId: 'rsh-0001', timestamp: 10, rating: 'good', totalMistakes: 1, hintUsed: false, durationMs: 1, inputDevice: 'touch' },
+      ], updatedAt: 42,
+    }
+    const migrated = migrateV4Save(v4)
+    expect(migrated.version).toBe(6)
+    expect(migrated.playerProgress.lifetimeCompletedKanji).toBe(1)
+    expect(migrated.playerProgress.lifetimeErrors).toBe(1)
+    expect(migrated.playerProgress.totalXp).toBeGreaterThanOrEqual(1)
   })
 })

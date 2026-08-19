@@ -1,18 +1,30 @@
 import Dexie, { type EntityTable } from 'dexie'
-import { bedIdsByLegacyFieldId, characterById } from './data/model'
+import { bedIdsByLegacyFieldId, beds, biomes, characterById } from './data/model'
 import type { CardState, ReviewEvent } from './learning'
+import { completeKanji, initialPlayerProgress, initialSessionProgress, type PlayerProgress } from './progression'
+import {
+  initialAchievementPersistence,
+  processAchievementEvents,
+  type AchievementPersistence,
+  type AchievementEvent,
+} from './achievements'
 
 export type SaveGame = {
   id: 'main'
-  version: 4
+  version: 6
   unlockedBedIds: string[]
   masteredBedIds: string[]
   lastActiveBedId: string | null
   seenCharacterIds: string[]
   cards: Record<string, CardState>
   reviewEvents: ReviewEvent[]
+  playerProgress: PlayerProgress
+  achievements: AchievementPersistence
   updatedAt: number
 }
+
+export type SaveGameV5 = Omit<SaveGame, 'version' | 'achievements'> & { version: 5 }
+export type SaveGameV4 = Omit<SaveGameV5, 'version' | 'playerProgress'> & { version: 4 }
 
 export type SaveGameV3 = {
   id: 'main'
@@ -41,7 +53,7 @@ export type SaveGameV1 = {
   updatedAt: number
 }
 
-type StoredSave = SaveGame | SaveGameV3 | SaveGameV2 | SaveGameV1
+type StoredSave = SaveGame | SaveGameV5 | SaveGameV4 | SaveGameV3 | SaveGameV2 | SaveGameV1
 
 function migrateLegacyFieldIds(fieldIds: readonly string[]): string[] {
   return [...new Set(fieldIds.flatMap((fieldId) => bedIdsByLegacyFieldId.get(fieldId) ?? []))]
@@ -63,7 +75,7 @@ function lastActiveBedId(
     ?? null
 }
 
-export function migrateV3Save(save: SaveGameV3): SaveGame {
+export function migrateV3Save(save: SaveGameV3): SaveGameV4 {
   const unlockedBedIds = migrateLegacyPlotIds(save.unlockedPlotIds)
   return {
     id: 'main',
@@ -80,7 +92,7 @@ export function migrateV3Save(save: SaveGameV3): SaveGame {
   }
 }
 
-export function migrateV2Save(save: SaveGameV2): SaveGame {
+export function migrateV2Save(save: SaveGameV2): SaveGameV4 {
   return migrateV3Save({
     ...save,
     version: 3,
@@ -88,7 +100,7 @@ export function migrateV2Save(save: SaveGameV2): SaveGame {
   })
 }
 
-export function migrateV1Save(save: SaveGameV1): SaveGame {
+export function migrateV1Save(save: SaveGameV1): SaveGameV4 {
   const unlockedBedIds = migrateLegacyFieldIds(save.unlockedFieldIds)
   return {
     id: 'main',
@@ -115,10 +127,69 @@ function isV3Save(save: StoredSave): save is SaveGameV3 {
   return save.version === 3
 }
 
+function isV4Save(save: StoredSave): save is SaveGameV4 {
+  return save.version === 4
+}
+
+/** Reconstruct every progression fact that the retained review history can prove. */
+export function migrateV4Save(save: SaveGameV4): SaveGame {
+  let player = structuredClone(initialPlayerProgress)
+  let session = structuredClone(initialSessionProgress)
+  for (const event of [...save.reviewEvents].sort((left, right) => left.timestamp - right.timestamp)) {
+    const strokeCount = characterById.get(event.characterId)?.strokeCount ?? 1
+    const completed = completeKanji(player, session, {
+      correctStrokeCount: strokeCount,
+      errorCount: event.totalMistakes,
+      strokeCount,
+    })
+    player = completed.player
+    session = completed.session
+  }
+  const mastered = new Set(save.masteredBedIds)
+  player.completedBiomeIds = biomes
+    .filter((biome) => beds.filter((bed) => bed.biomeId === biome.id).every((bed) => mastered.has(bed.id)))
+    .map((biome) => biome.id)
+  return migrateV5Save({ ...save, version: 5, playerProgress: player })
+}
+
+export function migrateV5Save(save: SaveGameV5): SaveGame {
+  let achievements = structuredClone(initialAchievementPersistence)
+  let replayPlayer = structuredClone(initialPlayerProgress)
+  let replaySession = structuredClone(initialSessionProgress)
+  for (const event of [...save.reviewEvents].sort((left, right) => left.timestamp - right.timestamp)) {
+    const strokeCount = characterById.get(event.characterId)?.strokeCount ?? 1
+    const completed = completeKanji(replayPlayer, replaySession, {
+      correctStrokeCount: strokeCount,
+      errorCount: event.totalMistakes,
+      strokeCount,
+    })
+    replayPlayer = completed.player
+    replaySession = completed.session
+    const achievementEvent: AchievementEvent = {
+      type: 'kanji.completed',
+      timestamp: event.timestamp,
+      strokeCount,
+      errorCount: event.totalMistakes,
+      earnedXp: completed.reward.earnedXp,
+      kanjiXp: completed.reward.kanjiXp,
+      previousCombo: completed.reward.previousCombo,
+      combo: completed.reward.combo,
+      finalStrokeError: false,
+    }
+    achievements = processAchievementEvents(achievements, replayPlayer, replaySession, [achievementEvent]).state
+  }
+  achievements = processAchievementEvents(achievements, save.playerProgress, replaySession, [{
+    type: 'player.migrated', timestamp: save.updatedAt,
+  }]).state
+  return { ...save, version: 6, achievements }
+}
+
 function migrateStoredSave(save: StoredSave): SaveGame {
-  if (isV1Save(save)) return migrateV1Save(save)
-  if (isV2Save(save)) return migrateV2Save(save)
-  if (isV3Save(save)) return migrateV3Save(save)
+  if (isV1Save(save)) return migrateV4Save(migrateV1Save(save))
+  if (isV2Save(save)) return migrateV4Save(migrateV2Save(save))
+  if (isV3Save(save)) return migrateV4Save(migrateV3Save(save))
+  if (isV4Save(save)) return migrateV4Save(save)
+  if (save.version === 5) return migrateV5Save(save)
   return save
 }
 
@@ -163,16 +234,30 @@ database.version(4).stores({ saves: 'id, version, updatedAt' }).upgrade((transac
     delete (stored as Partial<SaveGameV1>).masteredFieldIds
   })
 })
+database.version(5).stores({ saves: 'id, version, updatedAt' }).upgrade((transaction) => {
+  return transaction.table('saves').toCollection().modify((stored: StoredSave) => {
+    if (!isV4Save(stored)) return
+    Object.assign(stored, migrateV4Save(stored))
+  })
+})
+database.version(6).stores({ saves: 'id, version, updatedAt' }).upgrade((transaction) => {
+  return transaction.table('saves').toCollection().modify((stored: StoredSave) => {
+    if (stored.version !== 5) return
+    Object.assign(stored, migrateV5Save(stored))
+  })
+})
 
 export const initialSave: SaveGame = {
   id: 'main',
-  version: 4,
+  version: 6,
   unlockedBedIds: ['bed-001'],
   masteredBedIds: [],
   lastActiveBedId: null,
   seenCharacterIds: [],
   cards: {},
   reviewEvents: [],
+  playerProgress: structuredClone(initialPlayerProgress),
+  achievements: structuredClone(initialAchievementPersistence),
   updatedAt: Date.now(),
 }
 
@@ -180,7 +265,7 @@ export async function loadSave(): Promise<SaveGame> {
   await pendingSaveOperation
   const stored = await database.saves.get('main')
   if (!stored) return structuredClone(initialSave)
-  if (stored.version === 4) return stored
+  if (stored.version === 6) return stored
   const migrated = migrateStoredSave(stored)
   await database.saves.put(migrated)
   return migrated

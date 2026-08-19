@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import HanziWriter from 'hanzi-writer'
-import { ArrowLeft, BarChart3, Flower2, Grid3X3, HelpCircle, Layers, Leaf, Plus, Sparkles, X } from 'lucide-react'
+import { ArrowLeft, BarChart3, Flower2, Grid3X3, HelpCircle, Layers, Leaf, Plus, Sparkles, Trophy, X } from 'lucide-react'
 import { type BedDefinition, type CharacterDefinition } from './data/model'
 import { battleArtworkForBiome, battleBackdropStage } from './data/battleBiomeArt'
 import { initialSave, loadSave, persistSave, type SaveGame } from './db'
@@ -14,6 +14,24 @@ import { streakHighlightColor, streakHighlightOpacity, streakIntensity } from '.
 import { assetUrl } from './assetUrl'
 import { writingInkForBackdrop } from './battleInk'
 import { dispatchQuizStroke, installGameCheats, registerBattleCheatDriver } from './gameCheats'
+import {
+  completedBiomeIds as findCompletedBiomeIds,
+  processAchievementEvents,
+  SESSION_IDLE_TIMEOUT_MS,
+  type AchievementEvent,
+} from './achievements'
+import { AchievementPopup } from './achievements/AchievementUi'
+import { playComboMilestoneCue } from './comboSound'
+import {
+  advanceActiveSession,
+  completeBed,
+  completeKanji,
+  crossedLevels,
+  getLevelProgress,
+  initialSessionProgress,
+  type KanjiReward,
+  type SessionProgress,
+} from './progression'
 
 type Screen = 'garden' | 'battle' | 'stats'
 
@@ -26,6 +44,18 @@ type PendingCheatStroke = {
 
 const NORMAL_HINT_COLOR = '#6d5269'
 const STREAK_GRADIENT_ID = 'streak-jade-highlight'
+
+function PlayerLevel({ totalXp, compact = false }: { totalXp: number; compact?: boolean }) {
+  const progress = getLevelProgress(totalXp)
+  const percent = progress.xpNeededInsideLevel === 0 ? 0 : progress.xpInsideLevel / progress.xpNeededInsideLevel
+  return (
+    <div className={`player-level ${compact ? 'is-compact' : ''}`} aria-label={`Уровень ${progress.level}, ${progress.xpInsideLevel} из ${progress.xpNeededInsideLevel} опыта`}>
+      <strong>{progress.level}</strong>
+      <span className="player-level-track"><i style={{ width: `${percent * 100}%` }} /></span>
+      <small>{progress.xpInsideLevel} / {progress.xpNeededInsideLevel} XP</small>
+    </div>
+  )
+}
 
 function setStreakGradient(target: HTMLDivElement, intensity: number): () => void {
   const svg = target.querySelector('svg')
@@ -94,7 +124,10 @@ function GardenScreen({
   return (
     <main className="map-screen">
       <header className="map-header">
-        <div className="brand-mark"><Leaf size={18} /><span>Сад иероглифов</span></div>
+        <div className="map-brand-progress">
+          <div className="brand-mark"><Leaf size={18} /><span>Сад иероглифов</span></div>
+          <PlayerLevel totalXp={save.playerProgress.totalXp} compact />
+        </div>
         <div className="garden-summary">
           <button
             type="button"
@@ -123,12 +156,14 @@ function GardenScreen({
 function BattleScreen({
   bed,
   save,
+  session,
   onSave,
   onExit,
 }: {
   bed: BedDefinition
   save: SaveGame
-  onSave: (save: SaveGame) => void
+  session: SessionProgress
+  onSave: (save: SaveGame, session: SessionProgress, events: AchievementEvent[]) => void
   onExit: () => void
 }) {
   const dueCharacters = useMemo(
@@ -141,17 +176,25 @@ function BattleScreen({
   const promptTextRef = useRef<HTMLElement>(null)
   const writerRef = useRef<HanziWriter | null>(null)
   const saveRef = useRef(save)
+  const sessionRef = useRef(session)
+  const bedStartXpRef = useRef(save.playerProgress.totalXp)
   const mistakesRef = useRef(0)
   const hintMistakesRef = useRef(0)
   const hintUsedRef = useRef(false)
   const startedAtRef = useRef(Date.now())
   const completingRef = useRef(false)
   const correctStrokesRef = useRef(0)
+  const finalStrokeErrorRef = useRef(false)
   const streakHighlightRef = useRef(0)
   const clearStreakGradientRef = useRef<(() => void) | null>(null)
   const pendingCheatStrokeRef = useRef<PendingCheatStroke | null>(null)
   const [correctStrokes, setCorrectStrokes] = useState(0)
   const [isCompositionOpen, setCompositionOpen] = useState(false)
+  const [lastReward, setLastReward] = useState<KanjiReward | null>(null)
+  const [rewardSequence, setRewardSequence] = useState(0)
+  const [bedSummary, setBedSummary] = useState({ correctStrokes: 0, errors: 0, comboBonusXp: 0, earnedXp: 0 })
+  const bedSummaryRef = useRef(bedSummary)
+  const [summaryReady, setSummaryReady] = useState(false)
 
   const settleCheatStroke = useCallback((outcome: 'correct' | 'wrong') => {
     const pending = pendingCheatStrokeRef.current
@@ -215,6 +258,15 @@ function BattleScreen({
   }, [activeCharacter?.id])
 
   useEffect(() => { saveRef.current = save }, [save])
+  useEffect(() => { sessionRef.current = session }, [session])
+
+  const gainedLevels = crossedLevels(bedStartXpRef.current, save.playerProgress.totalXp)
+  useEffect(() => {
+    if (activeCharacter || bedSummary.earnedXp === 0) return
+    setSummaryReady(false)
+    const timeout = window.setTimeout(() => setSummaryReady(true), 900 + gainedLevels.length * 650)
+    return () => window.clearTimeout(timeout)
+  }, [activeCharacter, bedSummary.earnedXp, gainedLevels.length])
 
   useEffect(() => {
     setCompositionOpen(false)
@@ -233,6 +285,11 @@ function BattleScreen({
     if (completingRef.current) return
     completingRef.current = true
     const current = saveRef.current
+    const progression = completeKanji(current.playerProgress, sessionRef.current, {
+      correctStrokeCount: character.strokeCount,
+      errorCount: totalMistakes,
+      strokeCount: character.strokeCount,
+    })
     const result = reviewCard(current.cards[character.id], totalMistakes, hintUsedRef.current)
     const seen = new Set(current.seenCharacterIds)
     seen.add(character.id)
@@ -253,21 +310,60 @@ function BattleScreen({
       durationMs: Date.now() - startedAtRef.current,
       inputDevice: getInputDevice(),
     }
-    const nextSave: SaveGame = {
+    let nextSave: SaveGame = {
       ...current,
       unlockedBedIds: [...unlocked],
       masteredBedIds: [...mastered],
       seenCharacterIds: [...seen],
       cards: { ...current.cards, [character.id]: result.card },
       reviewEvents: [...current.reviewEvents.slice(-499), event],
+      playerProgress: progression.player,
       updatedAt: Date.now(),
     }
+    const nextCharacter = bed.characters.find(
+      (candidate) => candidate.id !== character.id && isCardDue(nextSave.cards[candidate.id]),
+    )
+    let nextSession = progression.session
+    const achievementEvents: AchievementEvent[] = [{
+      type: 'kanji.completed',
+      timestamp: event.timestamp,
+      strokeCount: character.strokeCount,
+      errorCount: totalMistakes,
+      earnedXp: progression.reward.earnedXp,
+      kanjiXp: progression.reward.kanjiXp,
+      previousCombo: progression.reward.previousCombo,
+      combo: progression.reward.combo,
+      finalStrokeError: finalStrokeErrorRef.current,
+    }]
+    const nextBedSummary = {
+      correctStrokes: bedSummaryRef.current.correctStrokes + character.strokeCount,
+      errors: bedSummaryRef.current.errors + totalMistakes,
+      comboBonusXp: bedSummaryRef.current.comboBonusXp + progression.reward.comboBonusXp,
+      earnedXp: bedSummaryRef.current.earnedXp + progression.reward.earnedXp,
+    }
+    if (!nextCharacter) {
+      const completedBiomes = findCompletedBiomeIds(nextSave.cards)
+      const bedCompletion = completeBed(nextSave.playerProgress, nextSession, completedBiomes)
+      nextSave = { ...nextSave, playerProgress: bedCompletion.player }
+      nextSession = bedCompletion.session
+      achievementEvents.push({
+        type: 'gardenBed.completed',
+        timestamp: event.timestamp,
+        perfect: nextBedSummary.errors === 0,
+        earnedXp: nextBedSummary.earnedXp,
+        biomeId: bed.biomeId,
+        completedBiomeIds: completedBiomes,
+      })
+    }
     saveRef.current = nextSave
-    onSave(nextSave)
+    sessionRef.current = nextSession
+    setLastReward(progression.reward)
+    setRewardSequence((sequence) => sequence + 1)
+    if (progression.reward.comboBonusXp > 0) playComboMilestoneCue(progression.reward.combo)
+    bedSummaryRef.current = nextBedSummary
+    setBedSummary(nextBedSummary)
+    onSave(nextSave, nextSession, achievementEvents)
     window.setTimeout(() => {
-      const nextCharacter = bed.characters.find(
-        (candidate) => candidate.id !== character.id && isCardDue(nextSave.cards[candidate.id]),
-      )
       setActiveCharacterId(nextCharacter?.id ?? null)
     }, 1050)
   }, [bed, onSave])
@@ -279,6 +375,7 @@ function BattleScreen({
     hintMistakesRef.current = 0
     hintUsedRef.current = false
     correctStrokesRef.current = 0
+    finalStrokeErrorRef.current = false
     streakHighlightRef.current = 0
     clearStreakGradientRef.current?.()
     clearStreakGradientRef.current = null
@@ -346,6 +443,7 @@ function BattleScreen({
         settleCheatStroke('wrong')
         const totalMistakes = data.totalMistakes + hintMistakesRef.current
         mistakesRef.current = totalMistakes
+        if (correctStrokesRef.current === activeCharacter.strokeCount - 1) finalStrokeErrorRef.current = true
       },
       onComplete: (summary) => {
         const totalMistakes = summary.totalMistakes + hintMistakesRef.current
@@ -489,10 +587,33 @@ function BattleScreen({
       ) : (
         <section className="cleared-state">
           <Flower2 />
-          <h1>Грядка очищена</h1>
+          <p className="cleared-eyebrow">Грядка очищена</p>
+          <h1>Сад снова дышит</h1>
           <p>Все сорняки на этой грядке уничтожены. Новые повторения появятся здесь по расписанию памяти.</p>
-          <button className="primary-button" onClick={onExit}>Вернуться в сад <Sparkles size={17} /></button>
+          {bedSummary.earnedXp > 0 && (
+            <div className="xp-summary">
+              <span>Правильные штрихи <b>+{bedSummary.correctStrokes} XP</b></span>
+              <span>Ошибки <b className="is-negative">−{bedSummary.errors} XP</b></span>
+              <span>Комбо <b>+{bedSummary.comboBonusXp} XP</b></span>
+              <strong>Итого <b>+{bedSummary.earnedXp} XP</b></strong>
+              <PlayerLevel totalXp={save.playerProgress.totalXp} />
+              {gainedLevels.map((level, index) => (
+                <div className="level-up-beat" style={{ animationDelay: `${.65 + index * .65}s` }} key={level}>
+                  <Trophy size={18} /> Новый уровень {level}
+                </div>
+              ))}
+            </div>
+          )}
+          <button className={`primary-button ${summaryReady ? 'is-ready' : ''}`} onClick={onExit}>Вернуться в сад <Sparkles size={17} /></button>
         </section>
+      )}
+
+      {activeCharacter && lastReward && (
+        <div className={`xp-toast ${lastReward.comboBonusXp > 0 ? 'has-milestone' : ''}`} key={rewardSequence}>
+          <strong>+{lastReward.earnedXp} XP</strong>
+          {lastReward.combo > 1 && <span>КОМБО {lastReward.combo}</span>}
+          {lastReward.comboBonusXp > 0 && <small>+{lastReward.comboBonusXp} за точность</small>}
+        </div>
       )}
 
       <div className="bed-cleanliness" title="Здоровье грядки">
@@ -545,6 +666,10 @@ export default function App() {
   const [screen, setScreen] = useState<Screen>('garden')
   const [activeBed, setActiveBed] = useState<BedDefinition | null>(null)
   const [camera, setCamera] = useState<CameraState>(initialCamera)
+  const [session, setSession] = useState<SessionProgress>(initialSessionProgress)
+  const [achievementQueue, setAchievementQueue] = useState<string[]>([])
+  const appSaveRef = useRef(save)
+  const appSessionRef = useRef(session)
 
   useEffect(() => {
     loadSave().then((stored) => {
@@ -552,6 +677,9 @@ export default function App() {
       setLoaded(true)
     })
   }, [])
+
+  useEffect(() => { appSaveRef.current = save }, [save])
+  useEffect(() => { appSessionRef.current = session }, [session])
 
   const applyLoadedSave = useCallback((loadedSave: SaveGame) => {
     setSave(loadedSave)
@@ -565,9 +693,51 @@ export default function App() {
   }, [applyLoadedSave, loaded])
 
   const updateSave = useCallback((nextSave: SaveGame) => {
+    appSaveRef.current = nextSave
     setSave(nextSave)
     void persistSave(nextSave)
   }, [])
+
+  const updateProgress = useCallback((nextSave: SaveGame, nextSession: SessionProgress, events: AchievementEvent[]) => {
+    const processed = processAchievementEvents(nextSave.achievements, nextSave.playerProgress, nextSession, events)
+    const saveWithAchievements = { ...nextSave, achievements: processed.state }
+    if (processed.unlocked.length > 0) setAchievementQueue((queue) => [...queue, ...processed.unlocked])
+    appSessionRef.current = nextSession
+    setSession(nextSession)
+    updateSave(saveWithAchievements)
+  }, [updateSave])
+
+  useEffect(() => {
+    if (!loaded) return
+    let lastInteractionAt = Date.now()
+    let lastTickAt = Date.now()
+    const noteInteraction = () => { lastInteractionAt = Date.now() }
+    const interactionEvents = ['pointerdown', 'keydown', 'wheel', 'touchstart'] as const
+    interactionEvents.forEach((name) => window.addEventListener(name, noteInteraction, { passive: true }))
+    const interval = window.setInterval(() => {
+      const now = Date.now()
+      const elapsed = now - lastTickAt
+      lastTickAt = now
+      if (document.visibilityState !== 'visible' || now - lastInteractionAt > SESSION_IDLE_TIMEOUT_MS) return
+      const nextSession = advanceActiveSession(appSessionRef.current, elapsed)
+      appSessionRef.current = nextSession
+      setSession(nextSession)
+      const current = appSaveRef.current
+      const processed = processAchievementEvents(current.achievements, current.playerProgress, nextSession, [{
+        type: 'session.activeTime', timestamp: now, activeMs: nextSession.activeMs,
+      }])
+      if (processed.unlocked.length === 0) return
+      const nextSave = { ...current, achievements: processed.state, updatedAt: now }
+      appSaveRef.current = nextSave
+      setSave(nextSave)
+      void persistSave(nextSave)
+      setAchievementQueue((queue) => [...queue, ...processed.unlocked])
+    }, 5_000)
+    return () => {
+      window.clearInterval(interval)
+      interactionEvents.forEach((name) => window.removeEventListener(name, noteInteraction))
+    }
+  }, [loaded])
 
   const enterBed = (bed: BedDefinition) => {
     if (!save.unlockedBedIds.includes(bed.id)) return
@@ -593,23 +763,30 @@ export default function App() {
     setScreen('battle')
   }
 
-  if (!loaded) return <div className="loading-screen"><Leaf /> Заходим в сад…</div>
-  if (!welcomed) return <Welcome onEnter={() => {
+  let content
+  if (!loaded) content = <div className="loading-screen"><Leaf /> Заходим в сад…</div>
+  else if (!welcomed) content = <Welcome onEnter={() => {
     sessionStorage.setItem('memory-garden-welcomed', 'yes')
     setWelcomed(true)
   }} />
-
-  if (screen === 'battle' && activeBed) {
-    return <BattleScreen bed={activeBed} save={save} onSave={updateSave} onExit={() => setScreen('garden')} />
+  else if (screen === 'battle' && activeBed) {
+    content = <BattleScreen bed={activeBed} save={save} session={session} onSave={updateProgress} onExit={() => setScreen('garden')} />
+  } else if (screen === 'stats') {
+    content = <StatisticsScreen save={save} session={session} onBack={() => setScreen('garden')} />
+  } else {
+    content = <GardenScreen
+      save={save}
+      camera={camera}
+      onCameraChange={setCamera}
+      onEnter={enterBed}
+      onStatistics={() => setScreen('stats')}
+    />
   }
 
-  if (screen === 'stats') return <StatisticsScreen save={save} onBack={() => setScreen('garden')} />
-
-  return <GardenScreen
-    save={save}
-    camera={camera}
-    onCameraChange={setCamera}
-    onEnter={enterBed}
-    onStatistics={() => setScreen('stats')}
-  />
+  return (
+    <>
+      {content}
+      {achievementQueue[0] && <AchievementPopup achievementId={achievementQueue[0]} onClose={() => setAchievementQueue((queue) => queue.slice(1))} />}
+    </>
+  )
 }

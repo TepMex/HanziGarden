@@ -2,11 +2,13 @@ import { describe, expect, test } from 'bun:test'
 import { State } from 'ts-fsrs'
 import { type SaveGame } from '../src/db'
 import { parseSaveDump, stringifySaveDump } from '../src/gameCheats'
+import { initialPlayerProgress } from '../src/progression'
+import { initialAchievementPersistence } from '../src/achievements'
 
 function saveFixture(): SaveGame {
   return {
     id: 'main',
-    version: 4,
+    version: 6,
     unlockedBedIds: ['bed-unknown'],
     masteredBedIds: ['bed-locked-but-mastered'],
     lastActiveBedId: 'bed-not-unlocked',
@@ -35,6 +37,8 @@ function saveFixture(): SaveGame {
       durationMs: 456,
       inputDevice: 'mouse',
     }],
+    playerProgress: { ...initialPlayerProgress, totalXp: 123, lifetimeCompletedKanji: 1 },
+    achievements: structuredClone(initialAchievementPersistence),
     updatedAt: 789,
   }
 }

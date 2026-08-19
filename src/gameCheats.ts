@@ -122,7 +122,7 @@ function reviewEventAt(value: unknown, path: string): ReviewEvent {
   }
 }
 
-/** Parse a v4 save while deliberately leaving cross-property/domain consistency unchecked. */
+/** Parse a current save while deliberately leaving cross-property/domain consistency unchecked. */
 export function parseSaveDump(dump: string | SaveGame): SaveGame {
   let value: unknown = dump
   if (typeof dump === 'string') {
@@ -135,7 +135,7 @@ export function parseSaveDump(dump: string | SaveGame): SaveGame {
 
   const save = recordAt(value, 'save')
   if (save.id !== 'main') return dumpError('save.id', 'строкой "main"')
-  if (save.version !== 4) return dumpError('save.version', 'числом 4')
+  if (save.version !== 6) return dumpError('save.version', 'числом 6')
   const lastActiveBedId = save.lastActiveBedId === null
     ? null
     : stringAt(save.lastActiveBedId, 'save.lastActiveBedId')
@@ -144,16 +144,46 @@ export function parseSaveDump(dump: string | SaveGame): SaveGame {
     Object.entries(rawCards).map(([id, card]) => [id, cardAt(card, `save.cards.${id}`)]),
   )
   if (!Array.isArray(save.reviewEvents)) return dumpError('save.reviewEvents', 'массивом')
+  const playerProgress = recordAt(save.playerProgress, 'save.playerProgress')
+  const achievements = recordAt(save.achievements, 'save.achievements')
+  if (!Array.isArray(achievements.unlockedAchievements)) return dumpError('save.achievements.unlockedAchievements', 'массивом')
+  const perfectBedsToday = recordAt(achievements.perfectBedsToday, 'save.achievements.perfectBedsToday')
 
   return {
     id: 'main',
-    version: 4,
+    version: 6,
     unlockedBedIds: stringArrayAt(save.unlockedBedIds, 'save.unlockedBedIds'),
     masteredBedIds: stringArrayAt(save.masteredBedIds, 'save.masteredBedIds'),
     lastActiveBedId,
     seenCharacterIds: stringArrayAt(save.seenCharacterIds, 'save.seenCharacterIds'),
     cards,
     reviewEvents: save.reviewEvents.map((event, index) => reviewEventAt(event, `save.reviewEvents[${index}]`)),
+    playerProgress: {
+      totalXp: numberAt(playerProgress.totalXp, 'save.playerProgress.totalXp'),
+      lifetimeCorrectStrokes: integerAt(playerProgress.lifetimeCorrectStrokes, 'save.playerProgress.lifetimeCorrectStrokes'),
+      lifetimeErrors: integerAt(playerProgress.lifetimeErrors, 'save.playerProgress.lifetimeErrors'),
+      lifetimeCompletedKanji: integerAt(playerProgress.lifetimeCompletedKanji, 'save.playerProgress.lifetimeCompletedKanji'),
+      lifetimeCompletedBeds: integerAt(playerProgress.lifetimeCompletedBeds, 'save.playerProgress.lifetimeCompletedBeds'),
+      bestComboEver: integerAt(playerProgress.bestComboEver, 'save.playerProgress.bestComboEver'),
+      perfectComplexKanjiCount: integerAt(playerProgress.perfectComplexKanjiCount, 'save.playerProgress.perfectComplexKanjiCount'),
+      completedBiomeIds: stringArrayAt(playerProgress.completedBiomeIds, 'save.playerProgress.completedBiomeIds'),
+    },
+    achievements: {
+      unlockedAchievements: achievements.unlockedAchievements.map((value, index) => {
+        const item = recordAt(value, `save.achievements.unlockedAchievements[${index}]`)
+        return {
+          id: stringAt(item.id, `save.achievements.unlockedAchievements[${index}].id`),
+          unlockedAt: stringAt(item.unlockedAt, `save.achievements.unlockedAchievements[${index}].unlockedAt`),
+        }
+      }),
+      currentDailyStreak: integerAt(achievements.currentDailyStreak, 'save.achievements.currentDailyStreak'),
+      bestDailyStreak: integerAt(achievements.bestDailyStreak, 'save.achievements.bestDailyStreak'),
+      ...(achievements.lastActiveDate === undefined ? {} : { lastActiveDate: stringAt(achievements.lastActiveDate, 'save.achievements.lastActiveDate') }),
+      perfectBedsToday: {
+        ...(perfectBedsToday.date === undefined ? {} : { date: stringAt(perfectBedsToday.date, 'save.achievements.perfectBedsToday.date') }),
+        count: integerAt(perfectBedsToday.count, 'save.achievements.perfectBedsToday.count'),
+      },
+    },
     updatedAt: numberAt(save.updatedAt, 'save.updatedAt'),
   }
 }

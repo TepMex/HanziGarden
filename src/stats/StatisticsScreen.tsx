@@ -4,6 +4,8 @@ import { characters, type CharacterDefinition } from '../data/model'
 import type { SaveGame } from '../db'
 import { isCardDue } from '../learning'
 import { getSrsStage, SRS_STAGES } from './srsStages'
+import { AchievementCollection } from '../achievements/AchievementUi'
+import type { SessionProgress } from '../progression'
 
 function reviewDate(character: CharacterDefinition, save: SaveGame): string {
   const card = save.cards[character.id]
@@ -12,8 +14,9 @@ function reviewDate(character: CharacterDefinition, save: SaveGame): string {
   return Number.isNaN(due.getTime()) ? 'неизвестно' : due.toLocaleString('ru-RU', { dateStyle: 'medium', timeStyle: 'short' })
 }
 
-export function StatisticsScreen({ save, onBack }: { save: SaveGame; onBack: () => void }) {
+export function StatisticsScreen({ save, session, onBack }: { save: SaveGame; session?: SessionProgress; onBack: () => void }) {
   const [selected, setSelected] = useState<CharacterDefinition | null>(null)
+  const [tab, setTab] = useState<'memory' | 'achievements'>('memory')
   const characterStages = useMemo(
     () => characters.map((character) => ({ character, stage: getSrsStage(save.cards[character.id]) })),
     [save.cards],
@@ -35,48 +38,47 @@ export function StatisticsScreen({ save, onBack }: { save: SaveGame; onBack: () 
       </header>
 
       <section className="statistics-content" aria-labelledby="statistics-title">
-        <p className="eyebrow">Состояние памяти</p>
-        <h1 id="statistics-title">Стена иероглифов</h1>
-        <div className="statistics-totals">
-          <span>Изучено: <strong>{studied} / {characters.length}</strong></span>
-          <span>На повторение сейчас: <strong>{due}</strong></span>
-          <span>Закреплено: <strong>{rooted}</strong></span>
+        <p className="eyebrow">Летопись сада</p>
+        <h1 id="statistics-title">{tab === 'memory' ? 'Стена иероглифов' : 'Достижения'}</h1>
+        <div className="statistics-tabs" role="tablist" aria-label="Раздел статистики">
+          <button role="tab" aria-selected={tab === 'memory'} onClick={() => setTab('memory')}>Память</button>
+          <button role="tab" aria-selected={tab === 'achievements'} onClick={() => setTab('achievements')}>Достижения</button>
         </div>
-
-        <div className="srs-legend" aria-label="Легенда стадий SRS">
-          {SRS_STAGES.map((stage) => (
-            <span className="srs-legend-item" key={stage.id}>
-              <i style={{ backgroundColor: stage.color }} /> {stage.label} <b>{stageCounts.get(stage.id)}</b>
-            </span>
-          ))}
-        </div>
-
-        {selected && (
-          <aside className="character-detail" aria-live="polite">
-            <strong>{selected.hanzi}</strong>
-            <span>{selected.keyword.ru} · кадр {selected.frame}</span>
-            <span>{getSrsStage(save.cards[selected.id]).label} · повтор: {reviewDate(selected, save)}</span>
-          </aside>
+        {tab === 'memory' ? (
+          <>
+            <div className="statistics-totals">
+              <span>Изучено: <strong>{studied} / {characters.length}</strong></span>
+              <span>На повторение сейчас: <strong>{due}</strong></span>
+              <span>Закреплено: <strong>{rooted}</strong></span>
+            </div>
+            <div className="srs-legend" aria-label="Легенда стадий SRS">
+              {SRS_STAGES.map((stage) => (
+                <span className="srs-legend-item" key={stage.id}>
+                  <i style={{ backgroundColor: stage.color }} /> {stage.label} <b>{stageCounts.get(stage.id)}</b>
+                </span>
+              ))}
+            </div>
+            {selected && (
+              <aside className="character-detail" aria-live="polite">
+                <strong>{selected.hanzi}</strong>
+                <span>{selected.keyword.ru} · кадр {selected.frame}</span>
+                <span>{getSrsStage(save.cards[selected.id]).label} · повтор: {reviewDate(selected, save)}</span>
+              </aside>
+            )}
+            <div className="character-wall" aria-label="Все иероглифы в порядке кадров RTH">
+              {characterStages.map(({ character, stage }) => {
+                const label = `${character.hanzi}: ${character.keyword.ru}, кадр ${character.frame}, стадия ${stage.label}, повтор ${reviewDate(character, save)}`
+                return (
+                  <button className="character-tile" key={character.id} style={{ backgroundColor: stage.color }} onClick={() => setSelected(character)} onFocus={() => setSelected(character)} title={label} aria-label={label}>
+                    {character.hanzi}
+                  </button>
+                )
+              })}
+            </div>
+          </>
+        ) : (
+          <AchievementCollection persistence={save.achievements} player={save.playerProgress} session={session} />
         )}
-
-        <div className="character-wall" aria-label="Все иероглифы в порядке кадров RTH">
-          {characterStages.map(({ character, stage }) => {
-            const label = `${character.hanzi}: ${character.keyword.ru}, кадр ${character.frame}, стадия ${stage.label}, повтор ${reviewDate(character, save)}`
-            return (
-              <button
-                className="character-tile"
-                key={character.id}
-                style={{ backgroundColor: stage.color }}
-                onClick={() => setSelected(character)}
-                onFocus={() => setSelected(character)}
-                title={label}
-                aria-label={label}
-              >
-                {character.hanzi}
-              </button>
-            )
-          })}
-        </div>
       </section>
     </main>
   )
