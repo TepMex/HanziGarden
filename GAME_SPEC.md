@@ -32,6 +32,8 @@ There is no intermediate garden-selection screen. The player pans and zooms the 
 
 The welcome screen is the main menu. It offers **Войти в сад**, **Об игре**, **Поддержать**, and **Выход**. It is centered within the available viewport and must not scroll or reveal a strip of the garden map beneath it. Its garden backdrop covers the screen without tiling, including during mobile overscroll. The About and Support items open dedicated placeholder text screens with a route back to the main menu. Entering the garden preserves the player's save and current map camera. Exit closes the Android host; browser builds request that the current tab be closed.
 
+The product icon is shared across browser favicons, touch icons, the Android download page, and the Android launcher. It depicts a warm ivory calligraphic sprout and garden mound with the simplified character **忆** (memory / to remember) inside a cinnabar-red circular seal on a deep jade background. The Android adaptive-icon foreground must remain inside the platform safe zone so round, squircle, and rounded-square launcher masks preserve the complete mark.
+
 The main map header also links to the statistics screen and has an icon-only exit-to-main-menu control as the rightmost header action, immediately to the right of Statistics. The exit control uses the same `LogOut` icon as the main-menu Exit action and has an accessible text label even though no text is shown visually.
 
 Statistics renders every Hanzi in original frame order as a dense colored tile wall. The colors are a human-readable SRS-stage projection derived from each card's scheduled interval; they never alter FSRS scheduling or due dates. Its summary shows **Изучено** and **Закреплено**; it does not show a **На повторение сейчас** total.
