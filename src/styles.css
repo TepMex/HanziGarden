@@ -53,12 +53,13 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
 .welcome-screen {
   display: grid;
   place-items: center;
+  overflow: hidden;
   padding:
     max(28px, env(safe-area-inset-top, 0px))
     max(16px, env(safe-area-inset-right, 0px))
     max(24px, env(safe-area-inset-bottom, 0px))
     max(16px, env(safe-area-inset-left, 0px));
-  background: var(--bg-garden-map) center / cover;
+  background: #101714 var(--bg-garden-map) center / cover no-repeat;
 }
 
 .welcome-screen::before {
@@ -81,7 +82,7 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
   position: relative;
   width: min(560px, 100%);
   max-width: 100%;
-  margin-top: 36px;
+  margin: 0 auto;
   padding: 56px 48px 48px;
   text-align: center;
   color: #3a3027;
@@ -148,6 +149,33 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
 }
 
 .primary-button:hover { transform: translateY(-2px); filter: brightness(1.12); }
+
+.main-menu {
+  width: min(300px, 100%);
+  display: grid;
+  gap: 10px;
+  margin: 0 auto;
+}
+.main-menu .primary-button,
+.main-menu .menu-button { width: 100%; }
+.menu-button {
+  min-height: 43px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 0 20px;
+  color: #473b2d;
+  border: 1px solid rgba(81, 64, 40, .45);
+  background: rgba(239, 224, 188, .38);
+  cursor: pointer;
+  letter-spacing: .035em;
+  transition: transform .2s, background .2s;
+}
+.menu-button:hover { transform: translateY(-1px); background: rgba(246, 232, 198, .7); }
+.menu-exit-button { color: #6a302b; border-color: rgba(112, 51, 43, .42); }
+.menu-info-card { width: min(520px, 100%); }
+.menu-info-card .menu-button { margin-top: 12px; }
 
 .map-backdrop,
 .battle-backdrop {
@@ -808,6 +836,7 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
 .map-header > * { pointer-events: auto; }
 .garden-summary { gap: 15px; }
 .map-grid-button,
+.map-menu-button,
 .map-stats-button,
 .stats-back {
   display: inline-flex;
@@ -821,7 +850,7 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
   box-shadow: 0 3px 14px rgba(7, 15, 11, .32);
   cursor: pointer;
 }
-.map-grid-button:hover, .map-stats-button:hover, .stats-back:hover { background: rgba(64, 88, 67, .88); }
+.map-grid-button:hover, .map-menu-button:hover, .map-stats-button:hover, .stats-back:hover { background: rgba(64, 88, 67, .88); }
 .map-grid-button[aria-pressed="true"] { color: #fff6d7; background: rgba(86, 112, 77, .92); }
 
 .garden-map-viewport {
@@ -1042,6 +1071,7 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
   .player-level.is-compact small { min-width: 68px; font-size: .58rem; }
   .garden-summary { gap: 7px; font-size: .76rem; }
   .map-grid-button,
+  .map-menu-button,
   .map-stats-button { width: 34px; min-height: 34px; padding: 0; justify-content: center; }
   .map-stats-button span { display: none; }
   .statistics-header { min-height: 58px; padding: max(8px, env(safe-area-inset-top, 0px)) 14px 8px; }

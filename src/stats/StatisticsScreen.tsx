@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react'
 import { ArrowLeft, Leaf } from 'lucide-react'
 import { characters, type CharacterDefinition } from '../data/model'
 import type { SaveGame } from '../db'
-import { isCardDue } from '../learning'
 import { getSrsStage, SRS_STAGES } from './srsStages'
 import { AchievementCollection } from '../achievements/AchievementUi'
 import type { SessionProgress } from '../progression'
@@ -27,7 +26,6 @@ export function StatisticsScreen({ save, session, onBack }: { save: SaveGame; se
     return counts
   }, [characterStages])
   const studied = save.seenCharacterIds.length
-  const due = characters.filter((character) => isCardDue(save.cards[character.id])).length
   const rooted = characterStages.filter(({ stage }) => stage.index >= 6).length
 
   return (
@@ -48,7 +46,6 @@ export function StatisticsScreen({ save, session, onBack }: { save: SaveGame; se
           <>
             <div className="statistics-totals">
               <span>Изучено: <strong>{studied} / {characters.length}</strong></span>
-              <span>На повторение сейчас: <strong>{due}</strong></span>
               <span>Закреплено: <strong>{rooted}</strong></span>
             </div>
             <div className="srs-legend" aria-label="Легенда стадий SRS">

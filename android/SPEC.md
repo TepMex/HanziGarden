@@ -52,7 +52,7 @@ No deep links, no native plugins, no Play Store listing in v1.
 
 ## UI / UX
 
-1. Cold start → splash theme → WebView loads bundled `index.html` → welcome / map.
+1. Cold start → splash theme → WebView loads bundled `index.html` → main menu. Its **Выход** action closes and removes the Android activity task through the internal `hanzi-garden://exit` command.
 2. Orientation follows the device sensor; the upstream UI adapts to portrait and landscape.
 3. System back: if the WebView history stack has an entry, go back; otherwise finish the activity.
 4. Landing page (`android/site/`): brand **Memory Garden**, short tagline, APK download link, update note.

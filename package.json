@@ -17,6 +17,7 @@
     "test:map-load": "bun scripts/check-map-load.mjs",
     "test:map-mask": "bun scripts/check-garden-mask-alignment.mjs",
     "test:keyword-layout": "bun scripts/check-keyword-layout.mjs",
+    "test:welcome-menu": "bun scripts/check-welcome-menu.mjs",
     "test:improvements": "bun scripts/check-improvements-19082026.mjs",
     "test:progression-achievements": "bun scripts/check-progression-achievements.mjs",
     "test:unit": "bun test"

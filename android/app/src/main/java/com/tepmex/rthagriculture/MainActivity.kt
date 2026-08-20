@@ -133,6 +133,14 @@ class MainActivity : AppCompatActivity() {
 
         webView.webChromeClient = WebChromeClient()
         webView.webViewClient = object : WebViewClient() {
+            override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
+                if (request.url.scheme == EXIT_SCHEME) {
+                    finishAndRemoveTask()
+                    return true
+                }
+                return super.shouldOverrideUrlLoading(view, request)
+            }
+
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
                 // Re-assert layout after first paint — immersive insets can change WebView size.
@@ -160,6 +168,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val ASSET_ENTRY = "file:///android_asset/www/index.html"
+        private const val EXIT_SCHEME = "hanzi-garden"
         private const val GARDEN_HEX = "#19211E"
     }
 }

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import HanziWriter from 'hanzi-writer'
-import { ArrowLeft, BarChart3, Flower2, Grid3X3, HelpCircle, Layers, Leaf, Plus, Sparkles, Trophy, X } from 'lucide-react'
+import { ArrowLeft, BarChart3, BookOpen, Flower2, Grid3X3, HandHeart, HelpCircle, Layers, Leaf, LogOut, Plus, Sparkles, Trophy, X } from 'lucide-react'
 import { type BedDefinition, type CharacterDefinition } from './data/model'
 import { battleArtworkForBiome, battleBackdropStage } from './data/battleBiomeArt'
 import { initialSave, loadSave, persistSave, type SaveGame } from './db'
@@ -33,7 +33,7 @@ import {
   type SessionProgress,
 } from './progression'
 
-type Screen = 'garden' | 'battle' | 'stats'
+type Screen = 'menu' | 'about' | 'support' | 'garden' | 'battle' | 'stats'
 
 type PendingCheatStroke = {
   expected: 'correct' | 'wrong'
@@ -112,12 +112,14 @@ function GardenScreen({
   camera,
   onCameraChange,
   onEnter,
+  onMainMenu,
   onStatistics,
 }: {
   save: SaveGame
   camera: CameraState
   onCameraChange: (camera: CameraState) => void
   onEnter: (bed: BedDefinition) => void
+  onMainMenu: () => void
   onStatistics: () => void
 }) {
   const [gridVisible, setGridVisible] = useState(false)
@@ -139,6 +141,7 @@ function GardenScreen({
             <Grid3X3 size={17} />
           </button>
           <button className="map-stats-button" onClick={onStatistics} aria-label="Статистика"><BarChart3 size={17} /><span>Статистика</span></button>
+          <button className="map-menu-button" onClick={onMainMenu} aria-label="Выйти в главное меню" title="Выйти в главное меню"><LogOut size={18} /></button>
         </div>
       </header>
       <GardenMap
@@ -643,7 +646,12 @@ function BattleScreen({
   )
 }
 
-function Welcome({ onEnter }: { onEnter: () => void }) {
+function MainMenu({ onEnter, onAbout, onSupport, onExit }: {
+  onEnter: () => void
+  onAbout: () => void
+  onSupport: () => void
+  onExit: () => void
+}) {
   return (
     <div className="welcome-screen">
       <div className="welcome-vignette" />
@@ -653,17 +661,45 @@ function Welcome({ onEnter }: { onEnter: () => void }) {
         <h1>Сад иероглифов</h1>
         <p>Добро пожаловать в Сад иероглифов! Очищай его от сорняков, запоминай начертания иероглифов и тренируй механическую память!</p>
         <div className="welcome-rule"><span /> кисть поможет запомнить <span /></div>
-        <button className="primary-button" onClick={onEnter}>Войти в сад <Leaf size={18} /></button>
+        <nav className="main-menu" aria-label="Главное меню">
+          <button className="primary-button" onClick={onEnter}>Войти в сад <Leaf size={18} /></button>
+          <button className="menu-button" onClick={onAbout}>Об игре <BookOpen size={18} /></button>
+          <button className="menu-button" onClick={onSupport}>Поддержать <HandHeart size={18} /></button>
+          <button className="menu-button menu-exit-button" onClick={onExit}>Выход <LogOut size={18} /></button>
+        </nav>
       </section>
     </div>
   )
 }
 
+function MenuInfoScreen({ kind, onBack }: { kind: 'about' | 'support'; onBack: () => void }) {
+  const about = kind === 'about'
+  return (
+    <div className="welcome-screen">
+      <div className="welcome-vignette" />
+      <section className="welcome-card menu-info-card">
+        <div className="seal"><span>忆</span></div>
+        <p className="eyebrow">Сад иероглифов</p>
+        <h1>{about ? 'Об игре' : 'Поддержать'}</h1>
+        <p>{about ? 'Здесь появится информация об игре.' : 'Здесь появится информация о способах поддержать проект.'}</p>
+        <button className="menu-button" onClick={onBack}><ArrowLeft size={18} /> Вернуться в главное меню</button>
+      </section>
+    </div>
+  )
+}
+
+function exitApplication() {
+  if (window.location.protocol === 'file:') {
+    window.location.assign('hanzi-garden://exit')
+    return
+  }
+  window.close()
+}
+
 export default function App() {
   const [save, setSave] = useState<SaveGame>(initialSave)
   const [loaded, setLoaded] = useState(false)
-  const [welcomed, setWelcomed] = useState(() => sessionStorage.getItem('memory-garden-welcomed') === 'yes')
-  const [screen, setScreen] = useState<Screen>('garden')
+  const [screen, setScreen] = useState<Screen>('menu')
   const [activeBed, setActiveBed] = useState<BedDefinition | null>(null)
   const [camera, setCamera] = useState<CameraState>(initialCamera)
   const [session, setSession] = useState<SessionProgress>(initialSessionProgress)
@@ -765,11 +801,11 @@ export default function App() {
 
   let content
   if (!loaded) content = <div className="loading-screen"><Leaf /> Заходим в сад…</div>
-  else if (!welcomed) content = <Welcome onEnter={() => {
-    sessionStorage.setItem('memory-garden-welcomed', 'yes')
-    setWelcomed(true)
-  }} />
-  else if (screen === 'battle' && activeBed) {
+  else if (screen === 'menu') {
+    content = <MainMenu onEnter={() => setScreen('garden')} onAbout={() => setScreen('about')} onSupport={() => setScreen('support')} onExit={exitApplication} />
+  } else if (screen === 'about' || screen === 'support') {
+    content = <MenuInfoScreen kind={screen} onBack={() => setScreen('menu')} />
+  } else if (screen === 'battle' && activeBed) {
     content = <BattleScreen bed={activeBed} save={save} session={session} onSave={updateProgress} onExit={() => setScreen('garden')} />
   } else if (screen === 'stats') {
     content = <StatisticsScreen save={save} session={session} onBack={() => setScreen('garden')} />
@@ -779,6 +815,7 @@ export default function App() {
       camera={camera}
       onCameraChange={setCamera}
       onEnter={enterBed}
+      onMainMenu={() => setScreen('menu')}
       onStatistics={() => setScreen('stats')}
     />
   }
