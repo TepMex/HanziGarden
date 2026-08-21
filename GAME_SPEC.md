@@ -1397,6 +1397,9 @@ Milestones award a small one-time bonus:
 Combo bonuses use short jade/gold glow, particle, pulse, and synthesized sound
 cues. Gameplay shows only a transient XP/Combo toast. The map permanently
 shows a compact level medallion, thin progress bar, and in-level XP count.
+When the operating system requests reduced motion, the XP/Combo toast remains
+completely static and visible for approximately one second, then disappears
+immediately; reduced motion must never make the reward feedback invisible.
 
 The XP cost from level `L` to `L + 1` is linear:
 

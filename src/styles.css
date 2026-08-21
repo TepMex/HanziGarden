@@ -544,6 +544,7 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
 .xp-toast small { color: #f1dfad; }
 .xp-toast.has-milestone::before { content: ''; position: absolute; inset: -35px -70px; z-index: -1; border-radius: 50%; background: radial-gradient(circle, rgba(232, 198, 108, .42), transparent 66%); animation: combo-pulse .75s ease-out both; }
 @keyframes xp-toast { 0% { opacity: 0; transform: translate(-50%, 18px) scale(.8); } 25%, 72% { opacity: 1; transform: translate(-50%, 0) scale(1); } 100% { opacity: 0; transform: translate(-50%, -18px) scale(1.06); } }
+@keyframes xp-toast-reduced { from, 99% { opacity: 1; transform: translate(-50%, 0) scale(1); } to { opacity: 0; transform: translate(-50%, 0) scale(1); } }
 @keyframes combo-pulse { from { opacity: 0; transform: scale(.6); } 45% { opacity: 1; } to { opacity: 0; transform: scale(1.4); } }
 
 .animation-debug-screen { background: #17231f; }
@@ -887,6 +888,7 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  .xp-toast { animation: xp-toast-reduced 1.05s step-end both !important; }
 }
 
 /* V2 continuous garden map ------------------------------------------------ */
