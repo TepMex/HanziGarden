@@ -1,4 +1,6 @@
 import rawCharacters from './rth.json'
+import rawPinyinAudio from './pinyinAudio.json'
+import type { PinyinPronunciation } from '../pinyinAudio'
 import { requireCharacterStructure, type CharacterStructure } from './rshStructure'
 import {
   cellsForBedIndex,
@@ -17,6 +19,7 @@ export type CharacterDefinition = {
   strokeCount: number
   writingDataId: string
   structure: CharacterStructure
+  pronunciation: PinyinPronunciation
 }
 
 export type BedDefinition = {
@@ -59,6 +62,10 @@ const russianKeywords: Record<string, string> = {
 }
 
 const source = rawCharacters as RawCharacter[]
+const pronunciationByFrame = rawPinyinAudio as Array<[string, string | null]>
+if (pronunciationByFrame.length !== source.length) {
+  throw new Error('Pinyin pronunciation data must match the RSH character source')
+}
 export const sourceRthListIds = [...new Set(source.map((item) => item.rth_list))]
 
 /** Stable v1 IDs are retained only for lossless save migration. */
@@ -97,6 +104,8 @@ for (const [listIndex, listId] of sourceRthListIds.entries()) {
 const characterByBedAndFrame = new Map<string, CharacterDefinition>()
 for (const draft of drafts) {
   for (const item of draft.rawCharacters) {
+    const pronunciation = pronunciationByFrame[item.frame - 1]
+    if (!pronunciation) throw new Error(`Нет пиньиня для ${item.hanzi}`)
     const character: CharacterDefinition = {
       id: `rsh-${String(item.frame).padStart(4, '0')}`,
       hanzi: item.hanzi,
@@ -106,6 +115,7 @@ for (const draft of drafts) {
       strokeCount: item.strokes,
       writingDataId: item.hanzi,
       structure: requireCharacterStructure(item.hanzi),
+      pronunciation: { pinyin: pronunciation[0], audioFile: pronunciation[1] },
     }
     characterByBedAndFrame.set(`${draft.id}:${item.frame}`, character)
   }
