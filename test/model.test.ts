@@ -1,4 +1,6 @@
 import { describe, expect, test } from 'bun:test'
+import { readdirSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
 import { beds, biomes, characters, sourceRthListIds } from '../src/data/model'
 
 describe('garden model', () => {
@@ -38,5 +40,23 @@ describe('garden model', () => {
     beds.forEach((bed) => bed.neighbors.forEach((neighborId) => {
       expect(byId.get(neighborId)?.neighbors).toContain(bed.id)
     }))
+  })
+
+  test('maps every character to pinyin and every available pronunciation to a local MP3', () => {
+    const audioDirectory = fileURLToPath(new URL('../public/assets/audio/pinyin/', import.meta.url))
+    const audioFiles = new Set(readdirSync(audioDirectory).filter((name) => name.endsWith('.mp3')))
+
+    expect(audioFiles.size).toBe(1125)
+    expect(characters.every((character) => character.pronunciation.pinyin.length > 0)).toBe(true)
+    expect(characters.filter((character) => character.pronunciation.audioFile === null).map((character) => character.hanzi)).toEqual(['哟'])
+    characters.forEach((character) => {
+      if (character.pronunciation.audioFile) {
+        expect(audioFiles.has(character.pronunciation.audioFile)).toBe(true)
+      }
+    })
+
+    expect(characters.find((character) => character.hanzi === '一')?.pronunciation).toEqual({ pinyin: 'yī', audioFile: 'cmn-yi1.mp3' })
+    expect(characters.find((character) => character.hanzi === '具')?.pronunciation).toEqual({ pinyin: 'jù', audioFile: 'cmn-jv4.mp3' })
+    expect(characters.find((character) => character.hanzi === '的')?.pronunciation).toEqual({ pinyin: 'de', audioFile: 'cmn-de1.mp3' })
   })
 })

@@ -140,6 +140,10 @@ type CharacterDefinition = {
   bedId: string;
   strokeCount: number;
   writingDataId: string;
+  pronunciation: {
+    pinyin: string;
+    audioFile: string | null;
+  };
 };
 ```
 
@@ -156,9 +160,36 @@ Example:
   "frame": 142,
   "bedId": "rsh-book1-list-08",
   "strokeCount": 11,
-  "writingDataId": "猫"
+  "writingDataId": "猫",
+  "pronunciation": {
+    "pinyin": "māo",
+    "audioFile": "cmn-mao1.mp3"
+  }
 }
 ```
+
+### 5.1 Pinyin Pronunciation Audio
+
+Completing the final accepted stroke of a character immediately plays that
+character's Mandarin pinyin syllable. Pronunciation is optional feedback: a
+blocked, unavailable, or failed audio playback must never delay or alter review
+grading, XP, combo, achievements, save persistence, or progression to the next
+character.
+
+The source of truth is `rsh_audio_cmn_syllables.xlsx`. For characters with more
+than one dictionary reading, the game uses the row whose `reading_rank` is `1`.
+The workbook's selected 64 kbit/s recordings come from the CC BY-SA
+`hugolpz/audio-cmn/64k/syllabs` set and are committed under
+`public/assets/audio/pinyin/`. They remain public assets rather than JavaScript
+imports, so only the active character's MP3 is preloaded and audio works with
+both hosted URLs and the Android `file://` bundle.
+
+The current upstream tree does not contain every logical filename emitted by
+the workbook. Neutral-tone filenames absent upstream resolve to the matching
+tone-1 recording, consistent with the upstream note that removed tone-5 files
+were duplicates. The workbook's `ju4` resolves to upstream `jv4`. `yo1`/`yo5`
+have no correct upstream MP3, so `哟` retains its pinyin metadata but playback is
+silently skipped rather than substituting an incorrect syllable.
 
 ## 6. Persistent Progress Model
 

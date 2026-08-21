@@ -16,6 +16,13 @@ const browser = await chromium.launch({
   args: ['--allow-file-access-from-files', '--disable-web-security'],
 })
 const page = await (await browser.newContext({ viewport: { width: 390, height: 844 } })).newPage()
+await page.addInitScript(() => {
+  window.__hanziGardenPlayedAudio = []
+  HTMLMediaElement.prototype.play = function () {
+    window.__hanziGardenPlayedAudio.push(this.src)
+    return Promise.resolve()
+  }
+})
 const errors = []
 page.on('console', (message) => {
   if (message.type() === 'error') errors.push(message.text())
@@ -50,6 +57,11 @@ try {
 
   await page.evaluate(() => window.hanziGardenCheats.drawWrongStroke())
   await page.evaluate(() => window.hanziGardenCheats.drawCorrectStroke())
+
+  const playedAudio = await page.evaluate(() => window.__hanziGardenPlayedAudio)
+  if (!playedAudio.some((url) => url.endsWith('/assets/audio/pinyin/cmn-yi1.mp3'))) {
+    throw new Error(`character completion did not play yi1: ${JSON.stringify(playedAudio)}`)
+  }
 
   const review = await page.evaluate(async () => {
     const save = await window.hanziGardenCheats.dumpDb('object')
@@ -98,7 +110,7 @@ try {
 
   await page.evaluate((json) => window.hanziGardenCheats.loadDb(json), backup)
   if (errors.length) throw new Error(`browser errors: ${errors.slice(0, 5).join(' | ')}`)
-  console.log('OK: production cheat API strokes + dump round-trip')
+  console.log('OK: production cheat API strokes + pinyin audio + dump round-trip')
 } finally {
   await browser.close()
 }

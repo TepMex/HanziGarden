@@ -22,6 +22,7 @@ import {
 } from './achievements'
 import { AchievementPopup } from './achievements/AchievementUi'
 import { playComboMilestoneCue } from './comboSound'
+import { PinyinAudioPlayer } from './pinyinAudio'
 import {
   advanceActiveSession,
   completeBed,
@@ -191,6 +192,7 @@ function BattleScreen({
   const streakHighlightRef = useRef(0)
   const clearStreakGradientRef = useRef<(() => void) | null>(null)
   const pendingCheatStrokeRef = useRef<PendingCheatStroke | null>(null)
+  const pronunciationPlayerRef = useRef<PinyinAudioPlayer | null>(null)
   const [correctStrokes, setCorrectStrokes] = useState(0)
   const [isCompositionOpen, setCompositionOpen] = useState(false)
   const [lastReward, setLastReward] = useState<KanjiReward | null>(null)
@@ -262,6 +264,17 @@ function BattleScreen({
 
   useEffect(() => { saveRef.current = save }, [save])
   useEffect(() => { sessionRef.current = session }, [session])
+
+  useEffect(() => {
+    const player = pronunciationPlayerRef.current ?? new PinyinAudioPlayer()
+    pronunciationPlayerRef.current = player
+    player.prepare(activeCharacter?.pronunciation ?? null)
+  }, [activeCharacter])
+
+  useEffect(() => () => {
+    pronunciationPlayerRef.current?.dispose()
+    pronunciationPlayerRef.current = null
+  }, [])
 
   const gainedLevels = crossedLevels(bedStartXpRef.current, save.playerProgress.totalXp)
   useEffect(() => {
@@ -456,6 +469,7 @@ function BattleScreen({
           writer.updateColor('strokeColor', cleanInk.completedStrokeColor, { duration: 120 })
           writer.updateColor('radicalColor', cleanInk.completedStrokeColor, { duration: 120 })
         }
+        pronunciationPlayerRef.current?.play(activeCharacter.pronunciation)
         finishCharacter(activeCharacter, totalMistakes)
       },
     })
