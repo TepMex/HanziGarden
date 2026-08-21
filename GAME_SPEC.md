@@ -1113,6 +1113,13 @@ show FSRS card state
 simulate review date
 ```
 
+Development builds expose `/debug/animations`, a standalone reward-animation
+workbench rendered over the real battle field. One control opens a random
+achievement through the production achievement popup; three separate controls
+replay the production XP drop for `+1`, `+3`, or `+5 XP`. Repeated presses must
+restart the animation without reloading the page. The workbench must not load,
+mutate, or persist player progress and is not exposed in production builds.
+
 ## 42. Accessibility / Input Devices
 
 Target:

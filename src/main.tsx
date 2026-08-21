@@ -9,8 +9,17 @@ rootStyle.setProperty('--bg-garden-map', `url(${JSON.stringify(assetUrl('assets/
 
 const root = createRoot(document.getElementById('root')!)
 const isGardenRevealPrototype = import.meta.env.DEV && window.location.pathname === '/prototype/garden-reveal'
+const isAnimationDebugPage = import.meta.env.DEV && window.location.pathname === '/debug/animations'
 
-if (isGardenRevealPrototype) {
+if (isAnimationDebugPage) {
+  import('./debug/AnimationDebugPage').then(({ AnimationDebugPage }) => {
+    root.render(
+      <StrictMode>
+        <AnimationDebugPage />
+      </StrictMode>,
+    )
+  })
+} else if (isGardenRevealPrototype) {
   import('./prototype/GardenRevealPrototype').then(({ GardenRevealPrototype }) => {
     root.render(
       <StrictMode>

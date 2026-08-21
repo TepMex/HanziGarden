@@ -23,6 +23,7 @@ import {
 import { AchievementPopup } from './achievements/AchievementUi'
 import { playComboMilestoneCue } from './comboSound'
 import { PinyinAudioPlayer } from './pinyinAudio'
+import { XpToast } from './XpToast'
 import {
   advanceActiveSession,
   completeBed,
@@ -626,11 +627,12 @@ function BattleScreen({
       )}
 
       {activeCharacter && lastReward && (
-        <div className={`xp-toast ${lastReward.comboBonusXp > 0 ? 'has-milestone' : ''}`} key={rewardSequence}>
-          <strong>+{lastReward.earnedXp} XP</strong>
-          {lastReward.combo > 1 && <span>КОМБО {lastReward.combo}</span>}
-          {lastReward.comboBonusXp > 0 && <small>+{lastReward.comboBonusXp} за точность</small>}
-        </div>
+        <XpToast
+          earnedXp={lastReward.earnedXp}
+          combo={lastReward.combo}
+          comboBonusXp={lastReward.comboBonusXp}
+          key={rewardSequence}
+        />
       )}
 
       <div className="bed-cleanliness" title="Здоровье грядки">
