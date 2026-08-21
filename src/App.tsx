@@ -24,6 +24,7 @@ import { AchievementPopup } from './achievements/AchievementUi'
 import { playComboMilestoneCue } from './comboSound'
 import { PinyinAudioPlayer } from './pinyinAudio'
 import { XpToast } from './XpToast'
+import { ThemeMusicPlayer } from './themeMusic'
 import {
   advanceActiveSession,
   completeBed,
@@ -722,6 +723,36 @@ export default function App() {
   const [achievementQueue, setAchievementQueue] = useState<string[]>([])
   const appSaveRef = useRef(save)
   const appSessionRef = useRef(session)
+  const themeMusicRef = useRef<ThemeMusicPlayer | null>(null)
+
+  useEffect(() => {
+    const player = new ThemeMusicPlayer()
+    themeMusicRef.current = player
+    return () => {
+      player.dispose()
+      themeMusicRef.current = null
+    }
+  }, [])
+
+  useEffect(() => {
+    const player = themeMusicRef.current
+    if (!player) return
+
+    const shouldPlay = loaded && (screen === 'menu' || screen === 'garden')
+    if (!shouldPlay) {
+      player.pause()
+      return
+    }
+
+    player.play()
+    const retryAfterUserGesture = () => player.play()
+    window.addEventListener('pointerdown', retryAfterUserGesture, { once: true })
+    window.addEventListener('keydown', retryAfterUserGesture, { once: true })
+    return () => {
+      window.removeEventListener('pointerdown', retryAfterUserGesture)
+      window.removeEventListener('keydown', retryAfterUserGesture)
+    }
+  }, [loaded, screen])
 
   useEffect(() => {
     loadSave().then((stored) => {
