@@ -13,37 +13,43 @@ if (!bed) throw new Error('missing bed-001')
 
 function saveForFrame(frame) {
   const index = bed.characters.findIndex((character) => character.frame === frame)
-  return {
-    id: 'main', version: 4, unlockedBedIds: [bed.id], masteredBedIds: [], lastActiveBedId: bed.id, seenCharacterIds: [],
-    cards: Object.fromEntries(bed.characters.slice(0, index).map((character) => [character.id, { due: '2999-01-01T00:00:00.000Z' }])),
-    reviewEvents: [], updatedAt: Date.now(),
-  }
+  return bed.characters.slice(0, index).map((character) => character.id)
 }
 
-async function seedSave(page, save) {
-  await page.evaluate(async (nextSave) => {
+async function seedSave(page, previousIds) {
+  await page.waitForFunction(() => Boolean(window.hanziGardenCheats))
+  return page.evaluate(async ({ nextBedId, precedingIds }) => {
     sessionStorage.setItem('memory-garden-welcomed', 'yes')
-    const database = await new Promise((resolve, reject) => {
-      const request = indexedDB.open('memory-garden')
-      request.onsuccess = () => resolve(request.result)
-      request.onerror = () => reject(request.error)
-    })
-    await new Promise((resolve, reject) => {
-      const transaction = database.transaction('saves', 'readwrite')
-      transaction.objectStore('saves').put(nextSave)
-      transaction.oncomplete = () => resolve()
-      transaction.onerror = () => reject(transaction.error)
-    })
-    database.close()
-  }, save)
+    const save = await window.hanziGardenCheats.dumpDb('object')
+    const futureCard = {
+      due: '2999-01-01T00:00:00.000Z',
+      stability: 12,
+      difficulty: 4,
+      elapsed_days: 3,
+      scheduled_days: 30,
+      learning_steps: 0,
+      reps: 2,
+      lapses: 0,
+      state: 2,
+      last_review: '2026-08-19T10:00:00.000Z',
+    }
+    save.unlockedBedIds = [nextBedId]
+    save.masteredBedIds = []
+    save.lastActiveBedId = nextBedId
+    save.seenCharacterIds = precedingIds
+    save.cards = Object.fromEntries(precedingIds.map((id) => [id, futureCard]))
+    save.reviewEvents = []
+    await window.hanziGardenCheats.loadDb(save)
+    return save.playerProgress.totalXp
+  }, { nextBedId: bed.id, precedingIds: previousIds })
 }
 
 async function enterBattle(page, frame) {
-  await seedSave(page, saveForFrame(frame))
-  await page.reload({ waitUntil: 'domcontentloaded' })
+  const startingXp = await seedSave(page, saveForFrame(frame))
   await page.waitForSelector('.garden-map-content.is-ready')
   await page.locator('[data-bed-id="bed-001"]').click({ force: true })
   await page.waitForSelector('.battle-screen .writing-circle')
+  return startingXp
 }
 
 const browser = await chromium.launch({ headless: true })
@@ -64,8 +70,10 @@ try {
   await page.waitForSelector('.map-screen')
   await enterBattle(page, 2)
   await page.getByRole('button', { name: /Показать состав/i }).click()
-  const dialog = page.getByRole('dialog', { name: /二\s+два/i })
+  const dialog = page.getByRole('dialog', { name: /два/i })
   await dialog.waitFor()
+  if (await dialog.getByText('二', { exact: true }).count()) throw new Error('composition reveals the target Hanzi')
+  if ((await dialog.locator('#composition-title').innerText()).trim() !== 'два') throw new Error('composition title does not contain only the keyword')
   const component = await page.locator('.composition-list li').allInnerTexts()
   if (component.length !== 1 || !/一\s*один/.test(component[0])) throw new Error(`unexpected composition: ${component}`)
   let writingBlocked = false
@@ -86,8 +94,27 @@ try {
   await page.mouse.click(5, 500)
   if (await page.getByRole('dialog').count()) throw new Error('composition dialog did not close on its backdrop')
 
+  const startingXp = await enterBattle(page, 2)
+  await page.getByRole('button', { name: /Показать состав/i }).click()
+  await page.keyboard.press('Escape')
+  await page.evaluate(async () => {
+    await window.hanziGardenCheats.drawCorrectStroke()
+    await window.hanziGardenCheats.drawCorrectStroke()
+  })
+  await page.waitForFunction(async () => {
+    const save = await window.hanziGardenCheats.dumpDb('object')
+    return save.reviewEvents.some((event) => event.characterId === 'rsh-0002')
+  })
+  const completedSave = await page.evaluate(() => window.hanziGardenCheats.dumpDb('object'))
+  const review = completedSave.reviewEvents.find((event) => event.characterId === 'rsh-0002')
+  if (review?.totalMistakes !== 1) throw new Error(`composition click counted as ${review?.totalMistakes} errors instead of 1`)
+  if (review.hintUsed) throw new Error('composition click was recorded as a stroke-order hint')
+  if (completedSave.playerProgress.totalXp !== startingXp + 1) {
+    throw new Error(`composition click did not deduct 1 XP: ${startingXp} -> ${completedSave.playerProgress.totalXp}`)
+  }
+
   await context.close()
-  console.log('OK: battle primitive and composition')
+  console.log('OK: battle primitive, hidden target, and composition penalty')
 } finally {
   await browser.close()
 }

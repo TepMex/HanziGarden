@@ -408,6 +408,12 @@ Required elements:
 - central garden/weed target;
 - invisible or nearly invisible writing input area.
 
+For characters with known direct components, a composition control opens a
+modal that shows each component's Hanzi form and keyword. The modal must never
+show the target Hanzi itself. Every activation of the composition control
+counts as one handwriting error, reducing the character's XP reward by 1 under
+the same minimum-reward rule as other handwriting errors.
+
 The battle keyword plaque must keep each word intact at supported viewport
 sizes, including when Android uses its maximum system font size. Multi-word
 meanings may wrap only at word boundaries. The text may shrink as needed, but

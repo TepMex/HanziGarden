@@ -186,7 +186,7 @@ function BattleScreen({
   const sessionRef = useRef(session)
   const bedStartXpRef = useRef(save.playerProgress.totalXp)
   const mistakesRef = useRef(0)
-  const hintMistakesRef = useRef(0)
+  const assistanceMistakesRef = useRef(0)
   const hintUsedRef = useRef(false)
   const startedAtRef = useRef(Date.now())
   const completingRef = useRef(false)
@@ -401,7 +401,7 @@ function BattleScreen({
     if (!writerTarget.current || !activeCharacter) return
     const initialInk = writingInkForBackdrop('fullDirty')
     mistakesRef.current = 0
-    hintMistakesRef.current = 0
+    assistanceMistakesRef.current = 0
     hintUsedRef.current = false
     correctStrokesRef.current = 0
     finalStrokeErrorRef.current = false
@@ -472,12 +472,12 @@ function BattleScreen({
       onMistake: (data) => {
         settleCheatStroke('wrong')
         strokeFeedbackPlayerRef.current?.playMistake()
-        const totalMistakes = data.totalMistakes + hintMistakesRef.current
+        const totalMistakes = data.totalMistakes + assistanceMistakesRef.current
         mistakesRef.current = totalMistakes
         if (correctStrokesRef.current === activeCharacter.strokeCount - 1) finalStrokeErrorRef.current = true
       },
       onComplete: (summary) => {
-        const totalMistakes = summary.totalMistakes + hintMistakesRef.current
+        const totalMistakes = summary.totalMistakes + assistanceMistakesRef.current
         if (totalMistakes === 0) {
           // The completed perfect character remains as opaque ink until the next one appears.
           const cleanInk = writingInkForBackdrop('clean')
@@ -558,13 +558,20 @@ function BattleScreen({
   const useHint = () => {
     if (!activeCharacter || !writerRef.current) return
     hintUsedRef.current = true
-    hintMistakesRef.current += 1
+    assistanceMistakesRef.current += 1
     mistakesRef.current += 1
     streakHighlightRef.current += 1
     clearStreakGradientRef.current?.()
     clearStreakGradientRef.current = null
     writerRef.current.updateColor('highlightColor', NORMAL_HINT_COLOR, { duration: 0 })
     writerRef.current.highlightStroke(correctStrokesRef.current)
+  }
+
+  const showComposition = () => {
+    if (!activeCharacter) return
+    assistanceMistakesRef.current += 1
+    mistakesRef.current += 1
+    setCompositionOpen(true)
   }
 
   const infection = bedInfection(bed, save.cards)
@@ -604,7 +611,7 @@ function BattleScreen({
       </header>
 
       {activeCharacter && activeCharacter.structure.components.length > 0 && (
-        <button className="composition-button" onClick={() => setCompositionOpen(true)} aria-label="Показать состав иероглифа">
+        <button className="composition-button" onClick={showComposition} aria-label="Показать состав иероглифа">
           <Layers size={18} /> <span>Состав</span>
         </button>
       )}
@@ -660,7 +667,7 @@ function BattleScreen({
           <section className="composition-dialog" role="dialog" aria-modal="true" aria-labelledby="composition-title">
             <button className="composition-close" onClick={() => setCompositionOpen(false)} aria-label="Закрыть состав"><X /></button>
             <p className="composition-eyebrow">Состав иероглифа</p>
-            <h1 id="composition-title"><span>{activeCharacter.hanzi}</span> {activeCharacter.keyword.ru}</h1>
+            <h1 id="composition-title">{activeCharacter.keyword.ru}</h1>
             <ol className="composition-list">
               {activeCharacter.structure.components.map((component, index) => (
                 <li key={`${component.hanzi}:${component.keyword}:${index}`}>
