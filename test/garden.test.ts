@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import { battleBedCleanliness, bedDueFraction, bedInfection } from '../src/garden'
+import { battleBedCleanliness, bedDueFraction, bedInfection, isBedHanziRevealed } from '../src/garden'
 import type { CardState } from '../src/learning'
 
 const bed = {
@@ -38,5 +38,15 @@ describe('garden due fraction', () => {
     expect(battleBedCleanliness(0.75)).toBe(0.25)
     expect(battleBedCleanliness(0.25)).toBe(0.4)
     expect(battleBedCleanliness(0)).toBe(1)
+  })
+})
+
+describe('bed hanzi discovery', () => {
+  const unlockedBedIds = new Set(['bed-open'])
+
+  test('reveals an unlocked bed and its direct neighbors only', () => {
+    expect(isBedHanziRevealed({ id: 'bed-open', neighbors: [] }, unlockedBedIds)).toBe(true)
+    expect(isBedHanziRevealed({ id: 'bed-neighbor', neighbors: ['bed-open'] }, unlockedBedIds)).toBe(true)
+    expect(isBedHanziRevealed({ id: 'bed-far', neighbors: ['bed-neighbor'] }, unlockedBedIds)).toBe(false)
   })
 })

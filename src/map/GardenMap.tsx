@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Leaf, LockKeyhole } from 'lucide-react'
 import { assetUrl } from '../assetUrl'
-import { beds, type BedDefinition } from '../data/model'
-import { automaticFocusBoundsForCells, bedBounds, bedQuad, biomes, cellQuad, quadPoint, GARDEN_HEIGHT, GARDEN_WIDTH, type NormalizedPoint, type NormalizedQuad } from '../data/mapLayout'
+import { beds, mostComplexCharacterForBed, type BedDefinition } from '../data/model'
+import { automaticFocusBoundsForCells, BED_HANZI_ZOOM_THRESHOLD, bedBounds, bedQuad, biomes, cellQuad, quadPoint, GARDEN_HEIGHT, GARDEN_WIDTH, type NormalizedPoint, type NormalizedQuad } from '../data/mapLayout'
 import type { SaveGame } from '../db'
-import { bedInfection } from '../garden'
+import { bedInfection, isBedHanziRevealed } from '../garden'
 import {
   baseMapScale,
   cameraForGardenPoint,
@@ -34,6 +34,9 @@ type MapLoadState = 'loading' | 'ready' | 'error'
 const debugMap = new URLSearchParams(window.location.search).get('debugMap') === '1'
 const DRAG_THRESHOLD = 12
 const GRID_URL = assetUrl('assets/garden-grid.svg')
+const mostComplexCharacterByBedId = new Map(
+  beds.map((bed) => [bed.id, mostComplexCharacterForBed(bed)]),
+)
 
 function distance(left: Point, right: Point): number {
   return Math.hypot(left.x - right.x, left.y - right.y)
@@ -137,6 +140,7 @@ export function GardenMap({ save, camera, focusBedId, gridVisible, onCameraChang
   const [lockedPulseId, setLockedPulseId] = useState<string | null>(null)
   const [loadState, setLoadState] = useState<MapLoadState>('loading')
   const [loadAttempt, setLoadAttempt] = useState(0)
+  const unlockedBedIds = new Set(save.unlockedBedIds)
   const revealReady = useCallback(() => setLoadState('ready'), [])
   const revealFailed = useCallback(() => setLoadState('error'), [])
 
@@ -150,9 +154,12 @@ export function GardenMap({ save, camera, focusBedId, gridVisible, onCameraChang
     const garden = gardenRef.current
     if (!viewport || !garden) return null
     const clamped = clampCamera(next, viewport)
+    const renderedScale = baseMapScale(viewport) * clamped.zoom
     cameraRef.current = clamped
+    garden.classList.toggle('show-bed-hanzi', clamped.zoom >= BED_HANZI_ZOOM_THRESHOLD)
+    garden.style.setProperty('--bed-hanzi-inverse-scale', String(1 / renderedScale))
     garden.style.transition = transition ? 'transform 360ms cubic-bezier(.2,.75,.2,1)' : 'none'
-    garden.style.transform = `translate3d(${viewport.width / 2 + clamped.x}px, ${viewport.height / 2 + clamped.y}px, 0) scale(${baseMapScale(viewport) * clamped.zoom}) translate3d(-${GARDEN_WIDTH / 2}px, -${GARDEN_HEIGHT / 2}px, 0)`
+    garden.style.transform = `translate3d(${viewport.width / 2 + clamped.x}px, ${viewport.height / 2 + clamped.y}px, 0) scale(${renderedScale}) translate3d(-${GARDEN_WIDTH / 2}px, -${GARDEN_HEIGHT / 2}px, 0)`
     return clamped
   }, [getViewport])
 
@@ -315,7 +322,9 @@ export function GardenMap({ save, camera, focusBedId, gridVisible, onCameraChang
           {beds.map((bed) => {
             const rect = bedBounds(bed.cells)
             const quad = bedQuad(bed.cells)
-            const unlocked = save.unlockedBedIds.includes(bed.id)
+            const mostComplexCharacter = mostComplexCharacterByBedId.get(bed.id)
+            const unlocked = unlockedBedIds.has(bed.id)
+            const revealedCharacter = isBedHanziRevealed(bed, unlockedBedIds) ? mostComplexCharacter : undefined
             // Empty second halves can occur for a one-character source list.
             // A locked bed remains visibly overgrown until the player reaches it.
             const infection = unlocked ? bedInfection(bed, save.cards) : 1
@@ -331,9 +340,11 @@ export function GardenMap({ save, camera, focusBedId, gridVisible, onCameraChang
                   clipPath: bedClipPath(quad),
                 }}
                 data-bed-id={bed.id}
+                data-bed-hanzi={revealedCharacter?.hanzi}
                 onClick={() => activateBed(bed)}
-                aria-label={`Грядка ${bed.id}, зарастание ${Math.ceil(infection * 10)} из 10${unlocked ? '' : ', путь закрыт'}`}
+                aria-label={`Грядка ${bed.id}, зарастание ${Math.ceil(infection * 10)} из 10${revealedCharacter ? `, самый сложный иероглиф ${revealedCharacter.hanzi}, ${revealedCharacter.strokeCount} черт` : ''}${unlocked ? '' : ', путь закрыт'}`}
               >
+                {revealedCharacter && <span className="bed-hanzi" aria-hidden="true">{revealedCharacter.hanzi}</span>}
                 {!unlocked && <LockKeyhole className="bed-lock" />}
               </button>
             )

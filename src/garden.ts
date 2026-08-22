@@ -3,9 +3,18 @@ import type { CardState } from './learning'
 import { isCardDue } from './learning'
 
 type InfectionBed = Pick<BedDefinition, 'characters'>
+type DiscoverableBed = Pick<BedDefinition, 'id' | 'neighbors'>
 
 function clamp01(value: number): number {
   return Math.max(0, Math.min(1, value))
+}
+
+/** A bed's map hint is known once the bed or one of its direct neighbors is unlocked. */
+export function isBedHanziRevealed(
+  bed: DiscoverableBed,
+  unlockedBedIds: ReadonlySet<string>,
+): boolean {
+  return unlockedBedIds.has(bed.id) || bed.neighbors.some((neighborId) => unlockedBedIds.has(neighborId))
 }
 
 /** Fraction of characters which are new or due, without stroke weighting. */

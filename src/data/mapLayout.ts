@@ -47,6 +47,7 @@ export const BIOME_CELL_ROWS = 5
 export const MIN_ZOOM = 1
 export const MAX_ZOOM = 12
 export const ENTER_ZOOM_THRESHOLD = 4.5
+export const BED_HANZI_ZOOM_THRESHOLD = 5
 
 const biomeCultures: BiomeCulture[] = [
   'bamboo', 'rice', 'lotus', 'tea', 'blossom',
