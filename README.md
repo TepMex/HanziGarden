@@ -1,8 +1,8 @@
-# Сад иероглифов / Memory Garden
+# Hanzi Garden / Сад иероглифов
 
 Игровой MVP по `GAME_SPEC.md`, `GAME_CONCEPT.md` и `V2_SPEC.md`: значение → самостоятельное написание иероглифа → каждый правильный штрих повреждает сорняк → завершённый знак обновляет FSRS и здоровье грядки.
 
-Этот репозиторий содержит **только** Memory Garden:
+Этот репозиторий содержит **только** Hanzi Garden:
 
 | Путь | Содержимое |
 | ---- | ---------- |
@@ -42,8 +42,9 @@ cd android
 
 Workflow [`.github/workflows/deploy.yml`](./.github/workflows/deploy.yml) на push в `master` собирает веб и при необходимости Android из **этого** репозитория.
 
-- Веб-игра: `https://<user-or-org>.github.io/<repository>/`
-- Android landing + APK: `https://<user-or-org>.github.io/<repository>/android/` → `rth-agriculture-android.apk`
+- Веб-игра: `https://tepmex.github.io/HanziGarden/`
+- Android landing: `https://tepmex.github.io/HanziGarden/android/`
+- APK: `https://tepmex.github.io/HanziGarden/android/hanzi-garden.apk`
 
 CI может задать `GH_PAGES_PUBLIC_PATH` (например `/<repository>/`), чтобы Vite выставил корректные абсолютные URL ассетов. Для локальной/`file://` сборки и Android-обёртки переменную не задают — `base` остаётся `./`.
 
@@ -58,7 +59,7 @@ Stroke JSON для Hanzi грузится через **XHR** (`src/hanziData.ts`
 ```bash
 bun test
 bun run test:battle-background
-# After `vite build --outDir /tmp/rth-www` + static server on :8765:
+# After `vite build --outDir /tmp/hanzi-garden-www` + static server on :8765:
 bun run test:battle-canvas
 # file:// input (Android-shaped):
 bun run test:battle-input

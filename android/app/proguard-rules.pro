@@ -1,4 +1,4 @@
-# Memory Garden Android — keep line numbers for crash reports
+# Hanzi Garden Android — keep line numbers for crash reports
 -keepattributes SourceFile,LineNumberTable
 -renamesourcefileattribute SourceFile
 

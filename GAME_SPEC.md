@@ -1,14 +1,16 @@
-# Memory Garden — Game & Technical Specification
+# Hanzi Garden — Game & Technical Specification
 
 > This document is the current source of truth. The XP/level/Combo and achievement requirements below supersede any older implementation notes that omit those systems.
 
 ## 1. Product Summary
 
-**Working title:** Memory Garden / Сад иероглифов
+**Product name:** Hanzi Garden / Сад иероглифов
 
 **Repository:** single-product repo — web game at the repository root, Android WebView sideload APK under `android/`. Not a multi-project monorepo.
 
-Memory Garden is a single-player educational game for learning to **produce Chinese characters from meaning**.
+Hanzi Garden is a single-player educational game for learning to **produce Chinese characters from meaning**.
+
+The public web and Android surfaces use the **Hanzi Garden** name. The downloadable Android artifact is `hanzi-garden.apk`. Legacy storage and Android package identifiers remain unchanged so existing players can update the app without losing access to their progress.
 
 The core tested skill is:
 

@@ -130,7 +130,7 @@ function GardenScreen({
     <main className="map-screen">
       <header className="map-header">
         <div className="map-brand-progress">
-          <div className="brand-mark"><Leaf size={18} /><span>Сад иероглифов</span></div>
+          <div className="brand-mark"><Leaf size={18} /><span>Hanzi Garden</span></div>
           <PlayerLevel totalXp={save.playerProgress.totalXp} compact />
         </div>
         <div className="garden-summary">
@@ -675,8 +675,8 @@ function MainMenu({ onEnter, onAbout, onSupport, onExit }: {
       <section className="welcome-card">
         <div className="seal"><span>忆</span></div>
         <p className="eyebrow">Изучи китайскую письменность</p>
-        <h1>Сад иероглифов</h1>
-        <p>Добро пожаловать в Сад иероглифов! Очищай его от сорняков, запоминай начертания иероглифов и тренируй механическую память!</p>
+        <h1>Hanzi Garden</h1>
+        <p>Добро пожаловать в Hanzi Garden! Очищай сад от сорняков, запоминай начертания иероглифов и тренируй механическую память!</p>
         <div className="welcome-rule"><span /> кисть поможет запомнить <span /></div>
         <nav className="main-menu" aria-label="Главное меню">
           <button className="primary-button" onClick={onEnter}>Войти в сад <Leaf size={18} /></button>
@@ -696,7 +696,7 @@ function MenuInfoScreen({ kind, onBack }: { kind: 'about' | 'support'; onBack: (
       <div className="welcome-vignette" />
       <section className="welcome-card menu-info-card">
         <div className="seal"><span>忆</span></div>
-        <p className="eyebrow">Сад иероглифов</p>
+        <p className="eyebrow">Hanzi Garden</p>
         <h1>{about ? 'Об игре' : 'Поддержать'}</h1>
         <p>{about ? 'Здесь появится информация об игре.' : 'Здесь появится информация о способах поддержать проект.'}</p>
         <button className="menu-button" onClick={onBack}><ArrowLeft size={18} /> Вернуться в главное меню</button>

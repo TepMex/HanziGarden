@@ -175,7 +175,7 @@ jobs:
         if: needs.detect.outputs.build_android == 'true'
         run: chmod +x android/scripts/sync-web-assets.sh && android/scripts/sync-web-assets.sh
 
-      - name: Build Memory Garden Android APK
+      - name: Build Hanzi Garden Android APK
         if: needs.detect.outputs.build_android == 'true'
         working-directory: android
         run: |
@@ -241,19 +241,22 @@ jobs:
           fi
 
           mkdir -p deploy/android
+          # The Pages directory is restored from the previous deployment, so
+          # remove the retired public filename during the brand migration.
+          rm -f deploy/android/rth-agriculture-android.apk
 
           if is_true "$BUILD_ANDROID"; then
             cp -r android/site/. deploy/android/
             cp android/app/build/outputs/apk/release/app-release.apk \
-              deploy/android/rth-agriculture-android.apk
+              deploy/android/hanzi-garden.apk
           elif is_true "$REFRESH_ANDROID_LANDING"; then
             cp -r android/site/. deploy/android/
-            if [[ ! -f deploy/android/rth-agriculture-android.apk ]]; then
+            if [[ ! -f deploy/android/hanzi-garden.apk ]]; then
               echo "Missing APK during android landing refresh" >&2
               exit 1
             fi
           else
-            if [[ ! -f deploy/android/rth-agriculture-android.apk ]]; then
+            if [[ ! -f deploy/android/hanzi-garden.apk ]]; then
               echo "Missing APK for android/" >&2
               exit 1
             fi

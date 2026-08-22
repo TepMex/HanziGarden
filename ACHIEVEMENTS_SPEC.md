@@ -2,7 +2,7 @@
 
 ## 0. Задача
 
-Реализовать полноценную achievement system для `rth-agriculture`.
+Реализовать полноценную achievement system для Hanzi Garden.
 
 Цель системы:
 

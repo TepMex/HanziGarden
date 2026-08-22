@@ -20,7 +20,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 import com.tepmex.rthagriculture.databinding.ActivityMainBinding
 
 /**
- * Thin WebView host for the bundled rth-agriculture React build.
+ * Thin WebView host for the bundled Hanzi Garden React build.
  */
 class MainActivity : AppCompatActivity() {
 

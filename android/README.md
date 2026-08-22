@@ -1,4 +1,4 @@
-# Memory Garden · Android
+# Hanzi Garden · Android
 
 Thin Android (Kotlin) WebView wrapper around the **web game in this same repository** (repo root: React + Vite). The production web build (including WebP map/battle art for all 15 gardens) is bundled into `app/src/main/assets/www/` so the APK plays offline.
 
@@ -31,14 +31,14 @@ Optional: override signing via `rthagricultureandroid.signing*` entries in `loca
 
 ### Updating on your phone
 
-1. Download the latest `rth-agriculture-android.apk` from this repo’s GitHub Pages `/android/` landing and install it over the existing app.
+1. Download the latest `hanzi-garden.apk` from the [Hanzi Garden Android page](https://tepmex.github.io/HanziGarden/android/) and install it over the existing app.
 2. If Android refuses (e.g. you installed an older build signed with a different key), **uninstall once**, install the latest APK, then future updates install in place.
 
 ## CI and download
 
 On push to `master`, `.github/workflows/deploy.yml` builds the web game from the repo root, syncs it into `android/` assets, builds the release APK, verifies sideload signing, and publishes:
 
-- web game at `/` (Pages root for this repository);
-- APK landing from `android/site/` at `/android/` with `rth-agriculture-android.apk`.
+- web game at `https://tepmex.github.io/HanziGarden/`;
+- APK landing at `https://tepmex.github.io/HanziGarden/android/` with `hanzi-garden.apk`.
 
 The APK is rebuilt when either the Android shell (`android/**`) or the web game (repo root sources / public assets) changes so bundled assets stay current.

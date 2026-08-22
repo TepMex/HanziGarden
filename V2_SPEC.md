@@ -1,10 +1,10 @@
-GOAL: Memory Garden v2 — zoomable garden map, 220 half-RTH beds, 15 biomes, SRS statistics
+GOAL: Hanzi Garden v2 — zoomable garden map, 220 half-RTH beds, 15 biomes, SRS statistics
 
 Repository:
 This single-product repo (web game at repository root; Android WebView wrapper in `android/`).
-Not a multi-project monorepo — there is no sibling `rth-agriculture` checkout.
+Not a multi-project monorepo — there is no sibling game checkout.
 
-Implement the next version of the existing Memory Garden MVP.
+Implement the next version of the existing Hanzi Garden MVP.
 
 IMPORTANT GENERAL RULES
 
@@ -767,7 +767,7 @@ Keep the main map visually clean.
 Persistent UI may include:
 
 top-left:
-    Memory Garden / Сад иероглифов brand
+    Hanzi Garden / Сад иероглифов brand
 
 top-right:
     learned count

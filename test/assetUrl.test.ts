@@ -21,10 +21,10 @@ describe('resolveAssetUrl', () => {
   test('absolute Pages base stays rooted at the site path', () => {
     expect(
       resolveAssetUrl(
-        '/CloudAgenticCoding/rth-agriculture/',
+        '/HanziGarden/',
         'assets/garden-map.webp',
-        'https://example.com/CloudAgenticCoding/rth-agriculture/index.html',
+        'https://example.com/HanziGarden/index.html',
       ),
-    ).toBe('https://example.com/CloudAgenticCoding/rth-agriculture/assets/garden-map.webp')
+    ).toBe('https://example.com/HanziGarden/assets/garden-map.webp')
   })
 })

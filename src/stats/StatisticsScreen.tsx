@@ -32,7 +32,7 @@ export function StatisticsScreen({ save, session, onBack }: { save: SaveGame; se
     <main className="statistics-screen">
       <header className="statistics-header">
         <button className="stats-back" onClick={onBack}><ArrowLeft size={18} /> К карте</button>
-        <div className="brand-mark"><Leaf size={18} /><span>Сад иероглифов</span></div>
+        <div className="brand-mark"><Leaf size={18} /><span>Hanzi Garden</span></div>
       </header>
 
       <section className="statistics-content" aria-labelledby="statistics-title">

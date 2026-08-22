@@ -1,8 +1,8 @@
-# Memory Garden Android — SPEC
+# Hanzi Garden Android — SPEC
 
 ## Purpose
 
-Ship **Memory Garden** (Сад иероглифов) as a sideloadable Android APK by wrapping the React/Vite web game from **this same repository** in a thin native shell. Players get the same meaning→write Hanzi garden game offline on Android 14+, downloadable from this repo’s GitHub Pages `/android/` landing.
+Ship **Hanzi Garden** (Сад иероглифов) as a sideloadable Android APK by wrapping the React/Vite web game from **this same repository** in a thin native shell. Players get the same meaning→write Hanzi garden game offline on Android 14+, downloadable from this repo’s GitHub Pages `/android/` landing.
 
 Audience: Mandarin learners who already use the web game and want a home-screen install with local progress.
 
@@ -15,7 +15,7 @@ This is a **single-product** repository (not a multi-project monorepo):
 | Repo root | Web game (`package.json`, `src/`, `public/`, …) |
 | `android/` | Kotlin WebView shell, Gradle project, APK landing (`site/`) |
 
-There is no sibling `rth-agriculture` / `rth-agriculture-android` checkout. Asset sync builds the web app from the parent of `android/` (the repo root).
+There is no sibling game or Android checkout. Asset sync builds the web app from the parent of `android/` (the repo root).
 
 ## Requirements
 
@@ -23,10 +23,10 @@ There is no sibling `rth-agriculture` / `rth-agriculture-android` checkout. Asse
 2. Preserve game behavior: JavaScript, IndexedDB (Dexie), DOM storage, canvas/Hanzi Writer pointer input, and Web Audio must work inside the WebView.
 3. Allow **sensor** orientation (portrait and landscape) to match the web game’s adaptive desktop/mobile UI.
 4. Use immersive system UI (hide status/nav bars) so the game fills the screen.
-5. Application id `com.tepmex.rthagriculture`; display name **Memory Garden**.
+5. Keep the legacy application id `com.tepmex.rthagriculture` for in-place upgrades; display name **Hanzi Garden**.
 6. minSdk 34, compile/targetSdk 35; Kotlin + ViewBinding shell.
 7. Sign release (and debug when keystore present) with the committed **sideload** keystore in `android/` so Pages APKs upgrade in place.
-8. Publish a GitHub Pages landing at `/android/` (from `android/site/`) with `rth-agriculture-android.apk` download.
+8. Publish a GitHub Pages landing at `/android/` (from `android/site/`) with the `hanzi-garden.apk` download.
 9. CI rebuilds the APK when `android/**` or the web game sources/assets at the repo root change (bundled assets must stay in sync).
 10. Provide a local/CI script to build the web game with relative `base: ./` and sync output into `app/src/main/assets/www/`.
 11. Ship map/battle art as **WebP** (including a distinct backdrop set for each of the 15 gardens) so the release APK stays under GitHub’s 100 MB push limit without remote asset downloads or shared-placeholder dedupe.
@@ -39,7 +39,7 @@ There is no sibling `rth-agriculture` / `rth-agriculture-android` checkout. Asse
 | Bundled URI | `file:///android_asset/www/index.html` |
 | Asset sync CLI | `./scripts/sync-web-assets.sh` (from `android/`) |
 | Gradle | `./gradlew assembleRelease` → `app/build/outputs/apk/release/app-release.apk` |
-| Pages download | `https://<host>/<repo>/android/rth-agriculture-android.apk` |
+| Pages download | `https://<host>/<repo>/android/hanzi-garden.apk` |
 | Upstream game | Same-repo web app at repository root (React + Vite + TypeScript) |
 
 No deep links, no native plugins, no Play Store listing in v1.
@@ -55,7 +55,7 @@ No deep links, no native plugins, no Play Store listing in v1.
 1. Cold start → splash theme → WebView loads bundled `index.html` → main menu. Its **Выход** action closes and removes the Android activity task through the internal `hanzi-garden://exit` command.
 2. Orientation follows the device sensor; the upstream UI adapts to portrait and landscape.
 3. System back: if the WebView history stack has an entry, go back; otherwise finish the activity.
-4. Landing page (`android/site/`): brand **Memory Garden**, short tagline, APK download link, update note.
+4. Landing page (`android/site/`): brand **Hanzi Garden**, short tagline, APK download link, update note.
 5. WebView must honor the game’s `width=device-width` viewport at 100% scale (no overview zoom) so mobile battle layout matches Chrome on phones — writer canvas clipped, no stroke SVG bleed over chrome.
 
 ## Out of scope

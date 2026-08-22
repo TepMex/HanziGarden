@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build the Memory Garden web app (repo root) with relative base and copy into
+# Build the Hanzi Garden web app (repo root) with relative base and copy into
 # Android assets/www. Garden/battle art is shipped as WebP so all 15 biome
 # backdrop sets fit under GitHub’s 100 MB APK push limit without remote
 # downloads or art dedupe.
