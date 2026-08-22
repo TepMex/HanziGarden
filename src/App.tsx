@@ -234,7 +234,7 @@ function BattleScreen({
       // size may have been selected for a narrower viewport or another word.
       prompt.style.fontSize = ''
       const maximum = Number.parseFloat(getComputedStyle(prompt).fontSize)
-      const minimum = 16
+      const minimum = 10
       let chosen = minimum
 
       for (let size = maximum; size >= minimum; size -= 0.5) {

@@ -673,7 +673,8 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
   font-weight: 600;
   line-height: 1.08;
   letter-spacing: .035em;
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
+  word-break: normal;
   text-align: center;
   text-wrap: balance;
 }

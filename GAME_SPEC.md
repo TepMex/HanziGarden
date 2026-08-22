@@ -395,6 +395,12 @@ Required elements:
 - central garden/weed target;
 - invisible or nearly invisible writing input area.
 
+The battle keyword plaque must keep each word intact at supported viewport
+sizes, including when Android uses its maximum system font size. Multi-word
+meanings may wrap only at word boundaries. The text may shrink as needed, but
+must remain legible and must not be clipped, leave the plaque, overlap the
+writing target, or cover battle controls.
+
 Initially do **not** display:
 
 - the target Hanzi;
@@ -1121,6 +1127,22 @@ achievement through the production achievement popup; three separate controls
 replay the production XP drop for `+1`, `+3`, or `+5 XP`. Repeated presses must
 restart the animation without reloading the page. The workbench must not load,
 mutate, or persist player progress and is not exposed in production builds.
+
+Development builds also expose the throwaway `/prototype/biome-badges`
+workbench. It renders the player-facing achievement popup for every biome badge
+and lets developers adjust the sprite's CSS dimensions, background size and
+border radius together with the JavaScript grid, position divisors, and offsets.
+The current formulas and per-index coordinates remain visible while editing.
+The workbench keeps its state in memory, never loads or changes player progress,
+and is not exposed in production builds.
+
+Development builds also expose the throwaway `/prototype/keyword-prompts`
+workbench. It renders the battle keyword plaque for every character in the
+production catalogue, including the additional primitive value where present.
+The page provides searchable gallery, longest-first, and detailed audit views,
+shows the effective plaque CSS, and lets developers tune its dimensions and
+typography in memory across every visible plaque. It never loads or changes
+player progress and is not exposed in production builds.
 
 ## 42. Accessibility / Input Devices
 
