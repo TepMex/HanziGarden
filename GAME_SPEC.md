@@ -199,6 +199,15 @@ were duplicates. The workbook's `ju4` resolves to upstream `jv4`. `yo1`/`yo5`
 have no correct upstream MP3, so `哟` retains its pinyin metadata but playback is
 silently skipped rather than substituting an incorrect syllable.
 
+### 5.2 Stroke Feedback Audio
+
+Every stroke accepted by Hanzi Writer plays
+`public/assets/audio/sound/sfx/correct.wav`. Every rejected stroke plays
+`public/assets/audio/sound/sfx/mistake.wav`. Both effects are preloaded when the
+handwriting battle opens and replay from the beginning on each corresponding
+callback. Missing assets, blocked playback, or audio-device failures must never
+delay or alter stroke grading or any other gameplay state.
+
 ## 6. Persistent Progress Model
 
 Two kinds of progress must remain independent.

@@ -11,6 +11,7 @@ import { GardenMap } from './map/GardenMap'
 import { initialCamera, type CameraState } from './map/cameraMath'
 import { StatisticsScreen } from './stats/StatisticsScreen'
 import { streakHighlightColor, streakHighlightOpacity, streakIntensity } from './streak'
+import { StrokeFeedbackAudioPlayer } from './strokeFeedbackAudio'
 import { assetUrl } from './assetUrl'
 import { writingInkForBackdrop } from './battleInk'
 import { dispatchQuizStroke, installGameCheats, registerBattleCheatDriver } from './gameCheats'
@@ -195,6 +196,7 @@ function BattleScreen({
   const clearStreakGradientRef = useRef<(() => void) | null>(null)
   const pendingCheatStrokeRef = useRef<PendingCheatStroke | null>(null)
   const pronunciationPlayerRef = useRef<PinyinAudioPlayer | null>(null)
+  const strokeFeedbackPlayerRef = useRef<StrokeFeedbackAudioPlayer | null>(null)
   const [correctStrokes, setCorrectStrokes] = useState(0)
   const [isCompositionOpen, setCompositionOpen] = useState(false)
   const [lastReward, setLastReward] = useState<KanjiReward | null>(null)
@@ -276,6 +278,15 @@ function BattleScreen({
   useEffect(() => () => {
     pronunciationPlayerRef.current?.dispose()
     pronunciationPlayerRef.current = null
+  }, [])
+
+  useEffect(() => {
+    const player = new StrokeFeedbackAudioPlayer()
+    strokeFeedbackPlayerRef.current = player
+    return () => {
+      player.dispose()
+      strokeFeedbackPlayerRef.current = null
+    }
   }, [])
 
   const gainedLevels = crossedLevels(bedStartXpRef.current, save.playerProgress.totalXp)
@@ -429,6 +440,7 @@ function BattleScreen({
       highlightOnComplete: false,
       onCorrectStroke: (data) => {
         settleCheatStroke('correct')
+        strokeFeedbackPlayerRef.current?.playCorrect()
         const completedStrokes = data.strokeNum + 1
         const nextBackdropStage = battleBackdropStage(activeCharacter.strokeCount, completedStrokes)
         const nextInk = writingInkForBackdrop(nextBackdropStage)
@@ -459,6 +471,7 @@ function BattleScreen({
       },
       onMistake: (data) => {
         settleCheatStroke('wrong')
+        strokeFeedbackPlayerRef.current?.playMistake()
         const totalMistakes = data.totalMistakes + hintMistakesRef.current
         mistakesRef.current = totalMistakes
         if (correctStrokesRef.current === activeCharacter.strokeCount - 1) finalStrokeErrorRef.current = true
