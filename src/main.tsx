@@ -11,9 +11,18 @@ const root = createRoot(document.getElementById('root')!)
 const isGardenRevealPrototype = import.meta.env.DEV && window.location.pathname === '/prototype/garden-reveal'
 const isBiomeBadgesPrototype = import.meta.env.DEV && window.location.pathname === '/prototype/biome-badges'
 const isKeywordPromptsPrototype = import.meta.env.DEV && window.location.pathname === '/prototype/keyword-prompts'
+const isContentEditor = import.meta.env.DEV && window.location.pathname === '/prototype/content-editor'
 const isAnimationDebugPage = import.meta.env.DEV && window.location.pathname === '/debug/animations'
 
-if (isKeywordPromptsPrototype) {
+if (isContentEditor) {
+  import('./contentEditor/ContentEditor').then(({ ContentEditor }) => {
+    root.render(
+      <StrictMode>
+        <ContentEditor />
+      </StrictMode>,
+    )
+  })
+} else if (isKeywordPromptsPrototype) {
   import('./prototype/KeywordPromptsPrototype').then(({ KeywordPromptsPrototype }) => {
     root.render(
       <StrictMode>

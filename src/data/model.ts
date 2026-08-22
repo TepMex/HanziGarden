@@ -48,19 +48,6 @@ type BedDraft = Omit<BedDefinition, 'characters' | 'characterIds' | 'neighbors'>
   rawCharacters: RawCharacter[]
 }
 
-const russianKeywords: Record<string, string> = {
-  one: 'один', two: 'два', three: 'три', four: 'четыре', five: 'пять', six: 'шесть',
-  seven: 'семь', eight: 'восемь', nine: 'девять', ten: 'десять', mouth: 'рот', day: 'день',
-  month: 'месяц', 'rice field': 'рисовое поле', eye: 'глаз', ancient: 'древний', leaf: 'лист',
-  'I (literary)': 'я (книжн.)', companion: 'товарищ', bright: 'яркий', sing: 'петь',
-  sparkling: 'сверкающий', goods: 'товары', prosperous: 'процветающий', early: 'рано',
-  'rising sun': 'восходящее солнце', generation: 'поколение', stomach: 'желудок',
-  daybreak: 'рассвет', concave: 'вогнутый', convex: 'выпуклый', oneself: 'сам', white: 'белый',
-  hundred: 'сто', middle: 'середина', thousand: 'тысяча', above: 'наверху', below: 'внизу',
-  left: 'слева', right: 'справа', large: 'большой', small: 'маленький', water: 'вода',
-  fire: 'огонь', tree: 'дерево', person: 'человек', woman: 'женщина', child: 'ребёнок',
-}
-
 const source = rawCharacters as RawCharacter[]
 const pronunciationByFrame = rawPinyinAudio as Array<[string, string | null]>
 if (pronunciationByFrame.length !== source.length) {
@@ -106,15 +93,16 @@ for (const draft of drafts) {
   for (const item of draft.rawCharacters) {
     const pronunciation = pronunciationByFrame[item.frame - 1]
     if (!pronunciation) throw new Error(`Нет пиньиня для ${item.hanzi}`)
+    const structure = requireCharacterStructure(item.hanzi)
     const character: CharacterDefinition = {
       id: `rsh-${String(item.frame).padStart(4, '0')}`,
       hanzi: item.hanzi,
-      keyword: { ru: russianKeywords[item.keyword] ?? item.keyword, en: item.keyword },
+      keyword: { ru: structure.keyword, en: item.keyword },
       frame: item.frame,
       bedId: draft.id,
       strokeCount: item.strokes,
       writingDataId: item.hanzi,
-      structure: requireCharacterStructure(item.hanzi),
+      structure,
       pronunciation: { pinyin: pronunciation[0], audioFile: pronunciation[1] },
     }
     characterByBedAndFrame.set(`${draft.id}:${item.frame}`, character)

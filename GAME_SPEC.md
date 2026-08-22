@@ -148,12 +148,25 @@ type CharacterDefinition = {
   bedId: string;
   strokeCount: number;
   writingDataId: string;
+  structure: CharacterStructure;
   pronunciation: {
     pinyin: string;
     audioFile: string | null;
   };
 };
+
+type CharacterStructure = {
+  hanzi: string;
+  keyword: string;
+  primitive: string | null;
+  components: readonly { hanzi: string; keyword: string }[];
+};
 ```
+
+The displayed Russian keyword is `structure.keyword` from
+`src/data/rsh_structure_ru.json`. That catalog also stores the additional
+primitive meaning and the direct composition shown in battle. Editing the
+catalog and replacing the asset updates those three fields.
 
 Example:
 
@@ -1163,6 +1176,19 @@ shows the effective plaque CSS, and lets developers tune its dimensions and
 typography in memory across every visible plaque. It never loads or changes
 player progress and is not exposed in production builds.
 
+Development builds also expose `/prototype/content-editor`, a service utility
+for editing game content files. The user opens a JSON asset (or a bundled
+catalog shortcut), edits the document in the browser, and downloads the result
+to replace the original file. The first supported documents are:
+
+- the character structure catalog (`rsh_structure_ru.json`): keyword, additional
+  primitive meaning, and composition components;
+- the achievement catalog (`achievements.json`): the award formula (`on` events
+  and `when` expression).
+
+The editor does not load or change player progress, is not exposed in production
+builds, and is intended to grow with additional content kinds later.
+
 ## 42. Accessibility / Input Devices
 
 Target:
@@ -1467,6 +1493,12 @@ achievement engine consumes domain events (`kanji.completed`,
 `gardenBed.completed`, `session.activeTime`, and migration events); React UI
 components do not contain eligibility rules. Unlock is idempotent and stores an
 ISO `unlockedAt` timestamp.
+
+The collection and its award formulas live in `src/data/achievements.json`.
+Each achievement names the events it listens to and a `when` expression over
+`event`, `player`, `session`, `persistence`, and `daysSinceLastActive`. The
+engine still owns streak and perfect-bed counters; it then evaluates the
+catalog formulas. Replacing that JSON asset changes which achievements unlock.
 
 The collection contains 61 deduplicated achievements across daily practice,
 Combo, the 15 real biomes, session duration, writing, lifetime statistics,
