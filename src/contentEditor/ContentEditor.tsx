@@ -26,8 +26,8 @@ const EVENT_OPTIONS: Array<{ value: AchievementEventType; label: string }> = [
 ]
 
 const bundledAssets = [
-  { fileName: 'rsh_structure_ru.json', label: 'Каталог иероглифов', source: rawStructureCatalog },
-  { fileName: 'achievements.json', label: 'Каталог достижений', source: rawAchievementCatalog },
+  { fileName: 'rsh_structure_ru.json', label: 'Каталог иероглифов', source: rawStructureCatalog, pretty: false },
+  { fileName: 'achievements.json', label: 'Каталог достижений', source: rawAchievementCatalog, pretty: true },
 ]
 
 function downloadText(fileName: string, text: string) {
@@ -97,7 +97,7 @@ export function ContentEditor() {
           <FolderOpen size={16} /> Открыть файл
         </button>
         {bundledAssets.map((asset) => (
-          <button type="button" key={asset.fileName} onClick={() => openText(asset.fileName, JSON.stringify(asset.source))}>
+          <button type="button" key={asset.fileName} onClick={() => openText(asset.fileName, JSON.stringify(asset.source, null, asset.pretty ? 2 : undefined))}>
             <FileJson size={16} /> {asset.label}
           </button>
         ))}
