@@ -44,7 +44,7 @@ Statistics renders every Hanzi in original frame order as a dense colored tile w
 
 ## 2. Core Design Principles
 
-1. **Production recall is primary.** The player is shown a meaning/keyword and must independently write the Hanzi.
+1. **Production recall is primary.** After the first encounter, the player is shown a meaning/keyword and must independently write the Hanzi. The first encounter — SRS stage **Новый**, meaning there is no FSRS card yet — shows a faint full-character outline so the player traces the shape once. Later reviews stay recall-only.
 2. **Writing is the combat mechanic.** There is no separate “flashcard UI” during play.
 3. **The garden is persistent.** It is one continuous territory, not a sequence of runs.
 4. **Garden progression and memory state are separate.** Unlocking territory is permanent; visual bed health changes according to FSRS.
@@ -435,11 +435,13 @@ writing target, or cover battle controls.
 
 Initially do **not** display:
 
-- the target Hanzi;
+- the target Hanzi as the answer;
 - stroke order;
-- an outline;
+- an outline, except on the first encounter (SRS stage **Новый**);
 - answer choices;
 - a visible handwriting grid.
+
+On a **Новый** character (no FSRS card), the battle shows the canonical Hanzi outline immediately at about 0.3 opacity, using the current writing-ink colour. The player traces that ghost. This teaching outline is not a player-requested hint and must not set `hintUsed` or force an FSRS `Again`. After that first completion the card exists, so later due reviews hide the outline again.
 
 The scene should preserve the established subdued ink-on-fabric Chinese fantasy aesthetic.
 
@@ -598,7 +600,7 @@ acceptBackwardsStrokes = false;
 ```ts
 const writer = HanziWriter.create(element, "猫", {
   showCharacter: false,
-  showOutline: false,
+  showOutline: isFirstEncounter, // true only for SRS Новый
 
   acceptBackwardsStrokes: false,
   showHintAfterMisses: false,
@@ -759,7 +761,7 @@ Suggested progression:
 - second mistake: same;
 - after ~3 failed attempts on the same stroke: briefly show only the next expected stroke as a faint ink ghost for ~500–700 ms.
 
-Do not reveal the full character unless the player explicitly asks for a stronger hint or reaches a failure state.
+Do not reveal the full character unless the player explicitly asks for a stronger hint or reaches a failure state. The first-encounter tracing outline in section 11 is the one exception: it is shown automatically for **Новый** characters and is not graded as a hint.
 
 ## 25. Review Grading
 

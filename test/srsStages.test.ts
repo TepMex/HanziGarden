@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import { getSrsStage } from '../src/stats/srsStages'
+import { getSrsStage, isFirstEncounter } from '../src/stats/srsStages'
 import type { CardState } from '../src/learning'
 
 function card(interval: number): CardState {
@@ -18,5 +18,11 @@ describe('display SRS stages', () => {
     expect(getSrsStage(card(30)).id).toBe('master')
     expect(getSrsStage(card(90)).id).toBe('enlightened')
     expect(getSrsStage(card(180)).id).toBe('rooted')
+  })
+
+  test('treats only a missing card as the first encounter', () => {
+    expect(isFirstEncounter()).toBe(true)
+    expect(isFirstEncounter(card(0))).toBe(false)
+    expect(isFirstEncounter(card(2))).toBe(false)
   })
 })

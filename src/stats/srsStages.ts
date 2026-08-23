@@ -47,3 +47,7 @@ export function getSrsStage(card?: CardState): SrsStage {
   if (interval < 180) return SRS_STAGES[8]
   return SRS_STAGES[9]
 }
+
+export function isFirstEncounter(card?: CardState): boolean {
+  return getSrsStage(card).id === 'new'
+}

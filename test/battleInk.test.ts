@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import { writingInkForBackdrop } from '../src/battleInk'
+import { FIRST_ENCOUNTER_OUTLINE_OPACITY, inkWithOpacity, writingInkForBackdrop } from '../src/battleInk'
 
 function rgbaParts(color: string): [number, number, number, number] {
   const match = /^rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)$/.exec(color)
@@ -16,5 +16,13 @@ describe('battle writing ink', () => {
       expect(opacity).toBeGreaterThanOrEqual(.94)
       expect(brightness).toBeGreaterThanOrEqual(220)
     }
+  })
+
+  test('turns drawing ink into a first-encounter ghost at the documented opacity', () => {
+    expect(inkWithOpacity('#fff2ca', FIRST_ENCOUNTER_OUTLINE_OPACITY)).toBe('rgba(255, 242, 202, 0.3)')
+    expect(inkWithOpacity('#25201c', FIRST_ENCOUNTER_OUTLINE_OPACITY)).toBe('rgba(37, 32, 28, 0.3)')
+    expect(inkWithOpacity('rgba(255, 239, 198, .98)', FIRST_ENCOUNTER_OUTLINE_OPACITY)).toBe(
+      'rgba(255, 239, 198, 0.3)',
+    )
   })
 })

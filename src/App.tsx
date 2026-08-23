@@ -10,10 +10,11 @@ import { isCardDue, reviewCard, type ReviewEvent } from './learning'
 import { GardenMap } from './map/GardenMap'
 import { initialCamera, type CameraState } from './map/cameraMath'
 import { StatisticsScreen } from './stats/StatisticsScreen'
+import { isFirstEncounter } from './stats/srsStages'
 import { streakHighlightColor, streakHighlightOpacity, streakIntensity } from './streak'
 import { StrokeFeedbackAudioPlayer } from './strokeFeedbackAudio'
 import { assetUrl } from './assetUrl'
-import { writingInkForBackdrop } from './battleInk'
+import { FIRST_ENCOUNTER_OUTLINE_OPACITY, inkWithOpacity, writingInkForBackdrop } from './battleInk'
 import { dispatchQuizStroke, installGameCheats, registerBattleCheatDriver } from './gameCheats'
 import {
   completedBiomeIds as findCompletedBiomeIds,
@@ -413,12 +414,15 @@ function BattleScreen({
     setCorrectStrokes(0)
     writerTarget.current.replaceChildren()
 
+    const tracingOutline = isFirstEncounter(saveRef.current.cards[activeCharacter.id])
+    writerTarget.current.dataset.traceOutline = tracingOutline ? 'true' : 'false'
     const writer = HanziWriter.create(writerTarget.current, activeCharacter.hanzi, {
       width: Math.round(writerTarget.current.clientWidth) || 300,
       height: Math.round(writerTarget.current.clientWidth) || 300,
       padding: 18,
       showCharacter: false,
-      showOutline: false,
+      showOutline: tracingOutline,
+      outlineColor: inkWithOpacity(initialInk.drawingColor, FIRST_ENCOUNTER_OUTLINE_OPACITY),
       renderer: 'svg',
       drawingColor: initialInk.drawingColor,
       drawingWidth: 7,
@@ -451,6 +455,13 @@ function BattleScreen({
         writer.updateColor('drawingColor', nextInk.drawingColor, { duration: 0 })
         writer.updateColor('strokeColor', nextInk.completedStrokeColor, { duration: 0 })
         writer.updateColor('radicalColor', nextInk.completedStrokeColor, { duration: 0 })
+        if (tracingOutline) {
+          writer.updateColor(
+            'outlineColor',
+            inkWithOpacity(nextInk.drawingColor, FIRST_ENCOUNTER_OUTLINE_OPACITY),
+            { duration: 0 },
+          )
+        }
         if (mistakesRef.current === 0) {
           const highlightId = ++streakHighlightRef.current
           const intensity = streakIntensity(activeCharacter.strokeCount, completedStrokes)
@@ -551,6 +562,7 @@ function BattleScreen({
       window.visualViewport?.removeEventListener('resize', syncWriterSize)
       writer.cancelQuiz()
       writerTarget.current?.replaceChildren()
+      if (writerTarget.current) delete writerTarget.current.dataset.traceOutline
       writerRef.current = null
     }
   }, [activeCharacter, finishCharacter, rejectPendingCheatStroke, settleCheatStroke])
@@ -619,7 +631,15 @@ function BattleScreen({
       {activeCharacter ? (
         <>
           <div className="writing-circle">
-            <div className="writing-target" ref={writerTarget} aria-label={`Напишите иероглиф со значением ${activeCharacter.keyword.ru}`} />
+            <div
+              className="writing-target"
+              ref={writerTarget}
+              aria-label={
+                isFirstEncounter(save.cards[activeCharacter.id])
+                  ? `Обведите иероглиф со значением ${activeCharacter.keyword.ru}`
+                  : `Напишите иероглиф со значением ${activeCharacter.keyword.ru}`
+              }
+            />
           </div>
           <button className="hint-button" onClick={useHint}><HelpCircle size={16} /> Показать следующий штрих</button>
         </>

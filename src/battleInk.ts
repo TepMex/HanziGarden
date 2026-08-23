@@ -5,6 +5,24 @@ export type BattleInkPalette = {
   completedStrokeColor: string
 }
 
+/** Faint full-character ghost used only on the first encounter (SRS Новый). */
+export const FIRST_ENCOUNTER_OUTLINE_OPACITY = 0.3
+
+export function inkWithOpacity(color: string, opacity: number): string {
+  const hex = /^#([\da-f]{3}|[\da-f]{6})$/i.exec(color.trim())
+  if (hex) {
+    let body = hex[1]!
+    if (body.length === 3) body = [...body].map((digit) => digit + digit).join('')
+    const red = Number.parseInt(body.slice(0, 2), 16)
+    const green = Number.parseInt(body.slice(2, 4), 16)
+    const blue = Number.parseInt(body.slice(4, 6), 16)
+    return `rgba(${red}, ${green}, ${blue}, ${opacity})`
+  }
+  const rgb = /^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i.exec(color)
+  if (rgb) return `rgba(${rgb[1]}, ${rgb[2]}, ${rgb[3]}, ${opacity})`
+  throw new Error(`Unsupported ink color: ${color}`)
+}
+
 const FULL_DIRTY_WRITING_INK: BattleInkPalette = {
   // Warm parchment ink reads clearly above the near-black stone at Y≈91.
   drawingColor: '#fff2ca',
