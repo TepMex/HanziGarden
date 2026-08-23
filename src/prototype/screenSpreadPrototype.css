@@ -150,7 +150,7 @@
   font: clamp(5rem, 28vw, 12rem)/1 'Songti SC', 'STSong', serif;
 }
 .screen-frame .prompt-scroll { width: min(390px, 56%); }
-.screen-frame .cleared-state { width: min(460px, calc(100% - 40px)); }
+.screen-frame .cleared-state { width: min(460px, calc(100% - 40px)); max-width: calc(100% - 24px); }
 .screen-frame .achievement-popup-backdrop { position: absolute; }
 
 .screen-frame .xp-toast,
@@ -185,6 +185,11 @@
 }
 .screen-frame.is-phone .bed-cleanliness { top: 92px; bottom: auto; left: 13px; }
 .screen-frame.is-phone .bed-cleanliness > span { width: 72px; }
+.screen-frame.is-phone .cleared-state { width: min(460px, calc(100% - 24px)); padding: 28px 20px 24px; }
+.screen-frame.is-phone .cleared-state h1 { font-size: clamp(1.7rem, 7vw, 2.1rem); }
+.screen-frame.is-phone .xp-summary .player-level { grid-template-columns: 30px minmax(0, 1fr) auto; gap: 7px; }
+.screen-frame.is-phone .xp-summary .player-level > strong { width: 30px; height: 30px; }
+.screen-frame.is-phone .xp-summary .player-level small { font-size: .68rem; }
 .screen-frame.is-phone .composition-backdrop { padding: 18px; }
 .screen-frame.is-phone .composition-dialog { max-height: calc(100% - 36px); padding: 31px 27px 27px; }
 .screen-frame.is-phone .statistics-header { padding: 0 16px; }
