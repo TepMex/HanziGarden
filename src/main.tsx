@@ -9,6 +9,7 @@ rootStyle.setProperty('--bg-garden-map', `url(${JSON.stringify(assetUrl('assets/
 
 const root = createRoot(document.getElementById('root')!)
 const isGardenRevealPrototype = import.meta.env.DEV && window.location.pathname === '/prototype/garden-reveal'
+const isHexGardenPrototype = import.meta.env.DEV && window.location.pathname === '/prototype/hex-garden'
 const isBiomeBadgesPrototype = import.meta.env.DEV && window.location.pathname === '/prototype/biome-badges'
 const isKeywordPromptsPrototype = import.meta.env.DEV && window.location.pathname === '/prototype/keyword-prompts'
 const isContentEditor = import.meta.env.DEV && window.location.pathname === '/prototype/content-editor'
@@ -60,6 +61,14 @@ if (isScreenSpreadPrototype) {
     root.render(
       <StrictMode>
         <GardenRevealPrototype />
+      </StrictMode>,
+    )
+  })
+} else if (isHexGardenPrototype) {
+  import('./prototype/HexGardenPrototype').then(({ HexGardenPrototype }) => {
+    root.render(
+      <StrictMode>
+        <HexGardenPrototype />
       </StrictMode>,
     )
   })
