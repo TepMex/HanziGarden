@@ -12,9 +12,18 @@ const isGardenRevealPrototype = import.meta.env.DEV && window.location.pathname 
 const isBiomeBadgesPrototype = import.meta.env.DEV && window.location.pathname === '/prototype/biome-badges'
 const isKeywordPromptsPrototype = import.meta.env.DEV && window.location.pathname === '/prototype/keyword-prompts'
 const isContentEditor = import.meta.env.DEV && window.location.pathname === '/prototype/content-editor'
+const isScreenSpreadPrototype = import.meta.env.DEV && window.location.pathname === '/prototype/screen-spread'
 const isAnimationDebugPage = import.meta.env.DEV && window.location.pathname === '/debug/animations'
 
-if (isContentEditor) {
+if (isScreenSpreadPrototype) {
+  import('./prototype/ScreenSpreadPrototype').then(({ ScreenSpreadPrototype }) => {
+    root.render(
+      <StrictMode>
+        <ScreenSpreadPrototype />
+      </StrictMode>,
+    )
+  })
+} else if (isContentEditor) {
   import('./contentEditor/ContentEditor').then(({ ContentEditor }) => {
     root.render(
       <StrictMode>

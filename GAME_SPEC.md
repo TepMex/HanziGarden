@@ -1189,6 +1189,17 @@ to replace the original file. The first supported documents are:
 The editor does not load or change player progress, is not exposed in production
 builds, and is intended to grow with additional content kinds later.
 
+Development builds also expose the throwaway `/prototype/screen-spread`
+workbench. It unfolds every player-facing screen — loading, main menu, About,
+Support, garden map, handwriting battle, composition dialog, cleared bed,
+statistics wall, achievement collection, and achievement popup — so a design
+change can be judged across the whole product at once. The page provides
+gallery, player-journey, and annotated audit views, switchable via `?variant=`,
+and an in-memory token panel for parchment, jade, gold, seal, and night colors.
+Frame size can be switched between phone, tablet, and desktop. Screens reuse
+production CSS classes with static fixture data. The workbench never loads or
+changes player progress and is not exposed in production builds.
+
 ## 42. Accessibility / Input Devices
 
 Target:
