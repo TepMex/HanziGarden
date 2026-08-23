@@ -1,0 +1,1173 @@
+{
+  "kind": "hanzi-garden.achievements",
+  "version": 1,
+  "achievements": [
+    {
+      "id": "daily_3",
+      "category": "daily",
+      "title": "Росток",
+      "description": "Заниматься 3 дня подряд.",
+      "secret": false,
+      "progressType": "streak",
+      "target": 3,
+      "badge": {
+        "atlas": "category",
+        "index": 0
+      },
+      "formula": {
+        "on": [
+          "kanji.completed"
+        ],
+        "when": "persistence.currentDailyStreak >= 3"
+      }
+    },
+    {
+      "id": "daily_7",
+      "category": "daily",
+      "title": "Привычка",
+      "description": "Заниматься 7 дней подряд.",
+      "secret": false,
+      "progressType": "streak",
+      "target": 7,
+      "badge": {
+        "atlas": "category",
+        "index": 0
+      },
+      "formula": {
+        "on": [
+          "kanji.completed"
+        ],
+        "when": "persistence.currentDailyStreak >= 7"
+      }
+    },
+    {
+      "id": "daily_14",
+      "category": "daily",
+      "title": "Садовник",
+      "description": "Заниматься 14 дней подряд.",
+      "secret": false,
+      "progressType": "streak",
+      "target": 14,
+      "badge": {
+        "atlas": "category",
+        "index": 0
+      },
+      "formula": {
+        "on": [
+          "kanji.completed"
+        ],
+        "when": "persistence.currentDailyStreak >= 14"
+      }
+    },
+    {
+      "id": "daily_30",
+      "category": "daily",
+      "title": "Месяц без засухи",
+      "description": "Заниматься 30 дней подряд.",
+      "secret": false,
+      "progressType": "streak",
+      "target": 30,
+      "badge": {
+        "atlas": "category",
+        "index": 0
+      },
+      "formula": {
+        "on": [
+          "kanji.completed"
+        ],
+        "when": "persistence.currentDailyStreak >= 30"
+      }
+    },
+    {
+      "id": "daily_90",
+      "category": "daily",
+      "title": "Сезон",
+      "description": "Заниматься 90 дней подряд.",
+      "secret": false,
+      "progressType": "streak",
+      "target": 90,
+      "badge": {
+        "atlas": "category",
+        "index": 0
+      },
+      "formula": {
+        "on": [
+          "kanji.completed"
+        ],
+        "when": "persistence.currentDailyStreak >= 90"
+      }
+    },
+    {
+      "id": "daily_180",
+      "category": "daily",
+      "title": "Полгода в поле",
+      "description": "Заниматься 180 дней подряд.",
+      "secret": false,
+      "progressType": "streak",
+      "target": 180,
+      "badge": {
+        "atlas": "category",
+        "index": 0
+      },
+      "formula": {
+        "on": [
+          "kanji.completed"
+        ],
+        "when": "persistence.currentDailyStreak >= 180"
+      }
+    },
+    {
+      "id": "daily_365",
+      "category": "daily",
+      "title": "Год урожая",
+      "description": "Заниматься 365 дней подряд.",
+      "secret": false,
+      "progressType": "streak",
+      "target": 365,
+      "badge": {
+        "atlas": "category",
+        "index": 0
+      },
+      "formula": {
+        "on": [
+          "kanji.completed"
+        ],
+        "when": "persistence.currentDailyStreak >= 365"
+      }
+    },
+    {
+      "id": "return_after_30_days",
+      "category": "recovery",
+      "title": "Возвращение",
+      "description": "Вернуться в Сад после перерыва не менее 30 дней.",
+      "secret": false,
+      "progressType": "boolean",
+      "badge": {
+        "atlas": "category",
+        "index": 6
+      },
+      "formula": {
+        "on": [
+          "kanji.completed"
+        ],
+        "when": "daysSinceLastActive >= 30"
+      }
+    },
+    {
+      "id": "combo_5",
+      "category": "combo",
+      "title": "Твёрдая рука",
+      "description": "Написать 5 иероглифов подряд без ошибок.",
+      "secret": false,
+      "progressType": "max",
+      "target": 5,
+      "badge": {
+        "atlas": "category",
+        "index": 1
+      },
+      "formula": {
+        "on": [
+          "kanji.completed",
+          "player.migrated"
+        ],
+        "when": "event.combo >= 5 || player.bestComboEver >= 5"
+      }
+    },
+    {
+      "id": "combo_10",
+      "category": "combo",
+      "title": "Не дрогнул",
+      "description": "Написать 10 иероглифов подряд без ошибок.",
+      "secret": false,
+      "progressType": "max",
+      "target": 10,
+      "badge": {
+        "atlas": "category",
+        "index": 1
+      },
+      "formula": {
+        "on": [
+          "kanji.completed",
+          "player.migrated"
+        ],
+        "when": "event.combo >= 10 || player.bestComboEver >= 10"
+      }
+    },
+    {
+      "id": "combo_20",
+      "category": "combo",
+      "title": "На автомате",
+      "description": "Написать 20 иероглифов подряд без ошибок.",
+      "secret": false,
+      "progressType": "max",
+      "target": 20,
+      "badge": {
+        "atlas": "category",
+        "index": 1
+      },
+      "formula": {
+        "on": [
+          "kanji.completed",
+          "player.migrated"
+        ],
+        "when": "event.combo >= 20 || player.bestComboEver >= 20"
+      }
+    },
+    {
+      "id": "combo_50",
+      "category": "combo",
+      "title": "Каллиграф",
+      "description": "Написать 50 иероглифов подряд без ошибок.",
+      "secret": false,
+      "progressType": "max",
+      "target": 50,
+      "badge": {
+        "atlas": "category",
+        "index": 1
+      },
+      "formula": {
+        "on": [
+          "kanji.completed",
+          "player.migrated"
+        ],
+        "when": "event.combo >= 50 || player.bestComboEver >= 50"
+      }
+    },
+    {
+      "id": "combo_100",
+      "category": "combo",
+      "title": "Без единой ошибки",
+      "description": "Написать 100 иероглифов подряд без ошибок.",
+      "secret": false,
+      "progressType": "max",
+      "target": 100,
+      "badge": {
+        "atlas": "category",
+        "index": 1
+      },
+      "formula": {
+        "on": [
+          "kanji.completed",
+          "player.migrated"
+        ],
+        "when": "event.combo >= 100 || player.bestComboEver >= 100"
+      }
+    },
+    {
+      "id": "combo_250",
+      "category": "secret",
+      "title": "Машина",
+      "description": "Написать 250 иероглифов подряд без ошибок.",
+      "secret": true,
+      "progressType": "max",
+      "target": 250,
+      "badge": {
+        "atlas": "category",
+        "index": 7
+      },
+      "formula": {
+        "on": [
+          "kanji.completed",
+          "player.migrated"
+        ],
+        "when": "event.combo >= 250 || player.bestComboEver >= 250"
+      }
+    },
+    {
+      "id": "perfect_bed",
+      "category": "writing",
+      "title": "С чистого листа",
+      "description": "Полностью очистить грядку, не допустив ни одной ошибки.",
+      "secret": false,
+      "progressType": "boolean",
+      "badge": {
+        "atlas": "category",
+        "index": 4
+      },
+      "formula": {
+        "on": [
+          "gardenBed.completed"
+        ],
+        "when": "event.perfect"
+      }
+    },
+    {
+      "id": "biome_01_complete",
+      "category": "biome",
+      "title": "Шёпот бамбука",
+      "description": "Полностью очистить Бамбуковая роща.",
+      "secret": false,
+      "progressType": "boolean",
+      "badge": {
+        "atlas": "biome",
+        "index": 0
+      },
+      "formula": {
+        "on": [
+          "gardenBed.completed",
+          "player.migrated"
+        ],
+        "when": "includes(event.completedBiomeIds, \"biome-01\") || includes(player.completedBiomeIds, \"biome-01\")"
+      }
+    },
+    {
+      "id": "biome_02_complete",
+      "category": "biome",
+      "title": "Золотая вода",
+      "description": "Полностью очистить Рисовые террасы.",
+      "secret": false,
+      "progressType": "boolean",
+      "badge": {
+        "atlas": "biome",
+        "index": 1
+      },
+      "formula": {
+        "on": [
+          "gardenBed.completed",
+          "player.migrated"
+        ],
+        "when": "includes(event.completedBiomeIds, \"biome-02\") || includes(player.completedBiomeIds, \"biome-02\")"
+      }
+    },
+    {
+      "id": "biome_03_complete",
+      "category": "biome",
+      "title": "Тихий лотос",
+      "description": "Полностью очистить Лотосовый пруд.",
+      "secret": false,
+      "progressType": "boolean",
+      "badge": {
+        "atlas": "biome",
+        "index": 2
+      },
+      "formula": {
+        "on": [
+          "gardenBed.completed",
+          "player.migrated"
+        ],
+        "when": "includes(event.completedBiomeIds, \"biome-03\") || includes(player.completedBiomeIds, \"biome-03\")"
+      }
+    },
+    {
+      "id": "biome_04_complete",
+      "category": "biome",
+      "title": "Первая заварка",
+      "description": "Полностью очистить Чайный сад.",
+      "secret": false,
+      "progressType": "boolean",
+      "badge": {
+        "atlas": "biome",
+        "index": 3
+      },
+      "formula": {
+        "on": [
+          "gardenBed.completed",
+          "player.migrated"
+        ],
+        "when": "includes(event.completedBiomeIds, \"biome-04\") || includes(player.completedBiomeIds, \"biome-04\")"
+      }
+    },
+    {
+      "id": "biome_05_complete",
+      "category": "biome",
+      "title": "Весенний ветер",
+      "description": "Полностью очистить Сад цветения.",
+      "secret": false,
+      "progressType": "boolean",
+      "badge": {
+        "atlas": "biome",
+        "index": 4
+      },
+      "formula": {
+        "on": [
+          "gardenBed.completed",
+          "player.migrated"
+        ],
+        "when": "includes(event.completedBiomeIds, \"biome-05\") || includes(player.completedBiomeIds, \"biome-05\")"
+      }
+    },
+    {
+      "id": "biome_06_complete",
+      "category": "biome",
+      "title": "Царь цветов",
+      "description": "Полностью очистить Пионовый двор.",
+      "secret": false,
+      "progressType": "boolean",
+      "badge": {
+        "atlas": "biome",
+        "index": 5
+      },
+      "formula": {
+        "on": [
+          "gardenBed.completed",
+          "player.migrated"
+        ],
+        "when": "includes(event.completedBiomeIds, \"biome-06\") || includes(player.completedBiomeIds, \"biome-06\")"
+      }
+    },
+    {
+      "id": "biome_07_complete",
+      "category": "biome",
+      "title": "Позднее золото",
+      "description": "Полностью очистить Сад хризантем.",
+      "secret": false,
+      "progressType": "boolean",
+      "badge": {
+        "atlas": "biome",
+        "index": 6
+      },
+      "formula": {
+        "on": [
+          "gardenBed.completed",
+          "player.migrated"
+        ],
+        "when": "includes(event.completedBiomeIds, \"biome-07\") || includes(player.completedBiomeIds, \"biome-07\")"
+      }
+    },
+    {
+      "id": "biome_08_complete",
+      "category": "biome",
+      "title": "Вечнозелёный покой",
+      "description": "Полностью очистить Сосновая роща.",
+      "secret": false,
+      "progressType": "boolean",
+      "badge": {
+        "atlas": "biome",
+        "index": 7
+      },
+      "formula": {
+        "on": [
+          "gardenBed.completed",
+          "player.migrated"
+        ],
+        "when": "includes(event.completedBiomeIds, \"biome-08\") || includes(player.completedBiomeIds, \"biome-08\")"
+      }
+    },
+    {
+      "id": "biome_09_complete",
+      "category": "biome",
+      "title": "Осенний фонарь",
+      "description": "Полностью очистить Сад хурмы.",
+      "secret": false,
+      "progressType": "boolean",
+      "badge": {
+        "atlas": "biome",
+        "index": 8
+      },
+      "formula": {
+        "on": [
+          "gardenBed.completed",
+          "player.migrated"
+        ],
+        "when": "includes(event.completedBiomeIds, \"biome-09\") || includes(player.completedBiomeIds, \"biome-09\")"
+      }
+    },
+    {
+      "id": "biome_10_complete",
+      "category": "biome",
+      "title": "Скрытый аромат",
+      "description": "Полностью очистить Сад орхидей.",
+      "secret": false,
+      "progressType": "boolean",
+      "badge": {
+        "atlas": "biome",
+        "index": 9
+      },
+      "formula": {
+        "on": [
+          "gardenBed.completed",
+          "player.migrated"
+        ],
+        "when": "includes(event.completedBiomeIds, \"biome-10\") || includes(player.completedBiomeIds, \"biome-10\")"
+      }
+    },
+    {
+      "id": "biome_11_complete",
+      "category": "biome",
+      "title": "Тёмные ягоды",
+      "description": "Полностью очистить Ягодный сад.",
+      "secret": false,
+      "progressType": "boolean",
+      "badge": {
+        "atlas": "biome",
+        "index": 10
+      },
+      "formula": {
+        "on": [
+          "gardenBed.completed",
+          "player.migrated"
+        ],
+        "when": "includes(event.completedBiomeIds, \"biome-11\") || includes(player.completedBiomeIds, \"biome-11\")"
+      }
+    },
+    {
+      "id": "biome_12_complete",
+      "category": "biome",
+      "title": "Жёлтое море",
+      "description": "Полностью очистить Рапсовое поле.",
+      "secret": false,
+      "progressType": "boolean",
+      "badge": {
+        "atlas": "biome",
+        "index": 11
+      },
+      "formula": {
+        "on": [
+          "gardenBed.completed",
+          "player.migrated"
+        ],
+        "when": "includes(event.completedBiomeIds, \"biome-12\") || includes(player.completedBiomeIds, \"biome-12\")"
+      }
+    },
+    {
+      "id": "biome_13_complete",
+      "category": "biome",
+      "title": "Спелый колос",
+      "description": "Полностью очистить Пшеничное поле.",
+      "secret": false,
+      "progressType": "boolean",
+      "badge": {
+        "atlas": "biome",
+        "index": 12
+      },
+      "formula": {
+        "on": [
+          "gardenBed.completed",
+          "player.migrated"
+        ],
+        "when": "includes(event.completedBiomeIds, \"biome-13\") || includes(player.completedBiomeIds, \"biome-13\")"
+      }
+    },
+    {
+      "id": "biome_14_complete",
+      "category": "biome",
+      "title": "Лиловый дождь",
+      "description": "Полностью очистить Сад глициний.",
+      "secret": false,
+      "progressType": "boolean",
+      "badge": {
+        "atlas": "biome",
+        "index": 13
+      },
+      "formula": {
+        "on": [
+          "gardenBed.completed",
+          "player.migrated"
+        ],
+        "when": "includes(event.completedBiomeIds, \"biome-14\") || includes(player.completedBiomeIds, \"biome-14\")"
+      }
+    },
+    {
+      "id": "biome_15_complete",
+      "category": "biome",
+      "title": "Тайны травника",
+      "description": "Полностью очистить Сад лекарственных трав.",
+      "secret": false,
+      "progressType": "boolean",
+      "badge": {
+        "atlas": "biome",
+        "index": 14
+      },
+      "formula": {
+        "on": [
+          "gardenBed.completed",
+          "player.migrated"
+        ],
+        "when": "includes(event.completedBiomeIds, \"biome-15\") || includes(player.completedBiomeIds, \"biome-15\")"
+      }
+    },
+    {
+      "id": "biomes_1",
+      "category": "biome",
+      "title": "Земледелец",
+      "description": "Полностью очистить первый биом.",
+      "secret": false,
+      "progressType": "counter",
+      "target": 1,
+      "badge": {
+        "atlas": "category",
+        "index": 2
+      },
+      "formula": {
+        "on": [
+          "gardenBed.completed",
+          "player.migrated"
+        ],
+        "when": "length(player.completedBiomeIds) >= 1"
+      }
+    },
+    {
+      "id": "biomes_5",
+      "category": "biome",
+      "title": "Путешественник",
+      "description": "Полностью очистить 5 биомов.",
+      "secret": false,
+      "progressType": "counter",
+      "target": 5,
+      "badge": {
+        "atlas": "category",
+        "index": 2
+      },
+      "formula": {
+        "on": [
+          "gardenBed.completed",
+          "player.migrated"
+        ],
+        "when": "length(player.completedBiomeIds) >= 5"
+      }
+    },
+    {
+      "id": "biomes_10",
+      "category": "biome",
+      "title": "За горизонтом",
+      "description": "Полностью очистить 10 биомов.",
+      "secret": false,
+      "progressType": "counter",
+      "target": 10,
+      "badge": {
+        "atlas": "category",
+        "index": 2
+      },
+      "formula": {
+        "on": [
+          "gardenBed.completed",
+          "player.migrated"
+        ],
+        "when": "length(player.completedBiomeIds) >= 10"
+      }
+    },
+    {
+      "id": "biomes_15",
+      "category": "biome",
+      "title": "Хозяин земли",
+      "description": "Полностью очистить все 15 биомов.",
+      "secret": false,
+      "progressType": "counter",
+      "target": 15,
+      "badge": {
+        "atlas": "category",
+        "index": 2
+      },
+      "formula": {
+        "on": [
+          "gardenBed.completed",
+          "player.migrated"
+        ],
+        "when": "length(player.completedBiomeIds) >= 15"
+      }
+    },
+    {
+      "id": "session_15m",
+      "category": "session",
+      "title": "Размялся",
+      "description": "Провести 15 минут активной практики за одну сессию.",
+      "secret": false,
+      "progressType": "max",
+      "target": 900000,
+      "badge": {
+        "atlas": "category",
+        "index": 3
+      },
+      "formula": {
+        "on": [
+          "session.activeTime"
+        ],
+        "when": "event.activeMs >= 900000"
+      }
+    },
+    {
+      "id": "session_30m",
+      "category": "session",
+      "title": "Вошёл в ритм",
+      "description": "Провести 30 минут активной практики за одну сессию.",
+      "secret": false,
+      "progressType": "max",
+      "target": 1800000,
+      "badge": {
+        "atlas": "category",
+        "index": 3
+      },
+      "formula": {
+        "on": [
+          "session.activeTime"
+        ],
+        "when": "event.activeMs >= 1800000"
+      }
+    },
+    {
+      "id": "session_60m",
+      "category": "session",
+      "title": "Час в поле",
+      "description": "Провести 60 минут активной практики за одну сессию.",
+      "secret": false,
+      "progressType": "max",
+      "target": 3600000,
+      "badge": {
+        "atlas": "category",
+        "index": 3
+      },
+      "formula": {
+        "on": [
+          "session.activeTime"
+        ],
+        "when": "event.activeMs >= 3600000"
+      }
+    },
+    {
+      "id": "session_90m",
+      "category": "session",
+      "title": "Не разгибая спины",
+      "description": "Провести 90 минут активной практики за одну сессию.",
+      "secret": false,
+      "progressType": "max",
+      "target": 5400000,
+      "badge": {
+        "atlas": "category",
+        "index": 3
+      },
+      "formula": {
+        "on": [
+          "session.activeTime"
+        ],
+        "when": "event.activeMs >= 5400000"
+      }
+    },
+    {
+      "id": "session_120m",
+      "category": "session",
+      "title": "Сегодня всё поле моё",
+      "description": "Провести 120 минут активной практики за одну сессию.",
+      "secret": false,
+      "progressType": "max",
+      "target": 7200000,
+      "badge": {
+        "atlas": "category",
+        "index": 3
+      },
+      "formula": {
+        "on": [
+          "session.activeTime"
+        ],
+        "when": "event.activeMs >= 7200000"
+      }
+    },
+    {
+      "id": "perfect_15_stroke_kanji",
+      "category": "writing",
+      "title": "Сложный характер",
+      "description": "Идеально написать иероглиф минимум из 15 штрихов.",
+      "secret": false,
+      "progressType": "boolean",
+      "badge": {
+        "atlas": "category",
+        "index": 4
+      },
+      "formula": {
+        "on": [
+          "kanji.completed",
+          "player.migrated"
+        ],
+        "when": "event.errorCount == 0 && event.strokeCount >= 15 || player.perfectComplexKanjiCount >= 1"
+      }
+    },
+    {
+      "id": "perfect_20_stroke_kanji",
+      "category": "writing",
+      "title": "Тяжёлая артиллерия",
+      "description": "Идеально написать иероглиф минимум из 20 штрихов.",
+      "secret": false,
+      "progressType": "boolean",
+      "badge": {
+        "atlas": "category",
+        "index": 4
+      },
+      "formula": {
+        "on": [
+          "kanji.completed"
+        ],
+        "when": "event.errorCount == 0 && event.strokeCount >= 20"
+      }
+    },
+    {
+      "id": "perfect_10_complex_kanji",
+      "category": "writing",
+      "title": "Хирургическая точность",
+      "description": "Идеально написать 10 иероглифов минимум из 15 штрихов.",
+      "secret": false,
+      "progressType": "counter",
+      "target": 10,
+      "badge": {
+        "atlas": "category",
+        "index": 4
+      },
+      "formula": {
+        "on": [
+          "kanji.completed",
+          "player.migrated"
+        ],
+        "when": "player.perfectComplexKanjiCount >= 10"
+      }
+    },
+    {
+      "id": "completed_kanji_100",
+      "category": "statistics",
+      "title": "Первые всходы",
+      "description": "Уничтожить 100 сорняков.",
+      "secret": false,
+      "progressType": "counter",
+      "target": 100,
+      "badge": {
+        "atlas": "category",
+        "index": 5
+      },
+      "formula": {
+        "on": [
+          "kanji.completed",
+          "player.migrated"
+        ],
+        "when": "player.lifetimeCompletedKanji >= 100"
+      }
+    },
+    {
+      "id": "completed_kanji_500",
+      "category": "statistics",
+      "title": "Работа кипит",
+      "description": "Уничтожить 500 сорняков.",
+      "secret": false,
+      "progressType": "counter",
+      "target": 500,
+      "badge": {
+        "atlas": "category",
+        "index": 5
+      },
+      "formula": {
+        "on": [
+          "kanji.completed",
+          "player.migrated"
+        ],
+        "when": "player.lifetimeCompletedKanji >= 500"
+      }
+    },
+    {
+      "id": "completed_kanji_1000",
+      "category": "statistics",
+      "title": "Опытный садовник",
+      "description": "Уничтожить 1 000 сорняков.",
+      "secret": false,
+      "progressType": "counter",
+      "target": 1000,
+      "badge": {
+        "atlas": "category",
+        "index": 5
+      },
+      "formula": {
+        "on": [
+          "kanji.completed",
+          "player.migrated"
+        ],
+        "when": "player.lifetimeCompletedKanji >= 1000"
+      }
+    },
+    {
+      "id": "completed_kanji_5000",
+      "category": "statistics",
+      "title": "Хранитель сада",
+      "description": "Уничтожить 5 000 сорняков.",
+      "secret": false,
+      "progressType": "counter",
+      "target": 5000,
+      "badge": {
+        "atlas": "category",
+        "index": 5
+      },
+      "formula": {
+        "on": [
+          "kanji.completed",
+          "player.migrated"
+        ],
+        "when": "player.lifetimeCompletedKanji >= 5000"
+      }
+    },
+    {
+      "id": "completed_kanji_10000",
+      "category": "statistics",
+      "title": "Сад без конца",
+      "description": "Уничтожить 10 000 сорняков.",
+      "secret": false,
+      "progressType": "counter",
+      "target": 10000,
+      "badge": {
+        "atlas": "category",
+        "index": 5
+      },
+      "formula": {
+        "on": [
+          "kanji.completed",
+          "player.migrated"
+        ],
+        "when": "player.lifetimeCompletedKanji >= 10000"
+      }
+    },
+    {
+      "id": "correct_strokes_1000",
+      "category": "statistics",
+      "title": "Тысяча штрихов",
+      "description": "Выполнить 1 000 правильных штрихов.",
+      "secret": false,
+      "progressType": "counter",
+      "target": 1000,
+      "badge": {
+        "atlas": "category",
+        "index": 5
+      },
+      "formula": {
+        "on": [
+          "kanji.completed",
+          "player.migrated"
+        ],
+        "when": "player.lifetimeCorrectStrokes >= 1000"
+      }
+    },
+    {
+      "id": "correct_strokes_10000",
+      "category": "statistics",
+      "title": "Десять тысяч движений",
+      "description": "Выполнить 10 000 правильных штрихов.",
+      "secret": false,
+      "progressType": "counter",
+      "target": 10000,
+      "badge": {
+        "atlas": "category",
+        "index": 5
+      },
+      "formula": {
+        "on": [
+          "kanji.completed",
+          "player.migrated"
+        ],
+        "when": "player.lifetimeCorrectStrokes >= 10000"
+      }
+    },
+    {
+      "id": "correct_strokes_100000",
+      "category": "statistics",
+      "title": "Сто тысяч штрихов",
+      "description": "Выполнить 100 000 правильных штрихов.",
+      "secret": false,
+      "progressType": "counter",
+      "target": 100000,
+      "badge": {
+        "atlas": "category",
+        "index": 5
+      },
+      "formula": {
+        "on": [
+          "kanji.completed",
+          "player.migrated"
+        ],
+        "when": "player.lifetimeCorrectStrokes >= 100000"
+      }
+    },
+    {
+      "id": "finish_after_10_errors",
+      "category": "secret",
+      "title": "Упрямее сорняка",
+      "description": "Завершить один иероглиф, допустив не менее 10 ошибок.",
+      "secret": true,
+      "progressType": "boolean",
+      "badge": {
+        "atlas": "category",
+        "index": 7
+      },
+      "formula": {
+        "on": [
+          "kanji.completed"
+        ],
+        "when": "event.errorCount >= 10"
+      }
+    },
+    {
+      "id": "first_error",
+      "category": "secret",
+      "title": "Это была разминка",
+      "description": "Допустить первую ошибку.",
+      "secret": true,
+      "progressType": "boolean",
+      "badge": {
+        "atlas": "category",
+        "index": 7
+      },
+      "formula": {
+        "on": [
+          "kanji.completed",
+          "player.migrated"
+        ],
+        "when": "player.lifetimeErrors > 0"
+      }
+    },
+    {
+      "id": "five_errors_one_kanji",
+      "category": "recovery",
+      "title": "Методом исключения",
+      "description": "Допустить минимум 5 ошибок на одном иероглифе и всё-таки завершить его.",
+      "secret": false,
+      "progressType": "boolean",
+      "badge": {
+        "atlas": "category",
+        "index": 6
+      },
+      "formula": {
+        "on": [
+          "kanji.completed"
+        ],
+        "when": "event.errorCount >= 5"
+      }
+    },
+    {
+      "id": "recover_after_combo_20",
+      "category": "recovery",
+      "title": "Не сегодня",
+      "description": "После потери большого Combo снова набрать 10 безошибочных иероглифов.",
+      "secret": false,
+      "progressType": "boolean",
+      "badge": {
+        "atlas": "category",
+        "index": 6
+      },
+      "formula": {
+        "on": [
+          "kanji.completed"
+        ],
+        "when": "session.comboRecoveryArmed && event.combo >= 10"
+      }
+    },
+    {
+      "id": "recover_after_bad_run",
+      "category": "recovery",
+      "title": "Второе дыхание",
+      "description": "После трёх неудачных иероглифов написать 5 идеально.",
+      "secret": false,
+      "progressType": "boolean",
+      "badge": {
+        "atlas": "category",
+        "index": 6
+      },
+      "formula": {
+        "on": [
+          "kanji.completed"
+        ],
+        "when": "session.badRunRecoveryArmed && session.recoveryPerfectRun >= 5"
+      }
+    },
+    {
+      "id": "error_on_final_stroke",
+      "category": "secret",
+      "title": "На последнем штрихе",
+      "description": "Ошибиться на последнем требуемом штрихе.",
+      "secret": true,
+      "progressType": "boolean",
+      "badge": {
+        "atlas": "category",
+        "index": 7
+      },
+      "formula": {
+        "on": [
+          "kanji.completed"
+        ],
+        "when": "event.finalStrokeError"
+      }
+    },
+    {
+      "id": "break_combo_49",
+      "category": "secret",
+      "title": "Ну почти",
+      "description": "Потерять Combo на значении 49.",
+      "secret": true,
+      "progressType": "boolean",
+      "badge": {
+        "atlas": "category",
+        "index": 7
+      },
+      "formula": {
+        "on": [
+          "kanji.completed"
+        ],
+        "when": "event.errorCount > 0 && event.previousCombo == 49"
+      }
+    },
+    {
+      "id": "perfect_day",
+      "category": "session",
+      "title": "Идеальный день",
+      "description": "Идеально очистить 3 грядки за один день.",
+      "secret": false,
+      "progressType": "counter",
+      "target": 3,
+      "badge": {
+        "atlas": "category",
+        "index": 3
+      },
+      "formula": {
+        "on": [
+          "gardenBed.completed"
+        ],
+        "when": "persistence.perfectBedsToday.count >= 3"
+      }
+    },
+    {
+      "id": "exact_100_xp_bed",
+      "category": "secret",
+      "title": "Ровно в цель",
+      "description": "Закончить грядку, заработав ровно 100 XP.",
+      "secret": true,
+      "progressType": "boolean",
+      "badge": {
+        "atlas": "category",
+        "index": 7
+      },
+      "formula": {
+        "on": [
+          "gardenBed.completed"
+        ],
+        "when": "event.earnedXp == 100"
+      }
+    },
+    {
+      "id": "one_xp_kanji",
+      "category": "secret",
+      "title": "Один XP",
+      "description": "Завершить иероглиф, получив минимально возможный +1 XP.",
+      "secret": true,
+      "progressType": "boolean",
+      "badge": {
+        "atlas": "category",
+        "index": 7
+      },
+      "formula": {
+        "on": [
+          "kanji.completed"
+        ],
+        "when": "event.earnedXp == 1"
+      }
+    },
+    {
+      "id": "ten_beds_session",
+      "category": "session",
+      "title": "Комбайн",
+      "description": "Очистить 10 грядок за одну игровую сессию.",
+      "secret": false,
+      "progressType": "counter",
+      "target": 10,
+      "badge": {
+        "atlas": "category",
+        "index": 3
+      },
+      "formula": {
+        "on": [
+          "gardenBed.completed"
+        ],
+        "when": "session.completedBeds >= 10"
+      }
+    }
+  ]
+}

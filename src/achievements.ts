@@ -1,21 +1,14 @@
+import { openContentDocument, type AchievementCatalogEntry } from './contentEditor/document'
+import rawAchievementCatalog from './data/achievements.json'
+import { evaluateAchievementFormula } from './data/achievementFormula'
 import { beds, biomes } from './data/model'
 import type { CardState } from './learning'
 import { isCardDue } from './learning'
 import type { PlayerProgress, SessionProgress } from './progression'
 
-export type AchievementCategory = 'daily' | 'combo' | 'biome' | 'session' | 'writing' | 'statistics' | 'recovery' | 'secret'
-export type AchievementProgressType = 'boolean' | 'counter' | 'max' | 'streak'
-
-export type AchievementDefinition = {
-  id: string
-  category: AchievementCategory
-  title: string
-  description: string
-  secret: boolean
-  progressType: AchievementProgressType
-  target?: number
-  badge: { atlas: 'category' | 'biome'; index: number }
-}
+export type AchievementCategory = AchievementCatalogEntry['category']
+export type AchievementProgressType = AchievementCatalogEntry['progressType']
+export type AchievementDefinition = AchievementCatalogEntry
 
 export type AchievementUnlock = { id: string; unlockedAt: string }
 
@@ -60,102 +53,9 @@ export const initialAchievementPersistence: AchievementPersistence = {
   perfectBedsToday: { count: 0 },
 }
 
-const categoryBadge: Record<AchievementCategory, number> = {
-  daily: 0,
-  combo: 1,
-  biome: 2,
-  session: 3,
-  writing: 4,
-  statistics: 5,
-  recovery: 6,
-  secret: 7,
-}
-
-function definition(
-  id: string,
-  category: AchievementCategory,
-  title: string,
-  description: string,
-  options: { secret?: boolean; progressType?: AchievementProgressType; target?: number; badge?: AchievementDefinition['badge'] } = {},
-): AchievementDefinition {
-  return {
-    id,
-    category,
-    title,
-    description,
-    secret: options.secret ?? false,
-    progressType: options.progressType ?? (options.target ? 'counter' : 'boolean'),
-    target: options.target,
-    badge: options.badge ?? { atlas: 'category', index: categoryBadge[category] },
-  }
-}
-
-export const BIOME_DETAILS = [
-  ['Бамбуковая роща', 'Шёпот бамбука'],
-  ['Рисовые террасы', 'Золотая вода'],
-  ['Лотосовый пруд', 'Тихий лотос'],
-  ['Чайный сад', 'Первая заварка'],
-  ['Сад цветения', 'Весенний ветер'],
-  ['Пионовый двор', 'Царь цветов'],
-  ['Сад хризантем', 'Позднее золото'],
-  ['Сосновая роща', 'Вечнозелёный покой'],
-  ['Сад хурмы', 'Осенний фонарь'],
-  ['Сад орхидей', 'Скрытый аромат'],
-  ['Ягодный сад', 'Тёмные ягоды'],
-  ['Рапсовое поле', 'Жёлтое море'],
-  ['Пшеничное поле', 'Спелый колос'],
-  ['Сад глициний', 'Лиловый дождь'],
-  ['Сад лекарственных трав', 'Тайны травника'],
-] as const
-
-const dailyDefinitions = [
-  [3, 'Росток'], [7, 'Привычка'], [14, 'Садовник'], [30, 'Месяц без засухи'],
-  [90, 'Сезон'], [180, 'Полгода в поле'], [365, 'Год урожая'],
-].map(([target, title]) => definition(`daily_${target}`, 'daily', String(title), `Заниматься ${target}${Number(target) === 3 ? ' дня' : ' дней'} подряд.`, { target: Number(target), progressType: 'streak' }))
-
-const comboDefinitions = [
-  [5, 'Твёрдая рука'], [10, 'Не дрогнул'], [20, 'На автомате'], [50, 'Каллиграф'],
-  [100, 'Без единой ошибки'], [250, 'Машина'],
-].map(([target, title]) => definition(`combo_${target}`, Number(target) === 250 ? 'secret' : 'combo', String(title), `Написать ${target} иероглифов подряд без ошибок.`, {
-  target: Number(target), progressType: 'max', secret: Number(target) === 250,
-}))
-
-const biomeDefinitions = BIOME_DETAILS.map(([biomeName, title], index) => definition(
-  `biome_${String(index + 1).padStart(2, '0')}_complete`, 'biome', title, `Полностью очистить ${biomeName}.`,
-  { badge: { atlas: 'biome', index } },
-))
-
-export const ACHIEVEMENTS: AchievementDefinition[] = [
-  ...dailyDefinitions,
-  definition('return_after_30_days', 'recovery', 'Возвращение', 'Вернуться в Сад после перерыва не менее 30 дней.'),
-  ...comboDefinitions,
-  definition('perfect_bed', 'writing', 'С чистого листа', 'Полностью очистить грядку, не допустив ни одной ошибки.'),
-  ...biomeDefinitions,
-  definition('biomes_1', 'biome', 'Земледелец', 'Полностью очистить первый биом.', { target: 1 }),
-  definition('biomes_5', 'biome', 'Путешественник', 'Полностью очистить 5 биомов.', { target: 5 }),
-  definition('biomes_10', 'biome', 'За горизонтом', 'Полностью очистить 10 биомов.', { target: 10 }),
-  definition('biomes_15', 'biome', 'Хозяин земли', 'Полностью очистить все 15 биомов.', { target: 15 }),
-  ...[[15, 'Размялся'], [30, 'Вошёл в ритм'], [60, 'Час в поле'], [90, 'Не разгибая спины'], [120, 'Сегодня всё поле моё']]
-    .map(([minutes, title]) => definition(`session_${minutes}m`, 'session', String(title), `Провести ${minutes} минут активной практики за одну сессию.`, { target: Number(minutes) * 60_000, progressType: 'max' })),
-  definition('perfect_15_stroke_kanji', 'writing', 'Сложный характер', 'Идеально написать иероглиф минимум из 15 штрихов.'),
-  definition('perfect_20_stroke_kanji', 'writing', 'Тяжёлая артиллерия', 'Идеально написать иероглиф минимум из 20 штрихов.'),
-  definition('perfect_10_complex_kanji', 'writing', 'Хирургическая точность', 'Идеально написать 10 иероглифов минимум из 15 штрихов.', { target: 10 }),
-  ...[[100, 'Первые всходы'], [500, 'Работа кипит'], [1_000, 'Опытный садовник'], [5_000, 'Хранитель сада'], [10_000, 'Сад без конца']]
-    .map(([target, title]) => definition(`completed_kanji_${target}`, 'statistics', String(title), `Уничтожить ${Number(target).toLocaleString('ru-RU')} сорняков.`, { target: Number(target) })),
-  ...[[1_000, 'Тысяча штрихов'], [10_000, 'Десять тысяч движений'], [100_000, 'Сто тысяч штрихов']]
-    .map(([target, title]) => definition(`correct_strokes_${target}`, 'statistics', String(title), `Выполнить ${Number(target).toLocaleString('ru-RU')} правильных штрихов.`, { target: Number(target) })),
-  definition('finish_after_10_errors', 'secret', 'Упрямее сорняка', 'Завершить один иероглиф, допустив не менее 10 ошибок.', { secret: true }),
-  definition('first_error', 'secret', 'Это была разминка', 'Допустить первую ошибку.', { secret: true }),
-  definition('five_errors_one_kanji', 'recovery', 'Методом исключения', 'Допустить минимум 5 ошибок на одном иероглифе и всё-таки завершить его.'),
-  definition('recover_after_combo_20', 'recovery', 'Не сегодня', 'После потери большого Combo снова набрать 10 безошибочных иероглифов.'),
-  definition('recover_after_bad_run', 'recovery', 'Второе дыхание', 'После трёх неудачных иероглифов написать 5 идеально.'),
-  definition('error_on_final_stroke', 'secret', 'На последнем штрихе', 'Ошибиться на последнем требуемом штрихе.', { secret: true }),
-  definition('break_combo_49', 'secret', 'Ну почти', 'Потерять Combo на значении 49.', { secret: true }),
-  definition('perfect_day', 'session', 'Идеальный день', `Идеально очистить ${PERFECT_DAY_BED_TARGET} грядки за один день.`, { target: PERFECT_DAY_BED_TARGET }),
-  definition('exact_100_xp_bed', 'secret', 'Ровно в цель', 'Закончить грядку, заработав ровно 100 XP.', { secret: true }),
-  definition('one_xp_kanji', 'secret', 'Один XP', 'Завершить иероглиф, получив минимально возможный +1 XP.', { secret: true }),
-  definition('ten_beds_session', 'session', 'Комбайн', 'Очистить 10 грядок за одну игровую сессию.', { target: 10 }),
-]
+const catalog = openContentDocument('achievements.json', JSON.stringify(rawAchievementCatalog))
+if (catalog.kind !== 'achievement-catalog') throw new Error('Achievement catalog must be a hanzi-garden.achievements document')
+export const ACHIEVEMENTS: AchievementDefinition[] = catalog.achievements
 
 export const achievementById = new Map(ACHIEVEMENTS.map((item) => [item.id, item]))
 
@@ -181,10 +81,6 @@ function unlock(state: AchievementPersistence, ids: readonly string[], timestamp
   }
 }
 
-function thresholdIds(prefix: string, thresholds: readonly number[], value: number): string[] {
-  return thresholds.filter((target) => value >= target).map((target) => `${prefix}${target}`)
-}
-
 export function processAchievementEvents(
   initial: AchievementPersistence,
   player: PlayerProgress,
@@ -195,64 +91,32 @@ export function processAchievementEvents(
   const allUnlocked: string[] = []
 
   for (const event of events) {
-    const candidates: string[] = []
+    let daysSinceLastActive = 0
     if (event.type === 'kanji.completed') {
       const today = localDateKey(event.timestamp)
       const priorDate = state.lastActiveDate
       if (priorDate !== today) {
-        const difference = priorDate ? calendarDayDifference(priorDate, today) : 0
-        if (priorDate && difference >= 30) candidates.push('return_after_30_days')
-        state.currentDailyStreak = priorDate && difference === 1 ? state.currentDailyStreak + 1 : 1
+        daysSinceLastActive = priorDate ? calendarDayDifference(priorDate, today) : 0
+        state.currentDailyStreak = priorDate && daysSinceLastActive === 1 ? state.currentDailyStreak + 1 : 1
         state.bestDailyStreak = Math.max(state.bestDailyStreak, state.currentDailyStreak)
         state.lastActiveDate = today
       }
-      candidates.push(...thresholdIds('daily_', [3, 7, 14, 30, 90, 180, 365], state.currentDailyStreak))
-      candidates.push(...thresholdIds('combo_', [5, 10, 20, 50, 100, 250], event.combo))
-      candidates.push(...thresholdIds('completed_kanji_', [100, 500, 1_000, 5_000, 10_000], player.lifetimeCompletedKanji))
-      candidates.push(...thresholdIds('correct_strokes_', [1_000, 10_000, 100_000], player.lifetimeCorrectStrokes))
-      if (event.errorCount === 0 && event.strokeCount >= 15) candidates.push('perfect_15_stroke_kanji')
-      if (event.errorCount === 0 && event.strokeCount >= 20) candidates.push('perfect_20_stroke_kanji')
-      if (player.perfectComplexKanjiCount >= 10) candidates.push('perfect_10_complex_kanji')
-      if (event.errorCount >= 10) candidates.push('finish_after_10_errors')
-      if (player.lifetimeErrors > 0) candidates.push('first_error')
-      if (event.errorCount >= 5) candidates.push('five_errors_one_kanji')
-      if (session.comboRecoveryArmed && event.combo >= 10) candidates.push('recover_after_combo_20')
-      if (session.badRunRecoveryArmed && session.recoveryPerfectRun >= 5) candidates.push('recover_after_bad_run')
-      if (event.finalStrokeError) candidates.push('error_on_final_stroke')
-      if (event.errorCount > 0 && event.previousCombo === 49) candidates.push('break_combo_49')
-      if (event.earnedXp === 1) candidates.push('one_xp_kanji')
     } else if (event.type === 'gardenBed.completed') {
       const today = localDateKey(event.timestamp)
       if (state.perfectBedsToday.date !== today) state.perfectBedsToday = { date: today, count: 0 }
-      if (event.perfect) {
-        state.perfectBedsToday.count += 1
-        candidates.push('perfect_bed')
-      }
-      for (const biomeId of event.completedBiomeIds) {
-        const index = biomes.findIndex((biome) => biome.id === biomeId)
-        if (index >= 0) candidates.push(`biome_${String(index + 1).padStart(2, '0')}_complete`)
-      }
-      candidates.push(...thresholdIds('biomes_', [1, 5, 10, 15], player.completedBiomeIds.length))
-      if (state.perfectBedsToday.count >= PERFECT_DAY_BED_TARGET) candidates.push('perfect_day')
-      if (event.earnedXp === 100) candidates.push('exact_100_xp_bed')
-      if (session.completedBeds >= 10) candidates.push('ten_beds_session')
-    } else if (event.type === 'session.activeTime') {
-      for (const minutes of [15, 30, 60, 90, 120]) {
-        if (event.activeMs >= minutes * 60_000) candidates.push(`session_${minutes}m`)
-      }
-    } else {
-      candidates.push(...thresholdIds('combo_', [5, 10, 20, 50, 100, 250], player.bestComboEver))
-      candidates.push(...thresholdIds('completed_kanji_', [100, 500, 1_000, 5_000, 10_000], player.lifetimeCompletedKanji))
-      candidates.push(...thresholdIds('correct_strokes_', [1_000, 10_000, 100_000], player.lifetimeCorrectStrokes))
-      candidates.push(...thresholdIds('biomes_', [1, 5, 10, 15], player.completedBiomeIds.length))
-      for (const biomeId of player.completedBiomeIds) {
-        const index = biomes.findIndex((biome) => biome.id === biomeId)
-        if (index >= 0) candidates.push(`biome_${String(index + 1).padStart(2, '0')}_complete`)
-      }
-      if (player.perfectComplexKanjiCount >= 1) candidates.push('perfect_15_stroke_kanji')
-      if (player.perfectComplexKanjiCount >= 10) candidates.push('perfect_10_complex_kanji')
-      if (player.lifetimeErrors > 0) candidates.push('first_error')
+      if (event.perfect) state.perfectBedsToday.count += 1
     }
+
+    const context = {
+      event: event as unknown as Record<string, unknown>,
+      player: player as unknown as Record<string, unknown>,
+      session: session as unknown as Record<string, unknown>,
+      persistence: state as unknown as Record<string, unknown>,
+      daysSinceLastActive,
+    }
+    const candidates = ACHIEVEMENTS
+      .filter((achievement) => achievement.formula.on.includes(event.type) && evaluateAchievementFormula(achievement.formula.when, context))
+      .map((achievement) => achievement.id)
 
     const result = unlock(state, candidates, event.timestamp)
     state = result.state
