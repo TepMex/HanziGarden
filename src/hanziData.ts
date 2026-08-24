@@ -5,7 +5,7 @@ export type HanziCharacterJson = {
   radStrokes?: number[]
 }
 
-const charDataCache = new Map<string, Promise<HanziCharacterJson>>()
+const charDataCache = new Map<string, HanziCharacterJson>()
 
 /**
  * Load Make Me a Hanzi stroke JSON for a character.
@@ -19,14 +19,11 @@ const charDataCache = new Map<string, Promise<HanziCharacterJson>>()
  */
 export function loadHanziCharData(char: string): Promise<HanziCharacterJson> {
   const cached = charDataCache.get(char)
-  if (cached) return cached
-
-  const request = loadHanziCharDataUncached(char)
-  charDataCache.set(char, request)
-  request.catch(() => {
-    if (charDataCache.get(char) === request) charDataCache.delete(char)
+  if (cached) return Promise.resolve(cached)
+  return loadHanziCharDataUncached(char).then((data) => {
+    charDataCache.set(char, data)
+    return data
   })
-  return request
 }
 
 function loadHanziCharDataUncached(char: string): Promise<HanziCharacterJson> {

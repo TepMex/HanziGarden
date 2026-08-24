@@ -758,10 +758,11 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
   gap: 10px;
   width: min(360px, calc(100vw - 48px));
   padding: 10px 14px;
-  color: #efe3c4;
-  border: 1px solid rgba(205, 181, 130, .34);
-  background: rgba(22, 28, 24, .88);
-  box-shadow: 0 8px 22px rgba(10, 14, 12, .38);
+  color: #f4e9cc;
+  border: 1px solid rgba(226, 205, 150, .48);
+  background: rgba(16, 22, 18, .94);
+  box-shadow: 0 8px 22px rgba(10, 14, 12, .5);
+  text-shadow: 0 1px 2px #101410;
   pointer-events: none;
   transform: translateX(-50%);
   animation: stroke-error-hint .45s ease both;
