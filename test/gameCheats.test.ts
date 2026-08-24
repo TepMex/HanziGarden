@@ -8,10 +8,15 @@ import { initialAchievementPersistence } from '../src/achievements'
 function saveFixture(): SaveGame {
   return {
     id: 'main',
-    version: 6,
+    version: 7,
     unlockedBedIds: ['bed-unknown'],
     masteredBedIds: ['bed-locked-but-mastered'],
     lastActiveBedId: 'bed-not-unlocked',
+    gardenSeed: 'debug-seed',
+    gardenGenerationVersion: 1,
+    clearedHexes: ['0,0', '1,0'],
+    pendingClearActions: 3,
+    lastActiveHexId: '1,0',
     seenCharacterIds: ['character-unknown'],
     cards: {
       'character-unknown': {
@@ -78,6 +83,8 @@ describe('game cheat save dumps', () => {
     expect(restored.unlockedBedIds).toEqual(['bed-unknown'])
     expect(restored.masteredBedIds).toEqual(['bed-locked-but-mastered'])
     expect(restored.lastActiveBedId).toBe('bed-not-unlocked')
+    expect(restored.gardenSeed).toBe('debug-seed')
+    expect(restored.clearedHexes).toEqual(['0,0', '1,0'])
     expect(restored.seenCharacterIds).toEqual(['character-unknown'])
   })
 })

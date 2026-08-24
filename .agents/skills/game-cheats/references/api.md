@@ -9,21 +9,31 @@ await cheats.drawWrongStroke()
 const json = await cheats.dumpDb()
 const save = await cheats.dumpDb('object')
 await cheats.loadDb(jsonOrSave)
+await cheats.grantClearActions(1)
+await cheats.clearHex('1,0')
+await cheats.setGardenSeed('reproducible-seed')
+await cheats.revealEntireGarden()
+const seed = await cheats.newRandomGardenSeed()
 ```
 
 `drawCorrectStroke()` submits the current canonical median. `drawWrongStroke()` submits it backwards. Both use Hanzi Writer's real input path, so use them one at a time and wait for each promise. They reject outside an active, loaded battle.
 
 ## Save shape
 
-`loadDb` accepts formatted JSON or an object with the current v6 shape:
+`loadDb` accepts formatted JSON or an object with the current v7 shape:
 
 ```ts
 type SaveGame = {
   id: 'main'
-  version: 6
+  version: 7
   unlockedBedIds: string[]
   masteredBedIds: string[]
   lastActiveBedId: string | null
+  gardenSeed: string
+  gardenGenerationVersion: 1
+  clearedHexes: string[]
+  pendingClearActions: number
+  lastActiveHexId: string | null
   seenCharacterIds: string[]
   cards: Record<string, CardState>
   reviewEvents: ReviewEvent[]
@@ -63,17 +73,17 @@ try {
 }
 ```
 
-Mark one bed as unlocked/mastered or clear its visible progress:
+Give a player one action and clear an available hex:
 
 ```js
 const cheats = window.hanziGardenCheats
-const save = await cheats.dumpDb('object')
-save.unlockedBedIds = [...new Set([...save.unlockedBedIds, 'bed-001'])]
-save.masteredBedIds = [...new Set([...save.masteredBedIds, 'bed-001'])]
-save.lastActiveBedId = 'bed-001'
-await cheats.loadDb(save)
+await cheats.grantClearActions(1)
+await cheats.clearHex('1,0')
 ```
 
-To make a bed unstudied, remove its ID from `masteredBedIds`, remove its character IDs from `seenCharacterIds`, and delete those keys from `cards`. To model all characters as studied, derive the complete bed and character ID lists from `src/data/model.ts`, populate the three progress collections, and give every character a structurally valid FSRS card. Copying an existing card and changing its date is less error-prone than inventing FSRS fields.
+`setGardenSeed` is a destructive development helper for geography only: it
+resets the map to the cleared center with no pending actions while preserving
+all learning, SRS, XP, and achievement data. `revealEntireGarden` reveals all
+217 deterministic cells without changing the seed.
 
 After loading any dump, expect the app to return to the map. Re-enter a battle before invoking stroke cheats.

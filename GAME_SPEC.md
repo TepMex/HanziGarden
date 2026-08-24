@@ -1,6 +1,11 @@
 # Hanzi Garden — Game & Technical Specification
 
-> This document is the current source of truth. The XP/level/Combo and achievement requirements below supersede any older implementation notes that omit those systems.
+> This document is the current source of truth. The XP/level/Combo and
+> achievement requirements below supersede older notes that omit those systems.
+> The current Hex Garden V7 requirements below supersede the rectangular
+> 5 × 3 / 220-bed geography, map-mask, and adjacency requirements in earlier
+> sections. Legacy bed data remains only as compatibility/content metadata; it
+> must not select the next character or determine garden geography.
 
 ## 1. Product Summary
 
@@ -1449,6 +1454,236 @@ restore garden
 =
 maintain memory
 ```
+
+## Current Hex Garden V7 Specification
+
+This section is authoritative for garden geography, exploration, procedural
+content, map rendering, and their relationship to learning.
+
+### 52.1 Independent progression
+
+Learning progression and garden geography are independent:
+
+```text
+learning progression → earns one clearing action
+garden progression   → player chooses where to spend it
+```
+
+New characters are introduced strictly by ascending Heisig frame number. The
+player never chooses the next character. A hex coordinate, biome, plant, or
+exploration direction must never influence the curriculum. Due reviews may
+interleave according to FSRS, but the next unseen character is always the
+lowest unseen Heisig frame.
+
+Completing a previously unseen character grants one pending clearing action.
+Completing a review does not grant another action. Selecting any cleared hex
+opens the same globally selected next study item; the selected hex controls
+only the battle's garden artwork.
+
+### 52.2 Geometry and exploration state
+
+The garden is a radius-eight pointy-top axial hex grid:
+
+```text
+s = -q-r
+max(abs(q), abs(r), abs(s)) <= 8
+cellCount = 1 + 3 × 8 × 9 = 217
+```
+
+There is one center and eight concentric rings. Neighbors are calculated from
+the six axial direction vectors and are never stored manually.
+
+Every cell has one of three projected states:
+
+- `hidden`: uncleared and not adjacent to cleared territory;
+- `available`: uncleared and adjacent to at least one cleared cell;
+- `cleared`: permanently cleared by the player.
+
+A new garden starts with only `(0,0)` cleared. Its six neighbors are available.
+Spending an action is valid only on an available cell; it permanently clears
+that cell and recalculates the frontier. No prescribed path, shape penalty, or
+directional reward exists.
+
+### 52.3 Persistence and migration
+
+Save version 7 adds:
+
+```ts
+gardenSeed: string;
+gardenGenerationVersion: 1;
+clearedHexes: string[];       // axial "q,r" IDs; includes "0,0"
+pendingClearActions: number;
+lastActiveHexId: string | null;
+```
+
+The save still retains all FSRS cards, seen-character IDs, review events, XP,
+achievements, and legacy bed fields so upgrades cannot discard learning
+history. A fresh seed is created once with cryptographic random bytes and is
+persisted immediately, including before the first study action. Normal
+gameplay never changes it.
+
+V6 migration cannot truthfully map the old painted rectangle to axial
+coordinates. It therefore clears only the center and converts the count of
+already seen characters into pending player-chosen clearing actions, capped by
+the 216 remaining cells. It does not alter cards, review history, seen
+characters, XP, or achievements.
+
+`gardenGenerationVersion` dispatches the generator. Version 1 saves must always
+use the V1 algorithm after later generators are introduced.
+
+### 52.4 Deterministic generation
+
+Cell content is a pure function of:
+
+```text
+gardenSeed + q + r + named random stream + generation version
+```
+
+V1 uses a stable 32-bit FNV-1a hash over length-prefixed inputs. Biome streams
+(`biome:*`) and plant streams (`plant:*`) are disjoint. Content is generated
+independently of click order, application restarts, and device.
+
+Biome V1 ranks all 217 coordinates deterministically, selects 24 spaced biome
+nuclei, assigns the established biome palette to those nuclei, and gives each
+cell to its nearest nucleus in axial Euclidean space with a small seeded
+nucleus bias. This produces connected regions several cells across while
+allowing one biome to appear in separate regions. Every V1 map contains the
+established 15 biome cultures:
+
+1. Bamboo Grove
+2. Rice Terrace
+3. Lotus Wetland
+4. Tea Garden
+5. Sakura Grove
+6. Peony Garden
+7. Chrysanthemum Garden
+8. Pine and Rock Garden
+9. Persimmon Orchard
+10. Orchid Garden
+11. Berry Woodland
+12. Rapeseed Field
+13. Wheat Field
+14. Wisteria Woodland
+15. Medicinal Herb Garden
+
+The centralized `BiomeRegistry` owns biome names, ground styles, and exactly
+three related plant definitions. No renderer or generator contains
+culture-specific branching.
+
+After biome selection, the independent `plant:rarity` roll chooses:
+
+```text
+COMMON      roll < 0.85
+RARE        roll < 0.95
+VERY_RARE   otherwise
+```
+
+These are probabilities, not per-map quotas. Rarity is cosmetic and
+collectible only; it has no XP, currency, SRS, production, crafting, or
+learning modifier.
+
+### 52.5 Hidden information and reveal
+
+Uncleared cells render neutral terrain plus fog/overgrowth. Neither hidden nor
+available presentation may expose biome color, plant silhouette, or rarity.
+Available cells use one biome-independent highlight.
+
+The reveal sequence is:
+
+```text
+earn action
+→ choose available hex
+→ clearing/fog animation
+→ biome ground appears
+→ predetermined plant appears
+→ rarity becomes visible
+→ frontier recalculates
+```
+
+Rare plants may receive a restrained glint after reveal. Rarity remains
+primarily legible from plant color, form, and silhouette rather than a large
+aura or particles.
+
+### 52.6 Rendering layers and input
+
+The map is composed as separate layers:
+
+```text
+existing Hanzi Garden background/environment
+hex biome terrain
+biome/outer boundaries
+plant sprites
+fog/frontier/reveal state
+development labels
+```
+
+The existing floating-island/cloud garden image remains the background. It is
+not regenerated per biome.
+
+All 217 positions come from the axial-to-screen transform. Terrain polygons
+slightly overlap to prevent raster gaps. The polygon itself is the pointer
+hitbox, not its bounding rectangle. Plant sprites render in ascending screen-Y
+order so lower plants overlap higher cells correctly; every sprite base is
+centered on its cell.
+
+No border or fence exists between cleared neighbors of the same biome. A
+decorative boundary is drawn only on a shared edge where both cells are
+cleared and `biome(A) != biome(B)`. The large garden perimeter has a separate
+outer treatment.
+
+### 52.7 Plant assets
+
+The official 15-biome registry requires 45 individual PNG sprites:
+
+```text
+public/assets/garden/plants/<culture>/
+  common.png
+  rare.png
+  very_rare.png
+```
+
+Each file is a 1024 × 1024 RGBA image with transparent background. It contains
+one isolated, centered plant with no pot, tile, hex, frame, text, character, or
+architecture. The trimmed plant width is at most 70% of the canvas and the
+height is at most 790 px, preserving transparent padding for one-hex placement.
+All sprites use a compatible polished, lightly stylized, hand-painted East
+Asian fantasy garden look and an elevated three-quarter camera.
+
+`/debug/plants` is a development-only 4 × N contact sheet with a checkerboard
+alpha preview and a marked 70% safe area. It is not included in normal UI.
+
+### 52.8 Development tools
+
+Development builds expose a collapsible garden panel with:
+
+- editable seed input;
+- New Random Seed;
+- Reveal Entire Garden;
+- axial coordinate labels;
+- biome-ID labels.
+
+The invisible `window.hanziGardenCheats` interface also supports
+`grantClearActions`, `clearHex`, `setGardenSeed`, `revealEntireGarden`, and
+`newRandomGardenSeed` for reproducible browser checks. Seed replacement is an
+explicit destructive debug action for geography only and preserves learning
+data.
+
+### 52.9 Required verification
+
+Automated tests cover:
+
+- radius 8 produces exactly 217 unique cells;
+- internal and edge neighbor behavior;
+- same seed and coordinate produce identical content;
+- reveal order does not affect content;
+- different seeds produce different maps;
+- coherent neighboring biome regions;
+- large-sample plant rarity near 85/10/5;
+- only frontier cells can be cleared;
+- compact growth and radius-length branches;
+- hex choice cannot influence the next curriculum character;
+- V6 migration preserves learning state and creates V7 garden state;
+- all registry assets exist, are 1024 × 1024 RGBA, and satisfy safe-area bounds.
 
 ## 50. XP, Levels, and Combo
 

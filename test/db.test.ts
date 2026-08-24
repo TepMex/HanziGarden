@@ -1,5 +1,16 @@
 import { describe, expect, test } from 'bun:test'
-import { migrateV1Save, migrateV2Save, migrateV3Save, migrateV4Save, type SaveGameV1, type SaveGameV2, type SaveGameV3, type SaveGameV4 } from '../src/db'
+import {
+  migrateV1Save,
+  migrateV2Save,
+  migrateV3Save,
+  migrateV4Save,
+  migrateV6Save,
+  type SaveGameV1,
+  type SaveGameV2,
+  type SaveGameV3,
+  type SaveGameV4,
+  type SaveGameV6,
+} from '../src/db'
 import type { CardState } from '../src/learning'
 
 describe('v1 save migration', () => {
@@ -73,9 +84,39 @@ describe('v4 progression migration', () => {
       ], updatedAt: 42,
     }
     const migrated = migrateV4Save(v4)
-    expect(migrated.version).toBe(6)
+    expect(migrated.version).toBe(7)
     expect(migrated.playerProgress.lifetimeCompletedKanji).toBe(1)
     expect(migrated.playerProgress.lifetimeErrors).toBe(1)
     expect(migrated.playerProgress.totalXp).toBeGreaterThanOrEqual(1)
+  })
+})
+
+describe('v6 hex-garden migration', () => {
+  test('preserves learning history and converts it into player-chosen clearing actions', () => {
+    const v7 = migrateV4Save({
+      id: 'main', version: 4, unlockedBedIds: ['bed-001'], masteredBedIds: [], lastActiveBedId: 'bed-001',
+      seenCharacterIds: ['rsh-0001', 'rsh-0002'], cards: {}, reviewEvents: [], updatedAt: 42,
+    })
+    const v6 = {
+      id: v7.id,
+      version: 6,
+      unlockedBedIds: v7.unlockedBedIds,
+      masteredBedIds: v7.masteredBedIds,
+      lastActiveBedId: v7.lastActiveBedId,
+      seenCharacterIds: v7.seenCharacterIds,
+      cards: v7.cards,
+      reviewEvents: v7.reviewEvents,
+      playerProgress: v7.playerProgress,
+      achievements: v7.achievements,
+      updatedAt: v7.updatedAt,
+    } satisfies SaveGameV6
+
+    const migrated = migrateV6Save(v6, 'fixed-migration-seed')
+    expect(migrated.version).toBe(7)
+    expect(migrated.gardenSeed).toBe('fixed-migration-seed')
+    expect(migrated.clearedHexes).toEqual(['0,0'])
+    expect(migrated.pendingClearActions).toBe(2)
+    expect(migrated.cards).toBe(v6.cards)
+    expect(migrated.reviewEvents).toBe(v6.reviewEvents)
   })
 })

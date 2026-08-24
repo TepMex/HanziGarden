@@ -1,13 +1,12 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import HanziWriter from 'hanzi-writer'
-import { ArrowLeft, BarChart3, BookOpen, Flower2, Grid3X3, HandHeart, HelpCircle, Layers, Leaf, LogOut, Plus, Sparkles, Trophy, X } from 'lucide-react'
-import { type BedDefinition, type CharacterDefinition } from './data/model'
+import { ArrowLeft, BarChart3, BookOpen, Flower2, HandHeart, HelpCircle, Layers, Leaf, LogOut, Plus, Sparkles, Trophy, X } from 'lucide-react'
+import { characterById, type CharacterDefinition } from './data/model'
 import { battleArtworkForBiome, battleBackdropStage } from './data/battleBiomeArt'
 import { initialSave, loadSave, persistSave, type SaveGame } from './db'
-import { battleBedCleanliness, bedInfection } from './garden'
 import { loadHanziCharData } from './hanziData'
-import { isCardDue, reviewCard, type ReviewEvent } from './learning'
-import { GardenMap } from './map/GardenMap'
+import { reviewCard, type ReviewEvent } from './learning'
+import { HexGardenMap } from './map/HexGardenMap'
 import { initialCamera, type CameraState } from './map/cameraMath'
 import { StatisticsScreen } from './stats/StatisticsScreen'
 import { isFirstEncounter } from './stats/srsStages'
@@ -37,6 +36,10 @@ import {
   type KanjiReward,
   type SessionProgress,
 } from './progression'
+import { nextCurriculumCharacter } from './curriculum'
+import { generateGardenCell } from './garden/gardenGenerator'
+import { clearGardenHex, grantClearAction } from './garden/gardenState'
+import { parseHexId } from './garden/hexGrid'
 
 type Screen = 'menu' | 'about' | 'support' | 'garden' | 'battle' | 'stats'
 
@@ -117,17 +120,20 @@ function GardenScreen({
   camera,
   onCameraChange,
   onEnter,
+  onClear,
+  onSave,
   onMainMenu,
   onStatistics,
 }: {
   save: SaveGame
   camera: CameraState
   onCameraChange: (camera: CameraState) => void
-  onEnter: (bed: BedDefinition) => void
+  onEnter: (hexId: string) => void
+  onClear: (hexId: string) => void
+  onSave: (save: SaveGame) => void
   onMainMenu: () => void
   onStatistics: () => void
 }) {
-  const [gridVisible, setGridVisible] = useState(false)
   return (
     <main className="map-screen">
       <header className="map-header">
@@ -136,50 +142,41 @@ function GardenScreen({
           <PlayerLevel totalXp={save.playerProgress.totalXp} compact />
         </div>
         <div className="garden-summary">
-          <button
-            type="button"
-            className="map-grid-button"
-            aria-pressed={gridVisible}
-            aria-label={gridVisible ? 'Скрыть сетку' : 'Показать сетку'}
-            onClick={() => setGridVisible((visible) => !visible)}
-          >
-            <Grid3X3 size={17} />
-          </button>
+          <span className={`clear-action-count ${save.pendingClearActions > 0 ? 'has-actions' : ''}`}>
+            <Sparkles size={16} /> Расчистки: <b>{save.pendingClearActions}</b>
+          </span>
           <button className="map-stats-button" onClick={onStatistics} aria-label="Статистика"><BarChart3 size={17} /><span>Статистика</span></button>
           <button className="map-menu-button" onClick={onMainMenu} aria-label="Выйти в главное меню" title="Выйти в главное меню"><LogOut size={18} /></button>
         </div>
       </header>
-      <GardenMap
+      <HexGardenMap
         save={save}
         camera={camera}
-        focusBedId={save.lastActiveBedId ?? save.unlockedBedIds[0] ?? null}
-        gridVisible={gridVisible}
         onCameraChange={onCameraChange}
-        onEnterBed={onEnter}
+        onEnterHex={onEnter}
+        onClearHex={onClear}
+        onSave={onSave}
       />
     </main>
   )
 }
 
 function BattleScreen({
-  bed,
+  biomeId,
   save,
   session,
   onSave,
   onExit,
 }: {
-  bed: BedDefinition
+  biomeId: string
   save: SaveGame
   session: SessionProgress
   onSave: (save: SaveGame, session: SessionProgress, events: AchievementEvent[]) => void
   onExit: () => void
 }) {
-  const dueCharacters = useMemo(
-    () => bed.characters.filter((character) => isCardDue(save.cards[character.id])),
-    [bed, save],
-  )
-  const [activeCharacterId, setActiveCharacterId] = useState<string | null>(dueCharacters[0]?.id ?? null)
-  const activeCharacter = bed.characters.find((character) => character.id === activeCharacterId) ?? null
+  const firstCharacter = useMemo(() => nextCurriculumCharacter(save.cards), [save.cards])
+  const [activeCharacterId, setActiveCharacterId] = useState<string | null>(firstCharacter?.id ?? null)
+  const activeCharacter = activeCharacterId ? characterById.get(activeCharacterId) ?? null : null
   const writerTarget = useRef<HTMLDivElement>(null)
   const promptTextRef = useRef<HTMLElement>(null)
   const writerRef = useRef<HanziWriter | null>(null)
@@ -321,15 +318,9 @@ function BattleScreen({
       strokeCount: character.strokeCount,
     })
     const result = reviewCard(current.cards[character.id], totalMistakes, hintUsedRef.current)
+    const wasNewCharacter = current.cards[character.id] === undefined
     const seen = new Set(current.seenCharacterIds)
     seen.add(character.id)
-    const mastered = new Set(current.masteredBedIds)
-    const unlocked = new Set(current.unlockedBedIds)
-    const bedMastered = bed.characterIds.every((id) => seen.has(id))
-    if (bedMastered) {
-      mastered.add(bed.id)
-      bed.neighbors.forEach((id) => unlocked.add(id))
-    }
     const event: ReviewEvent = {
       id: crypto.randomUUID(),
       characterId: character.id,
@@ -342,17 +333,20 @@ function BattleScreen({
     }
     let nextSave: SaveGame = {
       ...current,
-      unlockedBedIds: [...unlocked],
-      masteredBedIds: [...mastered],
       seenCharacterIds: [...seen],
       cards: { ...current.cards, [character.id]: result.card },
       reviewEvents: [...current.reviewEvents.slice(-499), event],
       playerProgress: progression.player,
       updatedAt: Date.now(),
     }
-    const nextCharacter = bed.characters.find(
-      (candidate) => candidate.id !== character.id && isCardDue(nextSave.cards[candidate.id]),
-    )
+    if (wasNewCharacter) {
+      const gardenProgress = grantClearAction(nextSave)
+      nextSave = {
+        ...nextSave,
+        clearedHexes: [...gardenProgress.clearedHexes],
+        pendingClearActions: gardenProgress.pendingClearActions,
+      }
+    }
     let nextSession = progression.session
     const achievementEvents: AchievementEvent[] = [{
       type: 'kanji.completed',
@@ -371,20 +365,18 @@ function BattleScreen({
       comboBonusXp: bedSummaryRef.current.comboBonusXp + progression.reward.comboBonusXp,
       earnedXp: bedSummaryRef.current.earnedXp + progression.reward.earnedXp,
     }
-    if (!nextCharacter) {
-      const completedBiomes = findCompletedBiomeIds(nextSave.cards)
-      const bedCompletion = completeBed(nextSave.playerProgress, nextSession, completedBiomes)
-      nextSave = { ...nextSave, playerProgress: bedCompletion.player }
-      nextSession = bedCompletion.session
-      achievementEvents.push({
-        type: 'gardenBed.completed',
-        timestamp: event.timestamp,
-        perfect: nextBedSummary.errors === 0,
-        earnedXp: nextBedSummary.earnedXp,
-        biomeId: bed.biomeId,
-        completedBiomeIds: completedBiomes,
-      })
-    }
+    const completedBiomes = findCompletedBiomeIds(nextSave.cards)
+    const bedCompletion = completeBed(nextSave.playerProgress, nextSession, completedBiomes)
+    nextSave = { ...nextSave, playerProgress: bedCompletion.player }
+    nextSession = bedCompletion.session
+    achievementEvents.push({
+      type: 'gardenBed.completed',
+      timestamp: event.timestamp,
+      perfect: nextBedSummary.errors === 0,
+      earnedXp: nextBedSummary.earnedXp,
+      biomeId,
+      completedBiomeIds: completedBiomes,
+    })
     saveRef.current = nextSave
     sessionRef.current = nextSession
     setLastReward(progression.reward)
@@ -394,9 +386,9 @@ function BattleScreen({
     setBedSummary(nextBedSummary)
     onSave(nextSave, nextSession, achievementEvents)
     window.setTimeout(() => {
-      setActiveCharacterId(nextCharacter?.id ?? null)
+      setActiveCharacterId(null)
     }, 1050)
-  }, [bed, onSave])
+  }, [biomeId, onSave])
 
   useEffect(() => {
     if (!writerTarget.current || !activeCharacter) return
@@ -586,9 +578,10 @@ function BattleScreen({
     setCompositionOpen(true)
   }
 
-  const infection = bedInfection(bed, save.cards)
-  const visualCleanliness = battleBedCleanliness(infection)
-  const artwork = battleArtworkForBiome(bed.biomeId)
+  const visualCleanliness = activeCharacter
+    ? Math.min(1, correctStrokes / Math.max(1, activeCharacter.strokeCount))
+    : 1
+  const artwork = battleArtworkForBiome(biomeId)
   const backdropStage = activeCharacter
     ? battleBackdropStage(activeCharacter.strokeCount, correctStrokes)
     : 'clean'
@@ -646,9 +639,9 @@ function BattleScreen({
       ) : (
         <section className="cleared-state">
           <Flower2 />
-          <p className="cleared-eyebrow">Грядка очищена</p>
+          <p className="cleared-eyebrow">Иероглиф завершён</p>
           <h1>Сад снова дышит</h1>
-          <p>Все сорняки на этой грядке уничтожены. Новые повторения появятся здесь по расписанию памяти.</p>
+          <p>Новые знаки изучаются строго по порядку Heisig. Вернитесь в сад, чтобы применить заработанную расчистку там, где захотите.</p>
           {bedSummary.earnedXp > 0 && (
             <div className="xp-summary">
               <span>Правильные штрихи <b>+{bedSummary.correctStrokes} XP</b></span>
@@ -676,7 +669,7 @@ function BattleScreen({
         />
       )}
 
-      <div className="bed-cleanliness" title="Здоровье грядки">
+      <div className="bed-cleanliness" title="Прогресс иероглифа">
         <Leaf size={15} /><span><i style={{ width: `${visualCleanliness * 100}%` }} /></span>
       </div>
 
@@ -757,7 +750,7 @@ export default function App() {
   const [save, setSave] = useState<SaveGame>(initialSave)
   const [loaded, setLoaded] = useState(false)
   const [screen, setScreen] = useState<Screen>('menu')
-  const [activeBed, setActiveBed] = useState<BedDefinition | null>(null)
+  const [activeHexId, setActiveHexId] = useState<string | null>(null)
   const [camera, setCamera] = useState<CameraState>(initialCamera)
   const [session, setSession] = useState<SessionProgress>(initialSessionProgress)
   const [achievementQueue, setAchievementQueue] = useState<string[]>([])
@@ -806,7 +799,7 @@ export default function App() {
 
   const applyLoadedSave = useCallback((loadedSave: SaveGame) => {
     setSave(loadedSave)
-    setActiveBed(null)
+    setActiveHexId(null)
     setScreen('garden')
   }, [])
 
@@ -862,28 +855,24 @@ export default function App() {
     }
   }, [loaded])
 
-  const enterBed = (bed: BedDefinition) => {
-    if (!save.unlockedBedIds.includes(bed.id)) return
-    // The source data contains one one-character list. Its second half is an
-    // intentional empty bed under the required midpoint split, so it is
-    // immediately mastered when reached and cannot block garden progression.
-    if (bed.characterIds.length === 0) {
-      const mastered = new Set(save.masteredBedIds)
-      const unlocked = new Set(save.unlockedBedIds)
-      mastered.add(bed.id)
-      bed.neighbors.forEach((id) => unlocked.add(id))
-      updateSave({
-        ...save,
-        masteredBedIds: [...mastered],
-        unlockedBedIds: [...unlocked],
-        updatedAt: Date.now(),
-      })
-      return
-    }
-    const nextSave = { ...save, lastActiveBedId: bed.id, updatedAt: Date.now() }
+  const enterHex = (hexId: string) => {
+    if (!save.clearedHexes.includes(hexId)) return
+    const nextSave = { ...save, lastActiveHexId: hexId, updatedAt: Date.now() }
     updateSave(nextSave)
-    setActiveBed(bed)
+    setActiveHexId(hexId)
     setScreen('battle')
+  }
+
+  const clearHex = (hexId: string) => {
+    const progress = clearGardenHex(save, hexId)
+    if (progress.clearedHexes === save.clearedHexes) return
+    updateSave({
+      ...save,
+      clearedHexes: [...progress.clearedHexes],
+      pendingClearActions: progress.pendingClearActions,
+      lastActiveHexId: hexId,
+      updatedAt: Date.now(),
+    })
   }
 
   let content
@@ -892,8 +881,12 @@ export default function App() {
     content = <MainMenu onEnter={() => setScreen('garden')} onAbout={() => setScreen('about')} onSupport={() => setScreen('support')} onExit={exitApplication} />
   } else if (screen === 'about' || screen === 'support') {
     content = <MenuInfoScreen kind={screen} onBack={() => setScreen('menu')} />
-  } else if (screen === 'battle' && activeBed) {
-    content = <BattleScreen bed={activeBed} save={save} session={session} onSave={updateProgress} onExit={() => setScreen('garden')} />
+  } else if (screen === 'battle' && activeHexId) {
+    const coordinate = parseHexId(activeHexId)
+    const biomeId = coordinate
+      ? generateGardenCell(save.gardenSeed, coordinate, save.gardenGenerationVersion).biome.id
+      : 'biome-01'
+    content = <BattleScreen biomeId={biomeId} save={save} session={session} onSave={updateProgress} onExit={() => setScreen('garden')} />
   } else if (screen === 'stats') {
     content = <StatisticsScreen save={save} session={session} onBack={() => setScreen('garden')} />
   } else {
@@ -901,7 +894,9 @@ export default function App() {
       save={save}
       camera={camera}
       onCameraChange={setCamera}
-      onEnter={enterBed}
+      onEnter={enterHex}
+      onClear={clearHex}
+      onSave={updateSave}
       onMainMenu={() => setScreen('menu')}
       onStatistics={() => setScreen('stats')}
     />

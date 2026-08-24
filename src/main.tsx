@@ -15,8 +15,17 @@ const isKeywordPromptsPrototype = import.meta.env.DEV && window.location.pathnam
 const isContentEditor = import.meta.env.DEV && window.location.pathname === '/prototype/content-editor'
 const isScreenSpreadPrototype = import.meta.env.DEV && window.location.pathname === '/prototype/screen-spread'
 const isAnimationDebugPage = import.meta.env.DEV && window.location.pathname === '/debug/animations'
+const isPlantContactSheet = import.meta.env.DEV && window.location.pathname === '/debug/plants'
 
-if (isScreenSpreadPrototype) {
+if (isPlantContactSheet) {
+  import('./debug/PlantContactSheet').then(({ PlantContactSheet }) => {
+    root.render(
+      <StrictMode>
+        <PlantContactSheet />
+      </StrictMode>,
+    )
+  })
+} else if (isScreenSpreadPrototype) {
   import('./prototype/ScreenSpreadPrototype').then(({ ScreenSpreadPrototype }) => {
     root.render(
       <StrictMode>
