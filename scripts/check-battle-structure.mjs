@@ -53,6 +53,15 @@ async function enterBattle(page, frame, characterNotes = {}) {
   return startingXp
 }
 
+async function dismissAchievements(page) {
+  for (let i = 0; i < 8; i++) {
+    const popup = page.locator('.achievement-popup-backdrop')
+    if (!await popup.count()) return
+    await page.getByRole('button', { name: /Продолжить/i }).click()
+    await popup.waitFor({ state: 'hidden' }).catch(() => {})
+  }
+}
+
 async function waitForReview(page, characterId) {
   await page.waitForFunction(async (id) => {
     const save = await window.hanziGardenCheats.dumpDb('object')
@@ -92,12 +101,29 @@ try {
   })
   if (savedNote !== 'горизонтальная черта') throw new Error(`note was not persisted: ${savedNote}`)
 
+  await page.locator('.back-button').click()
+  await page.waitForSelector('.map-screen')
+
+  const writingXp = await enterBattle(page, 2)
+  await page.getByRole('button', { name: /Открыть заметку/i }).click()
+  const writeDialog = page.getByRole('dialog', { name: /два/i })
+  await writeDialog.waitFor()
+  await writeDialog.getByLabel('Текст заметки').fill('две черты')
+  await writeDialog.getByRole('button', { name: /Сохранить/i }).click()
   await page.evaluate(async () => {
     await window.hanziGardenCheats.drawCorrectStroke()
+    await window.hanziGardenCheats.drawCorrectStroke()
   })
-  const written = await waitForReview(page, 'rsh-0001')
+  const written = await waitForReview(page, 'rsh-0002')
+  await dismissAchievements(page)
   if (written.review?.totalMistakes !== 0) {
     throw new Error(`writing a new note counted as ${written.review?.totalMistakes} errors`)
+  }
+  if (written.save.playerProgress.totalXp !== writingXp + 2) {
+    throw new Error(`writing a new note changed XP: ${writingXp} -> ${written.save.playerProgress.totalXp}`)
+  }
+  if (written.save.characterNotes['rsh-0002'] !== 'две черты') {
+    throw new Error('note was lost after completing the character')
   }
 
   await page.locator('.back-button').click()
@@ -136,6 +162,7 @@ try {
     await window.hanziGardenCheats.drawCorrectStroke()
   })
   const composed = await waitForReview(page, 'rsh-0002')
+  await dismissAchievements(page)
   if (composed.review?.totalMistakes !== 1) throw new Error(`composition click counted as ${composed.review?.totalMistakes} errors instead of 1`)
   if (composed.review.hintUsed) throw new Error('composition click was recorded as a stroke-order hint')
   if (composed.save.playerProgress.totalXp !== startingXp + 1) {
@@ -155,6 +182,7 @@ try {
     await window.hanziGardenCheats.drawCorrectStroke()
   })
   const viewed = await waitForReview(page, 'rsh-0002')
+  await dismissAchievements(page)
   if (viewed.review?.totalMistakes !== 1) throw new Error(`viewing a note counted as ${viewed.review?.totalMistakes} errors instead of 1`)
   if (viewed.review.hintUsed) throw new Error('viewing a note was recorded as a stroke-order hint')
   if (viewed.save.playerProgress.totalXp !== noteXp + 1) {

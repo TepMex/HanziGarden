@@ -802,7 +802,7 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
   min-height: 168px;
   margin: 0 0 18px;
   padding: 12px 14px;
-  resize: vertical;
+  resize: none;
   color: inherit;
   font: inherit;
   line-height: 1.35;
