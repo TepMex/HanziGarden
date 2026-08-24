@@ -8,13 +8,20 @@ import {
   type AchievementPersistence,
   type AchievementEvent,
 } from './achievements'
+import { CURRENT_GARDEN_GENERATION_VERSION } from './garden/gardenGenerator'
+import { CENTER_HEX_ID, createGardenSeed } from './garden/gardenState'
 
 export type SaveGame = {
   id: 'main'
-  version: 6
+  version: 7
   unlockedBedIds: string[]
   masteredBedIds: string[]
   lastActiveBedId: string | null
+  gardenSeed: string
+  gardenGenerationVersion: 1
+  clearedHexes: string[]
+  pendingClearActions: number
+  lastActiveHexId: string | null
   seenCharacterIds: string[]
   cards: Record<string, CardState>
   reviewEvents: ReviewEvent[]
@@ -23,7 +30,11 @@ export type SaveGame = {
   updatedAt: number
 }
 
-export type SaveGameV5 = Omit<SaveGame, 'version' | 'achievements'> & { version: 5 }
+export type SaveGameV6 = Omit<
+  SaveGame,
+  'version' | 'gardenSeed' | 'gardenGenerationVersion' | 'clearedHexes' | 'pendingClearActions' | 'lastActiveHexId'
+> & { version: 6 }
+export type SaveGameV5 = Omit<SaveGameV6, 'version' | 'achievements'> & { version: 5 }
 export type SaveGameV4 = Omit<SaveGameV5, 'version' | 'playerProgress'> & { version: 4 }
 
 export type SaveGameV3 = {
@@ -53,7 +64,7 @@ export type SaveGameV1 = {
   updatedAt: number
 }
 
-type StoredSave = SaveGame | SaveGameV5 | SaveGameV4 | SaveGameV3 | SaveGameV2 | SaveGameV1
+type StoredSave = SaveGame | SaveGameV6 | SaveGameV5 | SaveGameV4 | SaveGameV3 | SaveGameV2 | SaveGameV1
 
 function migrateLegacyFieldIds(fieldIds: readonly string[]): string[] {
   return [...new Set(fieldIds.flatMap((fieldId) => bedIdsByLegacyFieldId.get(fieldId) ?? []))]
@@ -181,7 +192,24 @@ export function migrateV5Save(save: SaveGameV5): SaveGame {
   achievements = processAchievementEvents(achievements, save.playerProgress, replaySession, [{
     type: 'player.migrated', timestamp: save.updatedAt,
   }]).state
-  return { ...save, version: 6, achievements }
+  return migrateV6Save({ ...save, version: 6, achievements })
+}
+
+/**
+ * The old rectangular geography has no truthful coordinate mapping. Preserve
+ * every learning/SRS field and convert completed learning into unspent choices
+ * instead of inventing a route through the new garden.
+ */
+export function migrateV6Save(save: SaveGameV6, gardenSeed = createGardenSeed()): SaveGame {
+  return {
+    ...save,
+    version: 7,
+    gardenSeed,
+    gardenGenerationVersion: CURRENT_GARDEN_GENERATION_VERSION,
+    clearedHexes: [CENTER_HEX_ID],
+    pendingClearActions: Math.min(216, new Set(save.seenCharacterIds).size),
+    lastActiveHexId: CENTER_HEX_ID,
+  }
 }
 
 function migrateStoredSave(save: StoredSave): SaveGame {
@@ -190,6 +218,7 @@ function migrateStoredSave(save: StoredSave): SaveGame {
   if (isV3Save(save)) return migrateV4Save(migrateV3Save(save))
   if (isV4Save(save)) return migrateV4Save(save)
   if (save.version === 5) return migrateV5Save(save)
+  if (save.version === 6) return migrateV6Save(save)
   return save
 }
 
@@ -246,26 +275,45 @@ database.version(6).stores({ saves: 'id, version, updatedAt' }).upgrade((transac
     Object.assign(stored, migrateV5Save(stored))
   })
 })
+database.version(7).stores({ saves: 'id, version, updatedAt' }).upgrade((transaction) => {
+  return transaction.table('saves').toCollection().modify((stored: StoredSave) => {
+    if (stored.version !== 6) return
+    Object.assign(stored, migrateV6Save(stored))
+  })
+})
 
-export const initialSave: SaveGame = {
-  id: 'main',
-  version: 6,
-  unlockedBedIds: ['bed-001'],
-  masteredBedIds: [],
-  lastActiveBedId: null,
-  seenCharacterIds: [],
-  cards: {},
-  reviewEvents: [],
-  playerProgress: structuredClone(initialPlayerProgress),
-  achievements: structuredClone(initialAchievementPersistence),
-  updatedAt: Date.now(),
+export function createInitialSave(): SaveGame {
+  return {
+    id: 'main',
+    version: 7,
+    unlockedBedIds: ['bed-001'],
+    masteredBedIds: [],
+    lastActiveBedId: null,
+    gardenSeed: createGardenSeed(),
+    gardenGenerationVersion: CURRENT_GARDEN_GENERATION_VERSION,
+    clearedHexes: [CENTER_HEX_ID],
+    pendingClearActions: 0,
+    lastActiveHexId: CENTER_HEX_ID,
+    seenCharacterIds: [],
+    cards: {},
+    reviewEvents: [],
+    playerProgress: structuredClone(initialPlayerProgress),
+    achievements: structuredClone(initialAchievementPersistence),
+    updatedAt: Date.now(),
+  }
 }
+
+export const initialSave: SaveGame = createInitialSave()
 
 export async function loadSave(): Promise<SaveGame> {
   await pendingSaveOperation
   const stored = await database.saves.get('main')
-  if (!stored) return structuredClone(initialSave)
-  if (stored.version === 6) return stored
+  if (!stored) {
+    const created = createInitialSave()
+    await database.saves.put(created)
+    return created
+  }
+  if (stored.version === 7) return stored
   const migrated = migrateStoredSave(stored)
   await database.saves.put(migrated)
   return migrated
@@ -287,8 +335,9 @@ export async function restoreSave(save: SaveGame): Promise<void> {
 }
 
 export async function resetSave(): Promise<SaveGame> {
+  const created = createInitialSave()
   await enqueueSaveOperation(async () => {
-    await database.saves.delete('main')
+    await database.saves.put(created)
   })
-  return structuredClone(initialSave)
+  return structuredClone(created)
 }

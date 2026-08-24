@@ -1,6 +1,8 @@
 import type HanziWriter from 'hanzi-writer'
 import { loadSave, restoreSave, type SaveGame } from './db'
 import type { CardState, ReviewEvent } from './learning'
+import { GARDEN_HEXES, hexId } from './garden/hexGrid'
+import { CENTER_HEX_ID, clearGardenHex, createGardenSeed } from './garden/gardenState'
 
 export type SaveDumpFormat = 'json' | 'object'
 
@@ -11,6 +13,11 @@ export type HanziGardenCheats = {
   dumpDb(format: 'json'): Promise<string>
   dumpDb(format: 'object'): Promise<SaveGame>
   loadDb(dump: string | SaveGame): Promise<void>
+  clearHex(id: string): Promise<void>
+  grantClearActions(count?: number): Promise<void>
+  setGardenSeed(seed: string): Promise<void>
+  revealEntireGarden(): Promise<void>
+  newRandomGardenSeed(): Promise<string>
 }
 
 export type BattleCheatDriver = {
@@ -135,10 +142,13 @@ export function parseSaveDump(dump: string | SaveGame): SaveGame {
 
   const save = recordAt(value, 'save')
   if (save.id !== 'main') return dumpError('save.id', 'строкой "main"')
-  if (save.version !== 6) return dumpError('save.version', 'числом 6')
+  if (save.version !== 7) return dumpError('save.version', 'числом 7')
   const lastActiveBedId = save.lastActiveBedId === null
     ? null
     : stringAt(save.lastActiveBedId, 'save.lastActiveBedId')
+  const lastActiveHexId = save.lastActiveHexId === null
+    ? null
+    : stringAt(save.lastActiveHexId, 'save.lastActiveHexId')
   const rawCards = recordAt(save.cards, 'save.cards')
   const cards = Object.fromEntries(
     Object.entries(rawCards).map(([id, card]) => [id, cardAt(card, `save.cards.${id}`)]),
@@ -151,10 +161,17 @@ export function parseSaveDump(dump: string | SaveGame): SaveGame {
 
   return {
     id: 'main',
-    version: 6,
+    version: 7,
     unlockedBedIds: stringArrayAt(save.unlockedBedIds, 'save.unlockedBedIds'),
     masteredBedIds: stringArrayAt(save.masteredBedIds, 'save.masteredBedIds'),
     lastActiveBedId,
+    gardenSeed: stringAt(save.gardenSeed, 'save.gardenSeed'),
+    gardenGenerationVersion: integerAt(save.gardenGenerationVersion, 'save.gardenGenerationVersion') === 1
+      ? 1
+      : dumpError('save.gardenGenerationVersion', 'числом 1'),
+    clearedHexes: stringArrayAt(save.clearedHexes, 'save.clearedHexes'),
+    pendingClearActions: integerAt(save.pendingClearActions, 'save.pendingClearActions'),
+    lastActiveHexId,
     seenCharacterIds: stringArrayAt(save.seenCharacterIds, 'save.seenCharacterIds'),
     cards,
     reviewEvents: save.reviewEvents.map((event, index) => reviewEventAt(event, `save.reviewEvents[${index}]`)),
@@ -215,6 +232,12 @@ async function dumpDatabase(format: SaveDumpFormat = 'json'): Promise<string | S
 }
 
 export function installGameCheats(saveDriver: SaveCheatDriver): () => void {
+  const replaceSave = async (transform: (save: SaveGame) => SaveGame): Promise<SaveGame> => {
+    const next = transform(await loadSave())
+    await restoreSave(next)
+    saveDriver.applyLoadedSave(structuredClone(next))
+    return next
+  }
   const api: HanziGardenCheats = {
     drawCorrectStroke: () => requireBattleDriver().drawCorrectStroke(),
     drawWrongStroke: () => requireBattleDriver().drawWrongStroke(),
@@ -223,6 +246,56 @@ export function installGameCheats(saveDriver: SaveCheatDriver): () => void {
       const save = parseSaveDump(dump)
       await restoreSave(save)
       saveDriver.applyLoadedSave(structuredClone(save))
+    },
+    async clearHex(id: string): Promise<void> {
+      await replaceSave((save) => {
+        const progress = clearGardenHex({
+          clearedHexes: save.clearedHexes,
+          pendingClearActions: save.pendingClearActions,
+        }, id)
+        if (progress.clearedHexes === save.clearedHexes) {
+          throw new Error(`Hex ${id} is not available or no clearing action is pending`)
+        }
+        return {
+          ...save,
+          clearedHexes: [...progress.clearedHexes],
+          pendingClearActions: progress.pendingClearActions,
+          lastActiveHexId: id,
+          updatedAt: Date.now(),
+        }
+      })
+    },
+    async grantClearActions(count = 1): Promise<void> {
+      if (!Number.isInteger(count) || count < 0) throw new Error('Clearing action count must be a non-negative integer')
+      await replaceSave((save) => ({
+        ...save,
+        pendingClearActions: Math.min(216 - save.clearedHexes.length + 1, save.pendingClearActions + count),
+        updatedAt: Date.now(),
+      }))
+    },
+    async setGardenSeed(seed: string): Promise<void> {
+      if (!seed.trim()) throw new Error('Garden seed must not be empty')
+      await replaceSave((save) => ({
+        ...save,
+        gardenSeed: seed,
+        clearedHexes: [CENTER_HEX_ID],
+        pendingClearActions: 0,
+        lastActiveHexId: CENTER_HEX_ID,
+        updatedAt: Date.now(),
+      }))
+    },
+    async revealEntireGarden(): Promise<void> {
+      await replaceSave((save) => ({
+        ...save,
+        clearedHexes: GARDEN_HEXES.map(hexId),
+        pendingClearActions: 0,
+        updatedAt: Date.now(),
+      }))
+    },
+    async newRandomGardenSeed(): Promise<string> {
+      const seed = createGardenSeed()
+      await api.setGardenSeed(seed)
+      return seed
     },
   }
   window.hanziGardenCheats = api
