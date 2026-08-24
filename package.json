@@ -14,6 +14,7 @@
     "test:battle-input": "bun scripts/check-battle-input.mjs",
     "test:game-cheats": "bun scripts/check-game-cheats.mjs",
     "test:battle-structure": "bun scripts/check-battle-structure.mjs",
+    "test:hex-garden": "bun scripts/check-hex-garden.mjs",
     "test:map-load": "bun scripts/check-map-load.mjs",
     "test:map-mask": "bun scripts/check-garden-mask-alignment.mjs",
     "test:keyword-layout": "bun scripts/check-keyword-layout.mjs",
