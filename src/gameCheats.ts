@@ -122,6 +122,13 @@ function reviewEventAt(value: unknown, path: string): ReviewEvent {
   }
 }
 
+function stringRecordAt(value: unknown, path: string): Record<string, string> {
+  const record = recordAt(value, path)
+  return Object.fromEntries(
+    Object.entries(record).map(([id, text]) => [id, stringAt(text, `${path}.${id}`)]),
+  )
+}
+
 /** Parse a current save while deliberately leaving cross-property/domain consistency unchecked. */
 export function parseSaveDump(dump: string | SaveGame): SaveGame {
   let value: unknown = dump
@@ -135,7 +142,7 @@ export function parseSaveDump(dump: string | SaveGame): SaveGame {
 
   const save = recordAt(value, 'save')
   if (save.id !== 'main') return dumpError('save.id', 'строкой "main"')
-  if (save.version !== 6) return dumpError('save.version', 'числом 6')
+  if (save.version !== 7) return dumpError('save.version', 'числом 7')
   const lastActiveBedId = save.lastActiveBedId === null
     ? null
     : stringAt(save.lastActiveBedId, 'save.lastActiveBedId')
@@ -151,7 +158,7 @@ export function parseSaveDump(dump: string | SaveGame): SaveGame {
 
   return {
     id: 'main',
-    version: 6,
+    version: 7,
     unlockedBedIds: stringArrayAt(save.unlockedBedIds, 'save.unlockedBedIds'),
     masteredBedIds: stringArrayAt(save.masteredBedIds, 'save.masteredBedIds'),
     lastActiveBedId,
@@ -184,6 +191,7 @@ export function parseSaveDump(dump: string | SaveGame): SaveGame {
         count: integerAt(perfectBedsToday.count, 'save.achievements.perfectBedsToday.count'),
       },
     },
+    characterNotes: stringRecordAt(save.characterNotes, 'save.characterNotes'),
     updatedAt: numberAt(save.updatedAt, 'save.updatedAt'),
   }
 }

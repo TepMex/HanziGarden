@@ -172,8 +172,11 @@
 .screen-frame.is-phone .seal { width: 58px; height: 58px; margin: -58px auto 16px; font-size: 1.7rem; }
 .screen-frame.is-phone .prompt-scroll { top: 10px; width: min(68%, calc(100% - 96px)); min-height: 72px; padding: 10px 16px; }
 .screen-frame.is-phone .back-button { top: 15px; left: 14px; width: 45px; height: 45px; }
-.screen-frame.is-phone .composition-button { top: 15px; right: 14px; width: 45px; min-height: 45px; padding: 0; justify-content: center; border-radius: 50%; }
-.screen-frame.is-phone .composition-button span { display: none; }
+.screen-frame.is-phone .battle-assist-buttons { top: 15px; right: 14px; }
+.screen-frame.is-phone .composition-button,
+.screen-frame.is-phone .note-button { width: 45px; min-height: 45px; padding: 0; justify-content: center; border-radius: 50%; }
+.screen-frame.is-phone .composition-button span,
+.screen-frame.is-phone .note-button span { display: none; }
 .screen-frame.is-phone .writing-circle { top: 46%; width: min(calc(100% - 32px), 58%); }
 .screen-frame.is-phone .battle-screen.has-primitive .writing-circle { top: 49%; }
 .screen-frame.is-phone .hint-button {
