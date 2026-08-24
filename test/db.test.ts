@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import { migrateV1Save, migrateV2Save, migrateV3Save, migrateV4Save, type SaveGameV1, type SaveGameV2, type SaveGameV3, type SaveGameV4 } from '../src/db'
+import { migrateV1Save, migrateV2Save, migrateV3Save, migrateV4Save, migrateV6Save, type SaveGameV1, type SaveGameV2, type SaveGameV3, type SaveGameV4, type SaveGameV6 } from '../src/db'
 import type { CardState } from '../src/learning'
 
 describe('v1 save migration', () => {
@@ -73,9 +73,34 @@ describe('v4 progression migration', () => {
       ], updatedAt: 42,
     }
     const migrated = migrateV4Save(v4)
-    expect(migrated.version).toBe(6)
+    expect(migrated.version).toBe(7)
+    expect(migrated.completedWalkthroughIds).toEqual([])
     expect(migrated.playerProgress.lifetimeCompletedKanji).toBe(1)
     expect(migrated.playerProgress.lifetimeErrors).toBe(1)
     expect(migrated.playerProgress.totalXp).toBeGreaterThanOrEqual(1)
+  })
+})
+
+describe('v6 walkthrough migration', () => {
+  test('adds an empty completed-walkthrough list without touching learning progress', () => {
+    const v6: SaveGameV6 = {
+      id: 'main',
+      version: 6,
+      unlockedBedIds: ['bed-001'],
+      masteredBedIds: [],
+      lastActiveBedId: 'bed-001',
+      seenCharacterIds: ['rsh-0001'],
+      cards: {},
+      reviewEvents: [],
+      playerProgress: { totalXp: 3, lifetimeCorrectStrokes: 2, lifetimeErrors: 0, lifetimeCompletedKanji: 1, lifetimeCompletedBeds: 0, bestComboEver: 1, perfectComplexKanjiCount: 0, completedBiomeIds: [] },
+      achievements: { unlockedAchievements: [], currentDailyStreak: 0, bestDailyStreak: 0, perfectBedsToday: { count: 0 } },
+      updatedAt: 42,
+    }
+    expect(migrateV6Save(v6)).toMatchObject({
+      version: 7,
+      seenCharacterIds: ['rsh-0001'],
+      completedWalkthroughIds: [],
+      playerProgress: v6.playerProgress,
+    })
   })
 })

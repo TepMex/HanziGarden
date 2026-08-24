@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import HanziWriter from 'hanzi-writer'
 import { ArrowLeft, BarChart3, BookOpen, Flower2, Grid3X3, HandHeart, HelpCircle, Layers, Leaf, LogOut, Plus, Sparkles, Trophy, X } from 'lucide-react'
+import { WalkthroughDialog } from './walkthrough/WalkthroughDialog'
+import { nextEligibleWalkthrough, withCompletedWalkthroughId } from './walkthrough'
 import { type BedDefinition, type CharacterDefinition } from './data/model'
 import { battleArtworkForBiome, battleBackdropStage } from './data/battleBiomeArt'
 import { initialSave, loadSave, persistSave, type SaveGame } from './db'
@@ -166,12 +168,14 @@ function BattleScreen({
   save,
   session,
   onSave,
+  onUpdateSave,
   onExit,
 }: {
   bed: BedDefinition
   save: SaveGame
   session: SessionProgress
   onSave: (save: SaveGame, session: SessionProgress, events: AchievementEvent[]) => void
+  onUpdateSave: (save: SaveGame) => void
   onExit: () => void
 }) {
   const dueCharacters = useMemo(
@@ -205,6 +209,27 @@ function BattleScreen({
   const [bedSummary, setBedSummary] = useState({ correctStrokes: 0, errors: 0, comboBonusXp: 0, earnedXp: 0 })
   const bedSummaryRef = useRef(bedSummary)
   const [summaryReady, setSummaryReady] = useState(false)
+  const blockingWalkthrough = activeCharacter
+    ? nextEligibleWalkthrough(activeCharacter.hanzi, {
+      surface: 'battle',
+      isFirstEncounter: isFirstEncounter(save.cards[activeCharacter.id]),
+      completedWalkthroughIds: save.completedWalkthroughIds,
+    })
+    : undefined
+
+  const completeWalkthrough = useCallback(() => {
+    if (!blockingWalkthrough) return
+    const nextSave: SaveGame = {
+      ...saveRef.current,
+      completedWalkthroughIds: withCompletedWalkthroughId(
+        saveRef.current.completedWalkthroughIds,
+        blockingWalkthrough.id,
+      ),
+      updatedAt: Date.now(),
+    }
+    saveRef.current = nextSave
+    onUpdateSave(nextSave)
+  }, [blockingWalkthrough, onUpdateSave])
 
   const settleCheatStroke = useCallback((outcome: 'correct' | 'wrong') => {
     const pending = pendingCheatStrokeRef.current
@@ -399,7 +424,7 @@ function BattleScreen({
   }, [bed, onSave])
 
   useEffect(() => {
-    if (!writerTarget.current || !activeCharacter) return
+    if (!writerTarget.current || !activeCharacter || blockingWalkthrough) return
     const initialInk = writingInkForBackdrop('fullDirty')
     mistakesRef.current = 0
     assistanceMistakesRef.current = 0
@@ -565,10 +590,10 @@ function BattleScreen({
       if (writerTarget.current) delete writerTarget.current.dataset.traceOutline
       writerRef.current = null
     }
-  }, [activeCharacter, finishCharacter, rejectPendingCheatStroke, settleCheatStroke])
+  }, [activeCharacter, blockingWalkthrough, finishCharacter, rejectPendingCheatStroke, settleCheatStroke])
 
   const useHint = () => {
-    if (!activeCharacter || !writerRef.current) return
+    if (!activeCharacter || !writerRef.current || blockingWalkthrough) return
     hintUsedRef.current = true
     assistanceMistakesRef.current += 1
     mistakesRef.current += 1
@@ -580,7 +605,7 @@ function BattleScreen({
   }
 
   const showComposition = () => {
-    if (!activeCharacter) return
+    if (!activeCharacter || blockingWalkthrough) return
     assistanceMistakesRef.current += 1
     mistakesRef.current += 1
     setCompositionOpen(true)
@@ -605,6 +630,7 @@ function BattleScreen({
 
   return (
     <main className={`battle-screen ${activeCharacter?.structure.primitive ? 'has-primitive' : ''}`}>
+      <div className="battle-playfield" {...(blockingWalkthrough ? { inert: true } : {})}>
       <div
         className="battle-backdrop"
         style={{ backgroundImage: `url(${JSON.stringify(backdropUrl)})` }}
@@ -698,6 +724,11 @@ function BattleScreen({
             </ol>
           </section>
         </div>
+      )}
+      </div>
+
+      {blockingWalkthrough && (
+        <WalkthroughDialog walkthrough={blockingWalkthrough} onContinue={completeWalkthrough} />
       )}
     </main>
   )
@@ -893,7 +924,7 @@ export default function App() {
   } else if (screen === 'about' || screen === 'support') {
     content = <MenuInfoScreen kind={screen} onBack={() => setScreen('menu')} />
   } else if (screen === 'battle' && activeBed) {
-    content = <BattleScreen bed={activeBed} save={save} session={session} onSave={updateProgress} onExit={() => setScreen('garden')} />
+    content = <BattleScreen bed={activeBed} save={save} session={session} onSave={updateProgress} onUpdateSave={updateSave} onExit={() => setScreen('garden')} />
   } else if (screen === 'stats') {
     content = <StatisticsScreen save={save} session={session} onBack={() => setScreen('garden')} />
   } else {

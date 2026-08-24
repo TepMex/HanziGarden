@@ -11,11 +11,12 @@ import {
 
 export type SaveGame = {
   id: 'main'
-  version: 6
+  version: 7
   unlockedBedIds: string[]
   masteredBedIds: string[]
   lastActiveBedId: string | null
   seenCharacterIds: string[]
+  completedWalkthroughIds: string[]
   cards: Record<string, CardState>
   reviewEvents: ReviewEvent[]
   playerProgress: PlayerProgress
@@ -23,7 +24,8 @@ export type SaveGame = {
   updatedAt: number
 }
 
-export type SaveGameV5 = Omit<SaveGame, 'version' | 'achievements'> & { version: 5 }
+export type SaveGameV6 = Omit<SaveGame, 'version' | 'completedWalkthroughIds'> & { version: 6 }
+export type SaveGameV5 = Omit<SaveGameV6, 'version' | 'achievements'> & { version: 5 }
 export type SaveGameV4 = Omit<SaveGameV5, 'version' | 'playerProgress'> & { version: 4 }
 
 export type SaveGameV3 = {
@@ -53,7 +55,7 @@ export type SaveGameV1 = {
   updatedAt: number
 }
 
-type StoredSave = SaveGame | SaveGameV5 | SaveGameV4 | SaveGameV3 | SaveGameV2 | SaveGameV1
+type StoredSave = SaveGame | SaveGameV6 | SaveGameV5 | SaveGameV4 | SaveGameV3 | SaveGameV2 | SaveGameV1
 
 function migrateLegacyFieldIds(fieldIds: readonly string[]): string[] {
   return [...new Set(fieldIds.flatMap((fieldId) => bedIdsByLegacyFieldId.get(fieldId) ?? []))]
@@ -149,10 +151,10 @@ export function migrateV4Save(save: SaveGameV4): SaveGame {
   player.completedBiomeIds = biomes
     .filter((biome) => beds.filter((bed) => bed.biomeId === biome.id).every((bed) => mastered.has(bed.id)))
     .map((biome) => biome.id)
-  return migrateV5Save({ ...save, version: 5, playerProgress: player })
+  return migrateV6Save(migrateV5Save({ ...save, version: 5, playerProgress: player }))
 }
 
-export function migrateV5Save(save: SaveGameV5): SaveGame {
+export function migrateV5Save(save: SaveGameV5): SaveGameV6 {
   let achievements = structuredClone(initialAchievementPersistence)
   let replayPlayer = structuredClone(initialPlayerProgress)
   let replaySession = structuredClone(initialSessionProgress)
@@ -184,12 +186,21 @@ export function migrateV5Save(save: SaveGameV5): SaveGame {
   return { ...save, version: 6, achievements }
 }
 
+export function migrateV6Save(save: SaveGameV6): SaveGame {
+  return { ...save, version: 7, completedWalkthroughIds: [] }
+}
+
+function isV6Save(save: StoredSave): save is SaveGameV6 {
+  return save.version === 6
+}
+
 function migrateStoredSave(save: StoredSave): SaveGame {
   if (isV1Save(save)) return migrateV4Save(migrateV1Save(save))
   if (isV2Save(save)) return migrateV4Save(migrateV2Save(save))
   if (isV3Save(save)) return migrateV4Save(migrateV3Save(save))
   if (isV4Save(save)) return migrateV4Save(save)
-  if (save.version === 5) return migrateV5Save(save)
+  if (save.version === 5) return migrateV6Save(migrateV5Save(save))
+  if (isV6Save(save)) return migrateV6Save(save)
   return save
 }
 
@@ -243,17 +254,24 @@ database.version(5).stores({ saves: 'id, version, updatedAt' }).upgrade((transac
 database.version(6).stores({ saves: 'id, version, updatedAt' }).upgrade((transaction) => {
   return transaction.table('saves').toCollection().modify((stored: StoredSave) => {
     if (stored.version !== 5) return
-    Object.assign(stored, migrateV5Save(stored))
+    Object.assign(stored, migrateV5Save(stored as SaveGameV5))
+  })
+})
+database.version(7).stores({ saves: 'id, version, updatedAt' }).upgrade((transaction) => {
+  return transaction.table('saves').toCollection().modify((stored: StoredSave) => {
+    if (!isV6Save(stored)) return
+    Object.assign(stored, migrateV6Save(stored))
   })
 })
 
 export const initialSave: SaveGame = {
   id: 'main',
-  version: 6,
+  version: 7,
   unlockedBedIds: ['bed-001'],
   masteredBedIds: [],
   lastActiveBedId: null,
   seenCharacterIds: [],
+  completedWalkthroughIds: [],
   cards: {},
   reviewEvents: [],
   playerProgress: structuredClone(initialPlayerProgress),
@@ -265,7 +283,7 @@ export async function loadSave(): Promise<SaveGame> {
   await pendingSaveOperation
   const stored = await database.saves.get('main')
   if (!stored) return structuredClone(initialSave)
-  if (stored.version === 6) return stored
+  if (stored.version === 7) return stored
   const migrated = migrateStoredSave(stored)
   await database.saves.put(migrated)
   return migrated

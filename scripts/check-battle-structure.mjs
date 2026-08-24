@@ -49,6 +49,10 @@ async function enterBattle(page, frame) {
   await page.waitForSelector('.garden-map-content.is-ready')
   await page.locator('[data-bed-id="bed-001"]').click({ force: true })
   await page.waitForSelector('.battle-screen .writing-circle')
+  if (frame === 2) {
+    await page.getByRole('button', { name: 'Понятно' }).click()
+    await page.waitForSelector('.battle-screen .writing-circle svg')
+  }
   return startingXp
 }
 

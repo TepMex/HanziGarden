@@ -192,6 +192,8 @@
 .screen-frame.is-phone .xp-summary .player-level small { font-size: .68rem; }
 .screen-frame.is-phone .composition-backdrop { padding: 18px; }
 .screen-frame.is-phone .composition-dialog { max-height: calc(100% - 36px); padding: 31px 27px 27px; }
+.screen-frame.is-phone .walkthrough-dialog { max-height: calc(100% - 24px); padding: 22px 20px 18px; }
+.screen-frame.is-phone .walkthrough-demo { width: min(210px, 58%); }
 .screen-frame.is-phone .statistics-header { padding: 0 16px; }
 .screen-frame.is-phone .statistics-content { width: calc(100% - 24px); padding: 28px 0 48px; }
 .screen-frame.is-phone .achievement-grid { grid-template-columns: 1fr; }

@@ -4,6 +4,8 @@
 import { useCallback, useEffect, useMemo, useState, type CSSProperties, type ReactNode } from 'react'
 import { ArrowLeft, BarChart3, BookOpen, ChevronLeft, ChevronRight, Flower2, Grid3X3, HandHeart, HelpCircle, Layers, Leaf, LogOut, Plus, RotateCcw, Sparkles, Trophy, X } from 'lucide-react'
 import { AchievementCollection, AchievementPopup } from '../achievements/AchievementUi'
+import { hanziWalkthroughs } from '../walkthrough'
+import { WalkthroughDialog } from '../walkthrough/WalkthroughDialog'
 import { assetUrl } from '../assetUrl'
 import { battleArtworkForBiome } from '../data/battleBiomeArt'
 import { biomes } from '../data/mapLayout'
@@ -63,6 +65,7 @@ const screenCatalog = [
   { id: 'garden', title: 'Карта сада', group: 'Сад', classes: '.map-screen .map-header .player-level .map-stats-button', tokens: 'night, chrome, gold, jade' },
   { id: 'battle', title: 'Бой', group: 'Письмо', classes: '.battle-screen .prompt-scroll .writing-circle .hint-button', tokens: 'paper, ink, chrome, gold' },
   { id: 'composition', title: 'Состав', group: 'Письмо', classes: '.composition-dialog .composition-list', tokens: 'paper, ink, gold, jade' },
+  { id: 'walkthrough', title: 'Правило черт', group: 'Письмо', classes: '.walkthrough-dialog .walkthrough-demo .primary-button', tokens: 'paper, ink, gold, jade' },
   { id: 'cleared', title: 'Грядка очищена', group: 'Письмо', classes: '.cleared-state .xp-summary .primary-button', tokens: 'paper, ink, jade, gold' },
   { id: 'stats', title: 'Стена иероглифов', group: 'Летопись', classes: '.statistics-screen .character-wall .character-tile', tokens: 'night, chrome, gold, paper' },
   { id: 'achievements', title: 'Коллекция достижений', group: 'Летопись', classes: '.achievement-collection .achievement-card', tokens: 'night, chrome, paper, gold' },
@@ -372,6 +375,25 @@ function StatsAchievementsMock() {
   )
 }
 
+function BattleWalkthroughMock({ backdrop }: { backdrop: string }) {
+  const walkthrough = hanziWalkthroughs['二']![0]!
+  return (
+    <BattleShell backdrop={backdrop}>
+      <header className="prompt-scroll">
+        <strong>ДВА</strong>
+      </header>
+      <div className="writing-circle">
+        <div className="writing-target" aria-hidden="true"><span>二</span></div>
+      </div>
+      <WalkthroughDialog
+        walkthrough={walkthrough}
+        demo={<div className="walkthrough-demo"><span className="walkthrough-demo-glyph">二</span></div>}
+        onContinue={noop}
+      />
+    </BattleShell>
+  )
+}
+
 function AchievementPopupMock({ backdrop, keyword, hanzi }: { backdrop: string; keyword: string; hanzi: string }) {
   return (
     <BattleShell backdrop={backdrop}>
@@ -417,6 +439,7 @@ function tokenCss(tokens: Tokens): string {
 .screen-spread-prototype .prompt-scroll,
 .screen-spread-prototype .cleared-state,
 .screen-spread-prototype .composition-dialog,
+.screen-spread-prototype .walkthrough-dialog,
 .screen-spread-prototype .achievement-popup,
 .screen-spread-prototype .character-detail {
   color: var(--spread-ink);
@@ -440,6 +463,7 @@ function tokenCss(tokens: Tokens): string {
 }
 
 .screen-spread-prototype .composition-dialog,
+.screen-spread-prototype .walkthrough-dialog,
 .screen-spread-prototype .achievement-popup {
   background: linear-gradient(145deg, var(--spread-paper-light), var(--spread-paper-deep));
   border-color: var(--spread-gold);
@@ -655,6 +679,7 @@ export function ScreenSpreadPrototype() {
     garden: <GardenMock />,
     battle: <BattleWritingMock backdrop={backdrop} keyword={sample.keyword.ru} primitive={sample.structure.primitive} hanzi={sample.hanzi} toast />,
     composition: <BattleCompositionMock backdrop={backdrop} keyword={sample.keyword.ru} primitive={sample.structure.primitive} hanzi={sample.hanzi} components={sample.structure.components} />,
+    walkthrough: <BattleWalkthroughMock backdrop={backdrop} />,
     cleared: <BattleClearedMock backdrop={cleanBackdrop} />,
     stats: <StatsMemoryMock />,
     achievements: <StatsAchievementsMock />,
