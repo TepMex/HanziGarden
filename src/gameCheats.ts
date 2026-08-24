@@ -1,5 +1,5 @@
 import type HanziWriter from 'hanzi-writer'
-import { loadSave, restoreSave, type SaveGame } from './db'
+import { loadSave, migrateV6Save, restoreSave, type SaveGame } from './db'
 import type { CardState, ReviewEvent } from './learning'
 
 export type SaveDumpFormat = 'json' | 'object'
@@ -122,7 +122,23 @@ function reviewEventAt(value: unknown, path: string): ReviewEvent {
   }
 }
 
-/** Parse a current save while deliberately leaving cross-property/domain consistency unchecked. */
+function restoreGardenProgress(save: Omit<SaveGame, 'version' | 'gardenSeed' | 'gardenGenerationVersion' | 'clearedHexes' | 'pendingClearActions'> & {
+  version: 6 | 7
+  gardenSeed?: unknown
+  gardenGenerationVersion?: unknown
+  clearedHexes?: unknown
+  pendingClearActions?: unknown
+}): SaveGame {
+  if (save.version === 6) return migrateV6Save({ ...save, version: 6 })
+  return {
+    ...save,
+    version: 7,
+    gardenSeed: stringAt(save.gardenSeed, 'save.gardenSeed'),
+    gardenGenerationVersion: integerAt(save.gardenGenerationVersion, 'save.gardenGenerationVersion'),
+    clearedHexes: stringArrayAt(save.clearedHexes, 'save.clearedHexes'),
+    pendingClearActions: integerAt(save.pendingClearActions, 'save.pendingClearActions'),
+  }
+}
 export function parseSaveDump(dump: string | SaveGame): SaveGame {
   let value: unknown = dump
   if (typeof dump === 'string') {
@@ -135,7 +151,8 @@ export function parseSaveDump(dump: string | SaveGame): SaveGame {
 
   const save = recordAt(value, 'save')
   if (save.id !== 'main') return dumpError('save.id', 'строкой "main"')
-  if (save.version !== 6) return dumpError('save.version', 'числом 6')
+  const version = integerAt(save.version, 'save.version')
+  if (version !== 6 && version !== 7) return dumpError('save.version', 'числом 6 или 7')
   const lastActiveBedId = save.lastActiveBedId === null
     ? null
     : stringAt(save.lastActiveBedId, 'save.lastActiveBedId')
@@ -149,9 +166,9 @@ export function parseSaveDump(dump: string | SaveGame): SaveGame {
   if (!Array.isArray(achievements.unlockedAchievements)) return dumpError('save.achievements.unlockedAchievements', 'массивом')
   const perfectBedsToday = recordAt(achievements.perfectBedsToday, 'save.achievements.perfectBedsToday')
 
-  return {
+  return restoreGardenProgress({
     id: 'main',
-    version: 6,
+    version: version === 7 ? 7 : 6,
     unlockedBedIds: stringArrayAt(save.unlockedBedIds, 'save.unlockedBedIds'),
     masteredBedIds: stringArrayAt(save.masteredBedIds, 'save.masteredBedIds'),
     lastActiveBedId,
@@ -185,7 +202,11 @@ export function parseSaveDump(dump: string | SaveGame): SaveGame {
       },
     },
     updatedAt: numberAt(save.updatedAt, 'save.updatedAt'),
-  }
+    gardenSeed: save.gardenSeed,
+    gardenGenerationVersion: save.gardenGenerationVersion,
+    clearedHexes: save.clearedHexes,
+    pendingClearActions: save.pendingClearActions,
+  })
 }
 
 export function stringifySaveDump(save: SaveGame): string {

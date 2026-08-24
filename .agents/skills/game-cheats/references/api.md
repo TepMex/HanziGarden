@@ -15,12 +15,12 @@ await cheats.loadDb(jsonOrSave)
 
 ## Save shape
 
-`loadDb` accepts formatted JSON or an object with the current v6 shape:
+`loadDb` accepts formatted JSON or an object with the current v7 shape:
 
 ```ts
 type SaveGame = {
   id: 'main'
-  version: 6
+  version: 7
   unlockedBedIds: string[]
   masteredBedIds: string[]
   lastActiveBedId: string | null
@@ -44,9 +44,15 @@ type SaveGame = {
     lastActiveDate?: string
     perfectBedsToday: { date?: string; count: number }
   }
+  gardenSeed: string
+  gardenGenerationVersion: number
+  clearedHexes: string[]
+  pendingClearActions: number
   updatedAt: number
 }
 ```
+
+v6 dumps are accepted and migrated onto hex-garden fields without dropping learning data.
 
 The loader validates field types and FSRS card/event shapes but deliberately permits unknown IDs and inconsistent progression. ISO date strings in `cards.*.due` and `cards.*.last_review` are restored as `Date` objects.
 

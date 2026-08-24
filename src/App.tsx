@@ -9,6 +9,11 @@ import { loadHanziCharData } from './hanziData'
 import { isCardDue, reviewCard, type ReviewEvent } from './learning'
 import { GardenMap } from './map/GardenMap'
 import { initialCamera, type CameraState } from './map/cameraMath'
+import { HexGardenDebugPanel } from './hexGarden/HexGardenDebug'
+import { type HexGardenDebugState } from './hexGarden/HexGardenOverlay'
+import { grantClearForMasteredBed } from './hexGarden/curriculum'
+import { clearHex } from './hexGarden/gardenState'
+import type { Axial } from './hexGarden/hexGrid'
 import { StatisticsScreen } from './stats/StatisticsScreen'
 import { isFirstEncounter } from './stats/srsStages'
 import { streakHighlightColor, streakHighlightOpacity, streakIntensity } from './streak'
@@ -115,15 +120,23 @@ function getInputDevice(): ReviewEvent['inputDevice'] {
 function GardenScreen({
   save,
   camera,
+  debug,
   onCameraChange,
   onEnter,
+  onClearHex,
+  onDebug,
+  onSave,
   onMainMenu,
   onStatistics,
 }: {
   save: SaveGame
   camera: CameraState
+  debug?: HexGardenDebugState
   onCameraChange: (camera: CameraState) => void
   onEnter: (bed: BedDefinition) => void
+  onClearHex: (hex: Axial) => void
+  onDebug: (debug: HexGardenDebugState) => void
+  onSave: (save: SaveGame) => void
   onMainMenu: () => void
   onStatistics: () => void
 }) {
@@ -154,9 +167,17 @@ function GardenScreen({
         camera={camera}
         focusBedId={save.lastActiveBedId ?? save.unlockedBedIds[0] ?? null}
         gridVisible={gridVisible}
+        debug={debug}
         onCameraChange={onCameraChange}
         onEnterBed={onEnter}
+        onClearHex={onClearHex}
       />
+      {save.pendingClearActions > 0 && (
+        <p className="hex-garden-banner">Можно расчистить: {save.pendingClearActions}</p>
+      )}
+      {import.meta.env.DEV && debug && (
+        <HexGardenDebugPanel save={save} debug={debug} onDebug={onDebug} onSave={onSave} />
+      )}
     </main>
   )
 }
@@ -326,9 +347,16 @@ function BattleScreen({
     const mastered = new Set(current.masteredBedIds)
     const unlocked = new Set(current.unlockedBedIds)
     const bedMastered = bed.characterIds.every((id) => seen.has(id))
+    let pendingClearActions = current.pendingClearActions
     if (bedMastered) {
       mastered.add(bed.id)
-      bed.neighbors.forEach((id) => unlocked.add(id))
+      const granted = grantClearForMasteredBed({
+        unlockedBedIds: [...unlocked],
+        masteredBedIds: [...mastered],
+      })
+      granted.unlockedBedIds.forEach((id) => unlocked.add(id))
+      granted.masteredBedIds.forEach((id) => mastered.add(id))
+      pendingClearActions += granted.grantedClears
     }
     const event: ReviewEvent = {
       id: crypto.randomUUID(),
@@ -348,6 +376,7 @@ function BattleScreen({
       cards: { ...current.cards, [character.id]: result.card },
       reviewEvents: [...current.reviewEvents.slice(-499), event],
       playerProgress: progression.player,
+      pendingClearActions,
       updatedAt: Date.now(),
     }
     const nextCharacter = bed.characters.find(
@@ -761,6 +790,11 @@ export default function App() {
   const [camera, setCamera] = useState<CameraState>(initialCamera)
   const [session, setSession] = useState<SessionProgress>(initialSessionProgress)
   const [achievementQueue, setAchievementQueue] = useState<string[]>([])
+  const [hexDebug, setHexDebug] = useState<HexGardenDebugState>({
+    revealAll: false,
+    showCoordinates: false,
+    showBiomeIds: false,
+  })
   const appSaveRef = useRef(save)
   const appSessionRef = useRef(session)
   const themeMusicRef = useRef<ThemeMusicPlayer | null>(null)
@@ -871,11 +905,15 @@ export default function App() {
       const mastered = new Set(save.masteredBedIds)
       const unlocked = new Set(save.unlockedBedIds)
       mastered.add(bed.id)
-      bed.neighbors.forEach((id) => unlocked.add(id))
+      const granted = grantClearForMasteredBed({
+        unlockedBedIds: [...unlocked],
+        masteredBedIds: [...mastered],
+      })
       updateSave({
         ...save,
-        masteredBedIds: [...mastered],
-        unlockedBedIds: [...unlocked],
+        masteredBedIds: granted.masteredBedIds,
+        unlockedBedIds: granted.unlockedBedIds,
+        pendingClearActions: save.pendingClearActions + granted.grantedClears,
         updatedAt: Date.now(),
       })
       return
@@ -900,8 +938,16 @@ export default function App() {
     content = <GardenScreen
       save={save}
       camera={camera}
+      debug={hexDebug}
       onCameraChange={setCamera}
       onEnter={enterBed}
+      onClearHex={(hex) => {
+        const opened = clearHex(save, hex)
+        if (!opened) return
+        updateSave({ ...save, ...opened, updatedAt: Date.now() })
+      }}
+      onDebug={setHexDebug}
+      onSave={updateSave}
       onMainMenu={() => setScreen('menu')}
       onStatistics={() => setScreen('stats')}
     />

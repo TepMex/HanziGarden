@@ -8,7 +8,7 @@ import { initialAchievementPersistence } from '../src/achievements'
 function saveFixture(): SaveGame {
   return {
     id: 'main',
-    version: 6,
+    version: 7,
     unlockedBedIds: ['bed-unknown'],
     masteredBedIds: ['bed-locked-but-mastered'],
     lastActiveBedId: 'bed-not-unlocked',
@@ -39,6 +39,10 @@ function saveFixture(): SaveGame {
     }],
     playerProgress: { ...initialPlayerProgress, totalXp: 123, lifetimeCompletedKanji: 1 },
     achievements: structuredClone(initialAchievementPersistence),
+    gardenSeed: 'fixture-seed',
+    gardenGenerationVersion: 1,
+    clearedHexes: ['0,0'],
+    pendingClearActions: 2,
     updatedAt: 789,
   }
 }
@@ -79,5 +83,26 @@ describe('game cheat save dumps', () => {
     expect(restored.masteredBedIds).toEqual(['bed-locked-but-mastered'])
     expect(restored.lastActiveBedId).toBe('bed-not-unlocked')
     expect(restored.seenCharacterIds).toEqual(['character-unknown'])
+    expect(restored.gardenSeed).toBe('fixture-seed')
+    expect(restored.clearedHexes).toEqual(['0,0'])
+    expect(restored.pendingClearActions).toBe(2)
+  })
+
+  test('migrates a v6 dump without destroying learning data', () => {
+    const v6 = { ...saveFixture(), version: 6 as const }
+    delete (v6 as { gardenSeed?: string }).gardenSeed
+    const restored = parseSaveDump(JSON.stringify({
+      ...v6,
+      gardenSeed: undefined,
+      gardenGenerationVersion: undefined,
+      clearedHexes: undefined,
+      pendingClearActions: undefined,
+    }))
+    expect(restored.version).toBe(7)
+    expect(restored.unlockedBedIds).toEqual(['bed-unknown'])
+    expect(restored.cards['character-unknown']?.due).toBeInstanceOf(Date)
+    expect(restored.gardenSeed.length).toBeGreaterThan(8)
+    expect(restored.clearedHexes).toEqual(['0,0'])
+    expect(restored.pendingClearActions).toBe(1)
   })
 })

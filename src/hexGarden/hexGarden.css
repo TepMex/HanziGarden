@@ -1,0 +1,135 @@
+.hex-garden-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
+  pointer-events: auto;
+  overflow: visible;
+}
+
+.hex-garden-overlay.is-grid .hex-garden-ground {
+  stroke: rgba(255, 240, 176, .55);
+  stroke-width: 1.6;
+}
+
+.hex-garden-cell.is-fogged .hex-garden-ground {
+  filter: brightness(.72) saturate(.35);
+}
+
+.hex-garden-cell.is-frontier .hex-garden-ground {
+  filter: brightness(.9) saturate(.45);
+  stroke-width: 2.4;
+}
+
+.hex-garden-available {
+  stroke: #f0d59a;
+  stroke-width: 2;
+  stroke-dasharray: 5 4;
+  opacity: .9;
+}
+
+.hex-garden-plant {
+  pointer-events: none;
+}
+
+.hex-garden-cell.is-revealing .hex-garden-plant {
+  animation: hex-plant-reveal .42s ease both;
+}
+
+.hex-garden-cell.is-revealing .hex-garden-ground {
+  animation: hex-ground-reveal .28s ease both;
+}
+
+.hex-garden-fence {
+  fill: none;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  pointer-events: none;
+}
+
+.hex-garden-rim {
+  fill: none;
+  stroke: #d8c49a;
+  stroke-width: 3.4;
+  stroke-linecap: round;
+  pointer-events: none;
+}
+
+.hex-garden-debug {
+  fill: #f4ead0;
+  font: 600 8px/1 ui-sans-serif, system-ui, sans-serif;
+  text-anchor: middle;
+  paint-order: stroke;
+  stroke: rgba(12, 18, 14, .7);
+  stroke-width: 2.5px;
+  pointer-events: none;
+}
+
+.hex-garden-banner {
+  position: absolute;
+  left: 50%;
+  bottom: 22px;
+  z-index: 6;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 42px;
+  padding: 8px 16px;
+  color: #f4ead0;
+  border: 1px solid rgba(226, 204, 149, .5);
+  border-radius: 999px;
+  background: rgba(22, 36, 29, .82);
+  box-shadow: 0 8px 24px rgba(7, 15, 11, .35);
+  pointer-events: none;
+}
+
+.hex-garden-debug-panel {
+  position: absolute;
+  right: 12px;
+  bottom: 18px;
+  z-index: 7;
+  display: grid;
+  gap: 6px;
+  width: min(240px, calc(100% - 24px));
+  padding: 10px;
+  color: #efe5c9;
+  border: 1px solid rgba(226, 204, 149, .28);
+  border-radius: 14px;
+  background: rgba(16, 24, 20, .88);
+  pointer-events: auto;
+}
+
+.hex-garden-debug-panel span {
+  font-size: 11px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: #b8b09c;
+}
+
+.hex-garden-debug-panel input,
+.hex-garden-debug-panel button {
+  min-height: 32px;
+  padding: 0 8px;
+  color: #efe5c9;
+  border: 1px solid rgba(226, 204, 149, .28);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .06);
+}
+
+.hex-garden-debug-panel .hex-debug-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+@keyframes hex-plant-reveal {
+  from { opacity: 0; transform: translateY(8px) scale(.86); transform-box: fill-box; transform-origin: center bottom; }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes hex-ground-reveal {
+  from { filter: brightness(.55) saturate(.2); }
+  to { filter: none; }
+}

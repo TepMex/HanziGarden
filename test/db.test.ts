@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import { migrateV1Save, migrateV2Save, migrateV3Save, migrateV4Save, type SaveGameV1, type SaveGameV2, type SaveGameV3, type SaveGameV4 } from '../src/db'
+import { migrateV1Save, migrateV2Save, migrateV3Save, migrateV4Save, migrateV6Save, type SaveGameV1, type SaveGameV2, type SaveGameV3, type SaveGameV4, type SaveGameV6 } from '../src/db'
 import type { CardState } from '../src/learning'
 
 describe('v1 save migration', () => {
@@ -77,5 +77,29 @@ describe('v4 progression migration', () => {
     expect(migrated.playerProgress.lifetimeCompletedKanji).toBe(1)
     expect(migrated.playerProgress.lifetimeErrors).toBe(1)
     expect(migrated.playerProgress.totalXp).toBeGreaterThanOrEqual(1)
+  })
+})
+
+describe('v6 hex garden migration', () => {
+  test('keeps learning progress and adds a stable garden seed', () => {
+    const v6: SaveGameV6 = {
+      id: 'main', version: 6, unlockedBedIds: ['bed-001', 'bed-002'], masteredBedIds: ['bed-001'],
+      lastActiveBedId: 'bed-001', seenCharacterIds: ['rsh-0001'], cards: {}, reviewEvents: [],
+      playerProgress: {
+        totalXp: 12, lifetimeCorrectStrokes: 4, lifetimeErrors: 1, lifetimeCompletedKanji: 1,
+        lifetimeCompletedBeds: 1, bestComboEver: 1, perfectComplexKanjiCount: 0, completedBiomeIds: [],
+      },
+      achievements: { unlockedAchievements: [], currentDailyStreak: 0, bestDailyStreak: 0, perfectBedsToday: { count: 0 } },
+      updatedAt: 99,
+    }
+    const first = migrateV6Save(v6)
+    const second = migrateV6Save(v6)
+    expect(first.version).toBe(7)
+    expect(first.unlockedBedIds).toEqual(['bed-001', 'bed-002'])
+    expect(first.seenCharacterIds).toEqual(['rsh-0001'])
+    expect(first.clearedHexes).toEqual(['0,0'])
+    expect(first.pendingClearActions).toBe(1)
+    expect(first.gardenGenerationVersion).toBe(1)
+    expect(first.gardenSeed).toBe(second.gardenSeed)
   })
 })

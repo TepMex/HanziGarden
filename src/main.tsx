@@ -15,6 +15,7 @@ const isKeywordPromptsPrototype = import.meta.env.DEV && window.location.pathnam
 const isContentEditor = import.meta.env.DEV && window.location.pathname === '/prototype/content-editor'
 const isScreenSpreadPrototype = import.meta.env.DEV && window.location.pathname === '/prototype/screen-spread'
 const isAnimationDebugPage = import.meta.env.DEV && window.location.pathname === '/debug/animations'
+const isHexPlantSheet = import.meta.env.DEV && window.location.pathname === '/debug/hex-plants'
 
 if (isScreenSpreadPrototype) {
   import('./prototype/ScreenSpreadPrototype').then(({ ScreenSpreadPrototype }) => {
@@ -53,6 +54,14 @@ if (isScreenSpreadPrototype) {
     root.render(
       <StrictMode>
         <AnimationDebugPage />
+      </StrictMode>,
+    )
+  })
+} else if (isHexPlantSheet) {
+  import('./hexGarden/HexPlantContactSheet').then(({ HexPlantContactSheet }) => {
+    root.render(
+      <StrictMode>
+        <HexPlantContactSheet />
       </StrictMode>,
     )
   })

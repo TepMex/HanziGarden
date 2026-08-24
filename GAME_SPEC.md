@@ -26,11 +26,11 @@ Learning progress, spaced repetition, garden state, and visual restoration are t
 
 ## Garden Domain Model
 
-The garden replaces the original 110-field presentation. The 110 stable RTH/RSH source lists remain the learning source, but each is split in original frame order into two contiguous halves, creating **220 beds** while retaining the same character IDs and FSRS cards.
+The garden replaces the original 110-field presentation. The 110 stable RTH/RSH source lists remain the learning source, but each is split in original frame order into two contiguous halves, creating **220 learning beds** while retaining the same character IDs and FSRS cards.
 
-The garden has 15 visually distinct `Biome`s in a 5 × 3 layout: bamboo, rice, lotus, tea, blossom, peony, chrysanthemum, pine, persimmon, orchid, berries, rapeseed, wheat, wisteria, and medicinal herbs. The first biome contains 10 beds in a 2 × 5 layout; each of the other 14 biomes contains 15 beds in a 3 × 5 layout.
+The visible garden is a hexagonal island of **217 hex cells** (`max(|q|, |r|, |s|) <= 8`). Curriculum order and garden geography are independent: the next Hanzi is always the next Heisig/RTH frame, while the player chooses which available hex to clear. Each hex has a seeded biome and plant that exist before the player opens it.
 
-There is no intermediate garden-selection screen. The player pans and zooms the continuous clean/overgrown map, then enters a close, unlocked bed directly into the existing handwriting battle. Bed unlocking is permanent and propagates through base-cell adjacency; infection remains a live, stroke-weighted projection of due/new FSRS cards.
+There is no intermediate garden-selection screen. The player pans and zooms the continuous map, then enters a handwriting battle from a cleared hex. Bed unlocking is permanent and proceeds in Heisig bed order; infection remains a live, stroke-weighted projection of due/new FSRS cards.
 
 The welcome screen is the main menu. It offers **Войти в сад**, **Об игре**, **Поддержать**, and **Выход**. It is centered within the available viewport and must not scroll or reveal a strip of the garden map beneath it. Its garden backdrop covers the screen without tiling, including during mobile overscroll. The About and Support items open dedicated placeholder text screens with a route back to the main menu. Entering the garden preserves the player's save and current map camera. Exit closes the Android host; browser builds request that the current tab be closed.
 
@@ -85,11 +85,27 @@ Do not use the book mnemonic stories as part of the core learning mechanic. Long
 
 ### 4.1 Garden
 
-The **Garden** is the single main map and contains all playable territory. It is divided into a fixed 5 × 3 grid of 15 biomes.
+The **Garden** is the single main map. Learning territory is still modeled as 220 beds in Heisig/RTH order. Visible geography is a pointy-top hex island of radius 8:
 
-### 4.2 Biomes
+```text
+s = -q - r
+max(|q|, |r|, |s|) <= 8
+cell count = 1 + 3 × 8 × 9 = 217
+```
 
-A **Biome** is one of the 15 large, visually distinct areas of the garden. The first biome has a 2 × 5 layout of 10 beds. Every other biome has a 3 × 5 layout of 15 beds.
+Neighbors are computed from axial coordinates, never stored by hand. A cell has at most six neighbors.
+
+### 4.2 Hex exploration
+
+Each hex is `hidden`, `available`, or `cleared`. The game starts with the center hex `(0, 0)` cleared. A hidden hex becomes available when it neighbors at least one cleared hex. Completing a learning bed grants one pending hex-clear; the player then chooses any available hex. Geography never selects the next character, biome, or Heisig number.
+
+Hex contents are generated once from `gardenSeed` + coordinates + an independent RNG stream (`biome` vs `plant`) and `gardenGenerationVersion`. Biomes form seeded Voronoi regions from the official 15 garden cultures. Each biome has common / rare / very-rare plants at 85 / 10 / 5. Rarity is cosmetic only.
+
+Uncleared hexes show a generic fog/overgrowth and never leak biome color, plant silhouette, or rarity. Fences appear only on edges where two cleared (or debug-revealed) neighbors have different biomes. The existing floating-island backdrop stays; the hex map sits on top of it.
+
+### 4.3 Biomes and beds
+
+A **Biome** is one of the 15 official cultures. Hex biomes are assigned procedurally; learning beds still keep their original biome IDs for battle art and achievements.
 
 ```ts
 type Biome = {
@@ -101,13 +117,13 @@ type Biome = {
 };
 ```
 
-### 4.3 Beds
+### 4.4 Beds
 
-A **Bed** is the smallest territory unit that the player clears of weeds. The full garden contains **220 beds**. Selecting an unlocked bed starts a battle for that bed.
+A **Bed** is the smallest learning unit. The catalog still contains **220 beds**. Selecting a cleared hex starts the next due battle in Heisig bed order among unlocked beds.
 
-Each of the 110 unique RTH/RSH lists is split at its midpoint into two ordered bed workloads. The first five beds occupy two logical cells each so the first biome still presents exactly 10 beds; every later bed occupies one logical cell.
+Each of the 110 unique RTH/RSH lists is split at its midpoint into two ordered bed workloads. The first five beds occupy two logical cells each so the first legacy biome still presents exactly 10 beds; every later bed occupies one logical cell. Those cells remain the layout source for battle artwork and statistics, not the hex map.
 
-### 4.4 Bed Data
+### 4.5 Bed Data
 
 ```ts
 type BedDefinition = {
@@ -124,13 +140,11 @@ type BedDefinition = {
 
 `sourceRthListId` must be globally unique. Do not identify beds only by numeric lesson number if books 1 and 2 can overlap.
 
-### 4.5 Map Camera
+### 4.6 Map Camera
 
 The player may zoom out only to the viewport's **cover** scale: the rendered garden must never become smaller than the viewport along either axis. Outside green space may appear along only the orientation's permitted axis—at the left/right sides on a landscape viewport, or at the top/bottom on a portrait viewport—never along both axes at once. Camera overscroll applies only to that permitted axis; panning must not expose a side edge in portrait orientation or a top/bottom edge in landscape orientation at any zoom level.
 
-When the map automatically focuses the last active (or initial unlocked) bed on a viewport where auto-focus is enabled, it frames the bed's containing biome rather than the individual bed. This keeps the opening view oriented around the relevant biome without an excessively close zoom.
-
-At camera zoom 5 and above, each non-empty unlocked bed and each non-empty bed directly adjacent to an unlocked bed shows the first character with the greatest `strokeCount` in that bed (source-list order breaks ties). More distant locked beds do not reveal a character. The character is rendered as a small, semi-transparent calligraphic Chinese label whose screen size stays stable as the map zoom changes. Labels have no background panel, do not capture pointer input, and must not materially obscure the garden artwork.
+When the map automatically focuses the garden, it frames the hexagonal island rather than a single hex.
 
 ## 5. Character Data
 
@@ -227,9 +241,20 @@ Two kinds of progress must remain independent.
 
 ### 6.1 Garden Progress
 
-`unlockedBedIds` and `masteredBedIds` record permanent progression. A bed becomes mastered when every character in it has been successfully produced from memory at least once.
+`unlockedBedIds` and `masteredBedIds` record permanent learning access. A bed becomes mastered when every character in it has been successfully produced from memory at least once. Mastering a bed unlocks the next Heisig-ordered bed and grants one hex-clear.
 
-Once unlocked, a bed never becomes locked again.
+Hex geography is stored separately:
+
+```ts
+gardenSeed: string
+gardenGenerationVersion: number
+clearedHexes: string[] // "q,r"
+pendingClearActions: number
+```
+
+Biome and plant assignments are not saved; they are recomputed from the seed. `gardenGenerationVersion` pins an existing save to generator v1 if a later generator ships.
+
+Once unlocked, a bed never becomes locked again. Existing v6 saves migrate without dropping cards, reviews, or XP: they receive a deterministic seed, a cleared center hex, and one pending clear per already mastered bed. Old rectangular geography is not reconstructed 1:1 (220 beds ≠ 217 hexes).
 
 ### 6.2 Memory State
 
@@ -1088,13 +1113,19 @@ This ensures weeds expand from existing patches instead of teleporting randomly 
 
 ```ts
 type SaveGame = {
-  version: 4;
+  version: 7;
   unlockedBedIds: string[];
   masteredBedIds: string[];
   lastActiveBedId: string | null;
   seenCharacterIds: string[];
   cards: Record<string, CardState>;
   reviewEvents: ReviewEvent[];
+  playerProgress: PlayerProgress;
+  achievements: AchievementPersistence;
+  gardenSeed: string;
+  gardenGenerationVersion: number;
+  clearedHexes: string[];
+  pendingClearActions: number;
   updatedAt: number;
 };
 ```
@@ -1136,7 +1167,7 @@ loadDb(dump: string | SaveGame): Promise<void>;
 
 Stroke cheats must pass canonical Hanzi medians through the same Hanzi Writer quiz input path as real mouse input. A wrong stroke uses the current median in reverse, so ordinary mistake counts, hints, animations, and review grading remain authoritative. The promises resolve only after the corresponding quiz callback.
 
-`dumpDb()` waits for pending Dexie writes and defaults to formatted JSON suitable for a backup; object mode returns a deep clone. `loadDb()` accepts either form, validates the v4 save structure, restores FSRS dates, persists the exact snapshot, synchronizes live application state, and returns to the garden. It intentionally does not enforce domain consistency between IDs or progression properties so tests can load impossible states.
+`dumpDb()` waits for pending Dexie writes and defaults to formatted JSON suitable for a backup; object mode returns a deep clone. `loadDb()` accepts either form, validates the v6 or v7 save structure, migrates v6 dumps onto the hex-garden fields, restores FSRS dates, persists the exact snapshot, synchronizes live application state, and returns to the garden. It intentionally does not enforce domain consistency between IDs or progression properties so tests can load impossible states.
 
 Additional debug tooling may support:
 
@@ -1161,6 +1192,8 @@ achievement through the production achievement popup; three separate controls
 replay the production XP drop for `+1`, `+3`, or `+5 XP`. Repeated presses must
 restart the animation without reloading the page. The workbench must not load,
 mutate, or persist player progress and is not exposed in production builds.
+
+Development builds also expose `/debug/hex-plants`, a 4×N contact sheet of generated hex-garden plant sprites, and an in-map hex debug panel (seed input, reveal all, new seed, coordinates, biome ids). Those controls are not part of the player UI.
 
 Development builds also expose the throwaway `/prototype/biome-badges`
 workbench. It renders the player-facing achievement popup for every biome badge
