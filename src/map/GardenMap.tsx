@@ -212,9 +212,9 @@ export function GardenMap({ save, camera, focusBedId, gridVisible, debug, onCame
     const viewport = viewportRef.current
     if (!viewport) return
     // Capturing immediately makes mobile browsers send the resulting click to
-    // the garden container instead of the bed button.  A real drag captures
+    // the garden container instead of the bed/hex button.  A real drag captures
     // later, after it crosses the gesture threshold.
-    if (!(event.target instanceof Element && event.target.closest('.bed-hotspot'))) {
+    if (!(event.target instanceof Element && event.target.closest('.bed-hotspot, .hex-garden-hit'))) {
       viewport.setPointerCapture(event.pointerId)
     }
     pointersRef.current.set(event.pointerId, localPoint(event, viewport.getBoundingClientRect()))

@@ -4,8 +4,33 @@
   z-index: 3;
   width: 100%;
   height: 100%;
-  pointer-events: auto;
+  pointer-events: none;
   overflow: visible;
+}
+
+.hex-garden-overlay svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.hex-garden-hotspots {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.hex-garden-hit {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 .hex-garden-overlay.is-grid .hex-garden-ground {

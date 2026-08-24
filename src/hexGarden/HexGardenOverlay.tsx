@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { assetUrl } from '../assetUrl'
 import type { BedDefinition } from '../data/model'
 import { GARDEN_HEIGHT, GARDEN_WIDTH } from '../data/mapLayout'
@@ -14,10 +14,10 @@ import { gardenHexes, hasHex, hexId, type Axial } from './hexGrid'
 import {
   axialToPixel,
   HEX_SIZE,
+  hexCorners,
   hexEdge,
   hexPoints,
   neighborInDirection,
-  pixelToAxial,
 } from './hexMath'
 import './hexGarden.css'
 
@@ -67,46 +67,28 @@ export function HexGardenOverlay({
     }).sort((left, right) => left.y - right.y || left.x - right.x)
   }, [])
 
-  const drag = useRef<{ x: number; y: number } | null>(null)
-
   const activate = (hex: Axial) => {
     const id = hexId(hex)
     if (canClearHex(cleared, pendingClearActions, hex)) {
       setRevealingId(id)
+      onClearHex(hex)
       window.setTimeout(() => {
-        onClearHex(hex)
         setRevealingId((current) => current === id ? null : current)
-      }, 280)
+      }, 420)
       return
     }
     if (hexVisibility(cleared, hex) === 'cleared' && studyBed) onEnterStudy(studyBed)
   }
 
-  const onPointerDown = (event: React.PointerEvent<SVGSVGElement>) => {
-    drag.current = { x: event.clientX, y: event.clientY }
-  }
-
-  const onPointerUp = (event: React.PointerEvent<SVGSVGElement>) => {
-    const start = drag.current
-    drag.current = null
-    if (event.button !== 0 || !start) return
-    if (Math.hypot(event.clientX - start.x, event.clientY - start.y) > 12) return
-    const svg = event.currentTarget
-    const rect = svg.getBoundingClientRect()
-    const x = (event.clientX - rect.left) / rect.width * GARDEN_WIDTH
-    const y = (event.clientY - rect.top) / rect.height * GARDEN_HEIGHT
-    const hex = pixelToAxial(x, y)
-    if (!hasHex(hex)) return
-    activate(hex)
+  const stopMapGesture = (event: React.PointerEvent<HTMLButtonElement>) => {
+    event.stopPropagation()
   }
 
   return (
+    <div className={`hex-garden-overlay ${gridVisible ? 'is-grid' : ''}`}>
     <svg
-      className={`hex-garden-overlay ${gridVisible ? 'is-grid' : ''}`}
       viewBox={`0 0 ${GARDEN_WIDTH} ${GARDEN_HEIGHT}`}
-      aria-label="Гексагональный сад"
-      onPointerDown={onPointerDown}
-      onPointerUp={onPointerUp}
+      aria-hidden="true"
     >
       {drawn.map(({ hex, id, x, y }) => {
         const visibility = hexVisibility(cleared, hex)
@@ -211,6 +193,48 @@ export function HexGardenOverlay({
         })
       })}
     </svg>
+    <div className="hex-garden-hotspots" aria-label="Гексагональный сад">
+      {drawn.map(({ hex, id, x, y }) => {
+        const visibility = hexVisibility(cleared, hex)
+        const isAvailable = available.has(id) && pendingClearActions > 0
+        if (visibility !== 'cleared' && !isAvailable) return null
+        const known = revealAll || visibility === 'cleared' || revealingId === id
+        const content = known ? hexContent(gardenSeed, hex, gardenGenerationVersion) : null
+        const plant = content ? plantById.get(content.plantId) : undefined
+        const biome = content ? requireBiome(content.biomeId) : null
+        const label = known && plant
+          ? `${biome?.name}, ${plant.displayName}`
+          : 'Можно расчистить'
+        const corners = hexCorners(HEX_SIZE, HEX_SIZE, HEX_SIZE)
+        const clip = `polygon(${corners.map((point) => `${(point.x / (HEX_SIZE * 2)) * 100}% ${(point.y / (HEX_SIZE * 2)) * 100}%`).join(', ')})`
+        return (
+          <button
+            key={id}
+            type="button"
+            className={`hex-garden-hit ${isAvailable ? 'is-frontier' : ''} ${visibility === 'cleared' ? 'is-cleared' : ''}`}
+            data-hex-id={id}
+            data-hex-q={hex.q}
+            data-hex-r={hex.r}
+            data-bed-id={id === '0,0' && visibility === 'cleared' && studyBed ? studyBed.id : undefined}
+            aria-label={label}
+            style={{
+              left: `${((x - HEX_SIZE) / GARDEN_WIDTH) * 100}%`,
+              top: `${((y - HEX_SIZE) / GARDEN_HEIGHT) * 100}%`,
+              width: `${(HEX_SIZE * 2 / GARDEN_WIDTH) * 100}%`,
+              height: `${(HEX_SIZE * 2 / GARDEN_HEIGHT) * 100}%`,
+              clipPath: clip,
+            }}
+            onPointerDown={stopMapGesture}
+            onPointerUp={stopMapGesture}
+            onClick={(event) => {
+              event.stopPropagation()
+              activate(hex)
+            }}
+          />
+        )
+      })}
+    </div>
+    </div>
   )
 }
 
