@@ -241,10 +241,10 @@ export function HexGardenRenderer({
               data-plant-id={cell.plant.id}
               href={assetUrl(cell.plant.asset)}
               key={cell.id}
-              x={cell.center.x - 47}
-              y={cell.center.y - 77}
-              width="94"
-              height="94"
+              x={cell.center.x - 34}
+              y={cell.center.y - 60}
+              width="68"
+              height="68"
               preserveAspectRatio="xMidYMid meet"
               filter={cell.rarity === 'common' ? undefined : 'url(#hex-rare-glint)'}
             />
