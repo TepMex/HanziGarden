@@ -836,6 +836,7 @@ export default function App() {
   useEffect(() => { appSessionRef.current = session }, [session])
 
   const applyLoadedSave = useCallback((loadedSave: SaveGame) => {
+    appSaveRef.current = loadedSave
     setSave(loadedSave)
     setActiveBed(null)
     setScreen('garden')
@@ -894,24 +895,25 @@ export default function App() {
   }, [loaded])
 
   const enterBed = (bed: BedDefinition) => {
-    if (!save.unlockedBedIds.includes(bed.id)) return
+    const current = appSaveRef.current
+    if (!current.unlockedBedIds.includes(bed.id)) return
     // The source data contains one one-character list. Its second half is an
     // intentional empty bed under the required midpoint split, so it is
     // immediately mastered when reached and cannot block garden progression.
     if (bed.characterIds.length === 0) {
-      const mastered = new Set(save.masteredBedIds)
-      const unlocked = new Set(save.unlockedBedIds)
+      const mastered = new Set(current.masteredBedIds)
+      const unlocked = new Set(current.unlockedBedIds)
       mastered.add(bed.id)
       bed.neighbors.forEach((id) => unlocked.add(id))
       updateSave({
-        ...save,
+        ...current,
         masteredBedIds: [...mastered],
         unlockedBedIds: [...unlocked],
         updatedAt: Date.now(),
       })
       return
     }
-    const nextSave = { ...save, lastActiveBedId: bed.id, updatedAt: Date.now() }
+    const nextSave = { ...current, lastActiveBedId: bed.id, updatedAt: Date.now() }
     updateSave(nextSave)
     setActiveBed(bed)
     setScreen('battle')

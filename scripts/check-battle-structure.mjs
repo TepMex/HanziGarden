@@ -39,6 +39,7 @@ async function seedSave(page, previousIds) {
     save.seenCharacterIds = precedingIds
     save.cards = Object.fromEntries(precedingIds.map((id) => [id, futureCard]))
     save.reviewEvents = []
+    save.completedWalkthroughIds = []
     await window.hanziGardenCheats.loadDb(save)
     return save.playerProgress.totalXp
   }, { nextBedId: bed.id, precedingIds: previousIds })
@@ -50,7 +51,10 @@ async function enterBattle(page, frame) {
   await page.locator('[data-bed-id="bed-001"]').click({ force: true })
   await page.waitForSelector('.battle-screen .writing-circle')
   if (frame === 2) {
-    await page.getByRole('button', { name: 'Понятно' }).click()
+    const walkthrough = page.locator('.walkthrough-dialog')
+    await walkthrough.waitFor()
+    await walkthrough.getByRole('button', { name: /Понятно/ }).click()
+    await walkthrough.waitFor({ state: 'hidden' })
     await page.waitForSelector('.battle-screen .writing-circle svg')
   }
   return startingXp
@@ -60,8 +64,10 @@ const browser = await chromium.launch({ headless: true })
 try {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 } })
   const page = await context.newPage()
-  await page.goto(`${baseUrl}/`, { waitUntil: 'networkidle' })
-  await page.getByRole('button', { name: /Войти в сад/i }).waitFor()
+  await page.goto(`${baseUrl}/`, { waitUntil: 'domcontentloaded' })
+  const welcome = page.getByRole('button', { name: /Войти в сад/i })
+  await welcome.waitFor()
+  if (await welcome.count()) await welcome.click()
 
   await enterBattle(page, 1)
   if (await page.getByRole('button', { name: /Показать состав/i }).count()) throw new Error('composition button shown for 一')
