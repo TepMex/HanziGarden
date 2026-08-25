@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 /**
- * Regression: primitive information and direct components stay available in
- * the battle UI without allowing clicks through the composition dialog.
+ * Regression: primitive information, composition, and character notes stay
+ * available in the battle UI without allowing clicks through the dialogs.
  * Usage: bun scripts/check-battle-structure.mjs [baseUrl]
  */
 import { chromium } from 'playwright'
@@ -16,9 +16,9 @@ function saveForFrame(frame) {
   return bed.characters.slice(0, index).map((character) => character.id)
 }
 
-async function seedSave(page, previousIds) {
+async function seedSave(page, previousIds, characterNotes = {}) {
   await page.waitForFunction(() => Boolean(window.hanziGardenCheats))
-  return page.evaluate(async ({ nextBedId, precedingIds }) => {
+  return page.evaluate(async ({ nextBedId, precedingIds, notes }) => {
     sessionStorage.setItem('memory-garden-welcomed', 'yes')
     const save = await window.hanziGardenCheats.dumpDb('object')
     const futureCard = {
@@ -39,17 +39,38 @@ async function seedSave(page, previousIds) {
     save.seenCharacterIds = precedingIds
     save.cards = Object.fromEntries(precedingIds.map((id) => [id, futureCard]))
     save.reviewEvents = []
+    save.characterNotes = notes
     await window.hanziGardenCheats.loadDb(save)
     return save.playerProgress.totalXp
-  }, { nextBedId: bed.id, precedingIds: previousIds })
+  }, { nextBedId: bed.id, precedingIds: previousIds, notes: characterNotes })
 }
 
-async function enterBattle(page, frame) {
-  const startingXp = await seedSave(page, saveForFrame(frame))
+async function enterBattle(page, frame, characterNotes = {}) {
+  const startingXp = await seedSave(page, saveForFrame(frame), characterNotes)
   await page.waitForSelector('.garden-map-content.is-ready')
   await page.locator('[data-bed-id="bed-001"]').click({ force: true })
   await page.waitForSelector('.battle-screen .writing-circle')
   return startingXp
+}
+
+async function dismissAchievements(page) {
+  for (let i = 0; i < 8; i++) {
+    const popup = page.locator('.achievement-popup-backdrop')
+    if (!await popup.count()) return
+    await page.getByRole('button', { name: /Продолжить/i }).click()
+    await popup.waitFor({ state: 'hidden' }).catch(() => {})
+  }
+}
+
+async function waitForReview(page, characterId) {
+  await page.waitForFunction(async (id) => {
+    const save = await window.hanziGardenCheats.dumpDb('object')
+    return save.reviewEvents.some((event) => event.characterId === id)
+  }, characterId)
+  return page.evaluate((id) => window.hanziGardenCheats.dumpDb('object').then((save) => ({
+    save,
+    review: save.reviewEvents.find((event) => event.characterId === id),
+  })), characterId)
 }
 
 const browser = await chromium.launch({ headless: true })
@@ -61,14 +82,57 @@ try {
 
   await enterBattle(page, 1)
   if (await page.getByRole('button', { name: /Показать состав/i }).count()) throw new Error('composition button shown for 一')
+  if (!await page.getByRole('button', { name: /Открыть заметку/i }).count()) throw new Error('note button missing for 一')
   if ((await page.locator('.primitive-prompt').innerText()).replace(/\s+/g, ' ').trim().toLocaleLowerCase('ru') !== 'пол') {
     throw new Error('primitive for 一 is missing')
   }
   if (await page.getByText('Примитив', { exact: true }).count()) throw new Error('removed primitive label is visible')
 
+  await page.getByRole('button', { name: /Открыть заметку/i }).click()
+  const noteDialog = page.getByRole('dialog', { name: /один/i })
+  await noteDialog.waitFor()
+  await noteDialog.getByLabel('Текст заметки').fill('горизонтальная черта')
+  await noteDialog.getByRole('button', { name: /Сохранить/i }).click()
+  if (await page.getByRole('dialog').count()) throw new Error('note dialog did not close after save')
+
+  const savedNote = await page.evaluate(async () => {
+    const save = await window.hanziGardenCheats.dumpDb('object')
+    return save.characterNotes['rsh-0001']
+  })
+  if (savedNote !== 'горизонтальная черта') throw new Error(`note was not persisted: ${savedNote}`)
+
+  await page.locator('.back-button').click()
+  await page.waitForSelector('.map-screen')
+
+  const writingXp = await enterBattle(page, 2)
+  await page.getByRole('button', { name: /Открыть заметку/i }).click()
+  const writeDialog = page.getByRole('dialog', { name: /два/i })
+  await writeDialog.waitFor()
+  await writeDialog.getByLabel('Текст заметки').fill('две черты')
+  await writeDialog.getByRole('button', { name: /Сохранить/i }).click()
+  await page.evaluate(async () => {
+    await window.hanziGardenCheats.drawCorrectStroke()
+    await window.hanziGardenCheats.drawCorrectStroke()
+  })
+  const written = await waitForReview(page, 'rsh-0002')
+  await dismissAchievements(page)
+  if (written.review?.totalMistakes !== 0) {
+    throw new Error(`writing a new note counted as ${written.review?.totalMistakes} errors`)
+  }
+  if (written.save.playerProgress.totalXp !== writingXp + 2) {
+    throw new Error(`writing a new note changed XP: ${writingXp} -> ${written.save.playerProgress.totalXp}`)
+  }
+  if (written.save.characterNotes['rsh-0002'] !== 'две черты') {
+    throw new Error('note was lost after completing the character')
+  }
+
   await page.locator('.back-button').click()
   await page.waitForSelector('.map-screen')
   await enterBattle(page, 2)
+  const noteBox = await page.getByRole('button', { name: /Открыть заметку/i }).boundingBox()
+  const compositionBox = await page.getByRole('button', { name: /Показать состав/i }).boundingBox()
+  if (!noteBox || !compositionBox) throw new Error('note or composition button missing for 二')
+  if (compositionBox.y >= noteBox.y) throw new Error('composition was displaced from the original top-right slot by the note')
   await page.getByRole('button', { name: /Показать состав/i }).click()
   const dialog = page.getByRole('dialog', { name: /два/i })
   await dialog.waitFor()
@@ -101,20 +165,39 @@ try {
     await window.hanziGardenCheats.drawCorrectStroke()
     await window.hanziGardenCheats.drawCorrectStroke()
   })
-  await page.waitForFunction(async () => {
-    const save = await window.hanziGardenCheats.dumpDb('object')
-    return save.reviewEvents.some((event) => event.characterId === 'rsh-0002')
+  const composed = await waitForReview(page, 'rsh-0002')
+  await dismissAchievements(page)
+  if (composed.review?.totalMistakes !== 1) throw new Error(`composition click counted as ${composed.review?.totalMistakes} errors instead of 1`)
+  if (composed.review.hintUsed) throw new Error('composition click was recorded as a stroke-order hint')
+  if (composed.save.playerProgress.totalXp !== startingXp + 1) {
+    throw new Error(`composition click did not deduct 1 XP: ${startingXp} -> ${composed.save.playerProgress.totalXp}`)
+  }
+
+  const noteXp = await enterBattle(page, 2, { 'rsh-0002': 'две горизонтальные черты' })
+  await page.getByRole('button', { name: /Открыть заметку/i }).click()
+  const reviewNote = page.getByRole('dialog', { name: /два/i })
+  await reviewNote.waitFor()
+  if ((await reviewNote.getByLabel('Текст заметки').inputValue()) !== 'две горизонтальные черты') {
+    throw new Error('saved note was not shown on the next writing attempt')
+  }
+  await page.keyboard.press('Escape')
+  await page.evaluate(async () => {
+    await window.hanziGardenCheats.drawCorrectStroke()
+    await window.hanziGardenCheats.drawCorrectStroke()
   })
-  const completedSave = await page.evaluate(() => window.hanziGardenCheats.dumpDb('object'))
-  const review = completedSave.reviewEvents.find((event) => event.characterId === 'rsh-0002')
-  if (review?.totalMistakes !== 1) throw new Error(`composition click counted as ${review?.totalMistakes} errors instead of 1`)
-  if (review.hintUsed) throw new Error('composition click was recorded as a stroke-order hint')
-  if (completedSave.playerProgress.totalXp !== startingXp + 1) {
-    throw new Error(`composition click did not deduct 1 XP: ${startingXp} -> ${completedSave.playerProgress.totalXp}`)
+  const viewed = await waitForReview(page, 'rsh-0002')
+  await dismissAchievements(page)
+  if (viewed.review?.totalMistakes !== 1) throw new Error(`viewing a note counted as ${viewed.review?.totalMistakes} errors instead of 1`)
+  if (viewed.review.hintUsed) throw new Error('viewing a note was recorded as a stroke-order hint')
+  if (viewed.save.playerProgress.totalXp !== noteXp + 1) {
+    throw new Error(`viewing a note did not deduct 1 XP: ${noteXp} -> ${viewed.save.playerProgress.totalXp}`)
+  }
+  if (viewed.save.characterNotes['rsh-0002'] !== 'две горизонтальные черты') {
+    throw new Error('viewing a note did not keep the saved text')
   }
 
   await context.close()
-  console.log('OK: battle primitive, hidden target, and composition penalty')
+  console.log('OK: battle primitive, composition penalty, and character notes')
 } finally {
   await browser.close()
 }
