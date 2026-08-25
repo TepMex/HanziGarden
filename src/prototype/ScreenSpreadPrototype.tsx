@@ -214,11 +214,11 @@ function BattleWritingMock({
         )}
       </header>
       <div className="battle-assist-buttons">
-        <button className="note-button has-note" type="button" aria-label="Открыть заметку">
-          <StickyNote size={18} /> <span>Заметка</span>
-        </button>
         <button className="composition-button" type="button" aria-label="Показать состав иероглифа">
           <Layers size={18} /> <span>Состав</span>
+        </button>
+        <button className="note-button has-note" type="button" aria-label="Открыть заметку">
+          <StickyNote size={18} /> <span>Заметка</span>
         </button>
       </div>
       <div className="writing-circle">

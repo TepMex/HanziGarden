@@ -428,10 +428,13 @@ counts as one handwriting error, reducing the character's XP reward by 1 under
 the same minimum-reward rule as other handwriting errors.
 
 The same battle cluster also has a note control, available for every Hanzi.
-The player may write and edit a free-text reminder. The note is persisted with
-the save and remains available whenever that Hanzi is due again. Opening a
-saved (non-empty) note counts as one handwriting error, the same as
-composition. Opening an empty note to write one is not an error.
+The note is an additional control in that cluster; it does not replace the
+composition control. When both are present, composition keeps the original
+top-right slot and the note sits below it in the cluster. The player may
+write and edit a free-text reminder. The note is persisted with the save and
+remains available whenever that Hanzi is due again. Opening a saved
+(non-empty) note counts as one handwriting error, the same as composition.
+Opening an empty note to write one is not an error.
 
 The battle keyword plaque must keep each word intact at supported viewport
 sizes, including when Android uses its maximum system font size. Multi-word

@@ -667,6 +667,11 @@ function BattleScreen({
 
       {activeCharacter && (
         <div className="battle-assist-buttons">
+          {activeCharacter.structure.components.length > 0 && (
+            <button className="composition-button" onClick={showComposition} aria-label="Показать состав иероглифа">
+              <Layers size={18} /> <span>Состав</span>
+            </button>
+          )}
           <button
             className={`note-button ${characterNoteFor(save.characterNotes, activeCharacter.id) ? 'has-note' : ''}`}
             onClick={showNote}
@@ -674,11 +679,6 @@ function BattleScreen({
           >
             <StickyNote size={18} /> <span>Заметка</span>
           </button>
-          {activeCharacter.structure.components.length > 0 && (
-            <button className="composition-button" onClick={showComposition} aria-label="Показать состав иероглифа">
-              <Layers size={18} /> <span>Состав</span>
-            </button>
-          )}
         </div>
       )}
 
