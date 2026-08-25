@@ -515,6 +515,7 @@ function BattleScreen({
             isBackwards: data.isBackwards,
           })
           const hint = strokeErrorCopy(error)
+          if (!hint) return
           setStrokeHint((current) => (isSameStrokeErrorHint(current, hint) ? current : hint))
           window.clearTimeout(strokeHintTimerRef.current)
           strokeHintTimerRef.current = window.setTimeout(() => setStrokeHint(null), STROKE_ERROR_HINT_DURATION_MS)

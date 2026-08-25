@@ -583,7 +583,7 @@ Normalize both paths and compare their curve shapes. A Fréchet-distance-style c
 
 ### 16.6 Stroke Order
 
-When stroke `N` is expected, compare the finished gesture against later strokes of the same character. If a later stroke is a clearly better geometric match than the expected one, classify the miss as a stroke-order error. Similar neighbouring strokes (for example the horizontals in 三, 王, and 丰) must not produce an aggressive false positive: if distances are close or confidence is low, fall back to a shape miss or a generic order hint.
+When stroke `N` is expected, compare the finished gesture against later strokes of the same character. If a later stroke is a clearly better geometric match than the expected one, classify the miss as a stroke-order error. Similar neighbouring strokes (for example the horizontals in 三, 王, and 丰) must not produce an aggressive false positive: if distances are close or confidence is low, fall back to a shape miss. A player-facing order hint is shown only when the classifier is confident which later stroke the player attempted; otherwise show no hint.
 
 ### 16.7 Reverse Direction
 
@@ -608,7 +608,7 @@ Result types:
 - `bad-shape` — fallback for position, length, or form errors;
 - `unknown` — empty, tiny, or malformed paths.
 
-Check order first, then reverse direction, then shape. Player-facing copy is instructional Russian and must never show the internal type names. Stroke numbers shown to the player are 1-based (`strokeNum + 1`). Repeated identical hints replace in place rather than stacking. A confident order miss briefly highlights the expected stroke with the existing `highlightStroke` API; it does not play a full-character animation and does not set `hintUsed`.
+Check order first, then reverse direction, then shape. Player-facing copy is instructional Russian and must never show the internal type names. A wrong-order hint does not name stroke numbers or which later stroke was attempted; it only says the player jumped ahead. Show that hint only when confidence is high enough that a later stroke is a clear match; `bad-shape` and `unknown` misses show no copy. Repeated identical hints replace in place rather than stacking. A confident order miss briefly highlights the expected stroke with the existing `highlightStroke` API; it does not play a full-character animation and does not set `hintUsed`.
 
 Development-only debug logging can be enabled with `localStorage.hanziGarden.debugStrokeErrors = '1'`, `?debugStrokes=1`, or `window.hanziGardenDebugStrokeErrors = true`. Production builds must not write this trace to the console.
 
@@ -784,7 +784,7 @@ Suggested progression:
 - second mistake: same;
 - after ~3 failed attempts on the same stroke: briefly show only the next expected stroke as a faint ink ghost for ~500–700 ms.
 
-A classified order miss may also briefly highlight that expected stroke immediately, because the player already attempted a later stroke. Direction and shape misses use the existing quiz hint threshold instead of revealing extra strokes.
+A confident classified order miss (when the attempted later stroke is identified) may also briefly highlight that expected stroke immediately. Direction misses show instructional copy without revealing extra strokes. Shape and unknown misses show no player-facing hint.
 
 Do not reveal the full character unless the player explicitly asks for a stronger hint or reaches a failure state. The first-encounter tracing outline in section 11 is the one exception: it is shown automatically for **Новый** characters and is not graded as a hint.
 

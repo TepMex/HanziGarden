@@ -1,11 +1,9 @@
-import { ListOrdered, PencilLine, Undo2 } from 'lucide-react'
+import { ListOrdered, Undo2 } from 'lucide-react'
 import type { StrokeErrorHintCopy } from './strokeErrorFeedback'
 
 const icons = {
   'wrong-order': ListOrdered,
   'wrong-direction': Undo2,
-  'bad-shape': PencilLine,
-  unknown: PencilLine,
 } as const
 
 export function StrokeErrorHint({ hint }: { hint: StrokeErrorHintCopy }) {

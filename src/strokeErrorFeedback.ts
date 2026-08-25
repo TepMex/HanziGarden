@@ -1,12 +1,12 @@
-import { displayStrokeNumber, type StrokeError } from './strokeErrorClassifier'
+import type { StrokeError } from './strokeErrorClassifier'
 
-/** Below this, name the expected stroke but not a specific later stroke. */
+/** Below this, do not show an order hint — we are not sure which later stroke was attempted. */
 export const SPECIFIC_ORDER_CONFIDENCE = 0.7
 
 export const STROKE_ERROR_HINT_DURATION_MS = 2800
 
 export type StrokeErrorHintCopy = {
-  type: StrokeError['type']
+  type: 'wrong-order' | 'wrong-direction'
   title: string
   detail: string
 }
@@ -14,16 +14,16 @@ export type StrokeErrorHintCopy = {
 /**
  * Player-facing copy for a classified handwriting miss.
  * Internal type names stay out of the UI; the product UI language is Russian.
+ * Returns null when the miss is not specific enough to explain.
  */
-export function strokeErrorCopy(error: StrokeError): StrokeErrorHintCopy {
+export function strokeErrorCopy(error: StrokeError): StrokeErrorHintCopy | null {
   switch (error.type) {
     case 'wrong-order':
+      if (error.confidence < SPECIFIC_ORDER_CONFIDENCE) return null
       return {
         type: error.type,
         title: 'Неправильный порядок черт',
-        detail: error.confidence >= SPECIFIC_ORDER_CONFIDENCE
-          ? `Сейчас нужно написать черту ${displayStrokeNumber(error.expectedStroke)}, а ты начал с черты ${displayStrokeNumber(error.attemptedStroke)}.`
-          : 'Сначала напиши выделенную черту.',
+        detail: 'Кажется ты поспешил нарисовать эту черту',
       }
     case 'wrong-direction':
       return {
@@ -33,11 +33,7 @@ export function strokeErrorCopy(error: StrokeError): StrokeErrorHintCopy {
       }
     case 'bad-shape':
     case 'unknown':
-      return {
-        type: error.type,
-        title: 'Попробуй ещё раз',
-        detail: 'Следуй форме выделенной черты.',
-      }
+      return null
   }
 }
 
