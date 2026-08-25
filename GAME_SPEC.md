@@ -427,6 +427,15 @@ show the target Hanzi itself. Every activation of the composition control
 counts as one handwriting error, reducing the character's XP reward by 1 under
 the same minimum-reward rule as other handwriting errors.
 
+The same battle cluster also has a note control, available for every Hanzi.
+The note is an additional control in that cluster; it does not replace the
+composition control. When both are present, composition keeps the original
+top-right slot and the note sits below it in the cluster. The player may
+write and edit a free-text reminder. The note is persisted with the save and
+remains available whenever that Hanzi is due again. Opening a saved
+(non-empty) note counts as one handwriting error, the same as composition.
+Opening an empty note to write one is not an error.
+
 The battle keyword plaque must keep each word intact at supported viewport
 sizes, including when Android uses its maximum system font size. Multi-word
 meanings may wrap only at word boundaries. The text may shrink as needed, but
@@ -1148,6 +1157,9 @@ type SaveGame = {
   completedWalkthroughIds: string[];
   cards: Record<string, CardState>;
   reviewEvents: ReviewEvent[];
+  playerProgress: PlayerProgress;
+  achievements: AchievementPersistence;
+  characterNotes: Record<string, string>;
   updatedAt: number;
 };
 ```
@@ -1246,9 +1258,9 @@ builds, and is intended to grow with additional content kinds later.
 
 Development builds also expose the throwaway `/prototype/screen-spread`
 workbench. It unfolds every player-facing screen — loading, main menu, About,
-Support, garden map, handwriting battle, composition dialog, stroke-order
-walkthrough, cleared bed, statistics wall, achievement collection, and
-achievement popup — so a design change can be judged across the whole product at once. The page provides
+Support, garden map, handwriting battle, composition dialog, character note
+dialog, stroke-order walkthrough, cleared bed, statistics wall, achievement
+collection, and achievement popup — so a design change can be judged across the whole product at once. The page provides
 gallery, player-journey, and annotated audit views, switchable via `?variant=`,
 and an in-memory token panel for parchment, jade, gold, seal, and night colors.
 Frame size can be switched between phone, tablet, and desktop. Screens reuse
@@ -1547,11 +1559,18 @@ level is presented as its own reward beat. The cleared-bed screen shows correct
 strokes, errors, Combo bonus, total XP, in-level progress, and sequential
 level-up beats.
 
+Opening composition or a saved character note during battle counts as a
+handwriting error for that Hanzi's XP, with the same `max(1, …)` floor as any
+other error. Writing a new empty note does not.
+
 Persistence also retains lifetime correct strokes, errors, completed Hanzi,
 completed bed runs, best Combo, perfect complex Hanzi, and permanently completed
 biome IDs. Save version 5 introduced progression and reconstructs provable
 historical progress from retained review events. Save version 7 adds
-`completedWalkthroughIds` so each teaching walkthrough is acknowledged once.
+`completedWalkthroughIds` so each teaching walkthrough is acknowledged once, and
+per-Hanzi `characterNotes`. Migration from version 6 adds an empty walkthrough
+list and an empty `characterNotes` map and does not alter XP, reviews, or
+achievements.
 
 ## 51. Achievements
 

@@ -45,6 +45,7 @@ type SaveGame = {
     lastActiveDate?: string
     perfectBedsToday: { date?: string; count: number }
   }
+  characterNotes: Record<string, string>
   updatedAt: number
 }
 ```

@@ -2,7 +2,7 @@
 // The route is read-only: screens are static production-class mockups, and token
 // tweaks stay in memory so a designer can watch every surface update at once.
 import { useCallback, useEffect, useMemo, useState, type CSSProperties, type ReactNode } from 'react'
-import { ArrowLeft, BarChart3, BookOpen, ChevronLeft, ChevronRight, Flower2, Grid3X3, HandHeart, HelpCircle, Layers, Leaf, LogOut, Plus, RotateCcw, Sparkles, Trophy, X } from 'lucide-react'
+import { ArrowLeft, BarChart3, BookOpen, ChevronLeft, ChevronRight, Flower2, Grid3X3, HandHeart, HelpCircle, Layers, Leaf, LogOut, Plus, RotateCcw, Sparkles, StickyNote, Trophy, X } from 'lucide-react'
 import { AchievementCollection, AchievementPopup } from '../achievements/AchievementUi'
 import { hanziWalkthroughs } from '../walkthrough'
 import { WalkthroughDialog } from '../walkthrough/WalkthroughDialog'
@@ -65,6 +65,7 @@ const screenCatalog = [
   { id: 'garden', title: 'Карта сада', group: 'Сад', classes: '.map-screen .map-header .player-level .map-stats-button', tokens: 'night, chrome, gold, jade' },
   { id: 'battle', title: 'Бой', group: 'Письмо', classes: '.battle-screen .prompt-scroll .writing-circle .hint-button', tokens: 'paper, ink, chrome, gold' },
   { id: 'composition', title: 'Состав', group: 'Письмо', classes: '.composition-dialog .composition-list', tokens: 'paper, ink, gold, jade' },
+  { id: 'note', title: 'Заметка', group: 'Письмо', classes: '.note-dialog .note-editor', tokens: 'paper, ink, gold, jade' },
   { id: 'walkthrough', title: 'Правило черт', group: 'Письмо', classes: '.walkthrough-dialog .walkthrough-demo .primary-button', tokens: 'paper, ink, gold, jade' },
   { id: 'cleared', title: 'Грядка очищена', group: 'Письмо', classes: '.cleared-state .xp-summary .primary-button', tokens: 'paper, ink, jade, gold' },
   { id: 'stats', title: 'Стена иероглифов', group: 'Летопись', classes: '.statistics-screen .character-wall .character-tile', tokens: 'night, chrome, gold, paper' },
@@ -215,9 +216,14 @@ function BattleWritingMock({
           </p>
         )}
       </header>
-      <button className="composition-button" type="button" aria-label="Показать состав иероглифа">
-        <Layers size={18} /> <span>Состав</span>
-      </button>
+      <div className="battle-assist-buttons">
+        <button className="composition-button" type="button" aria-label="Показать состав иероглифа">
+          <Layers size={18} /> <span>Состав</span>
+        </button>
+        <button className="note-button has-note" type="button" aria-label="Открыть заметку">
+          <StickyNote size={18} /> <span>Заметка</span>
+        </button>
+      </div>
       <div className="writing-circle">
         <div className="writing-target" aria-hidden="true"><span>{hanzi}</span></div>
       </div>
@@ -276,6 +282,49 @@ function BattleCompositionMock({
               </li>
             ))}
           </ol>
+        </section>
+      </div>
+    </BattleShell>
+  )
+}
+
+function BattleNoteMock({
+  backdrop,
+  keyword,
+  primitive,
+  hanzi,
+}: {
+  backdrop: string
+  keyword: string
+  primitive: string | null
+  hanzi: string
+}) {
+  return (
+    <BattleShell backdrop={backdrop} primitive={primitive}>
+      <header className="prompt-scroll">
+        <strong>{keyword.toLocaleUpperCase('ru')}</strong>
+        {primitive && (
+          <p className="primitive-prompt">
+            <Plus size={13} aria-hidden="true" />
+            <b>{primitive}</b>
+          </p>
+        )}
+      </header>
+      <div className="writing-circle">
+        <div className="writing-target" aria-hidden="true"><span>{hanzi}</span></div>
+      </div>
+      <div className="composition-backdrop">
+        <section className="composition-dialog note-dialog" role="dialog" aria-labelledby="spread-note-title">
+          <button className="composition-close" type="button" aria-label="Закрыть заметку"><X /></button>
+          <p className="composition-eyebrow">Заметка</p>
+          <h1 id="spread-note-title">{keyword}</h1>
+          <textarea
+            className="note-editor"
+            readOnly
+            value="огонь сверху, вода слева"
+            aria-label="Текст заметки"
+          />
+          <button className="primary-button note-save" type="button">Сохранить</button>
         </section>
       </div>
     </BattleShell>
@@ -439,6 +488,7 @@ function tokenCss(tokens: Tokens): string {
 .screen-spread-prototype .prompt-scroll,
 .screen-spread-prototype .cleared-state,
 .screen-spread-prototype .composition-dialog,
+.screen-spread-prototype .note-dialog,
 .screen-spread-prototype .walkthrough-dialog,
 .screen-spread-prototype .achievement-popup,
 .screen-spread-prototype .character-detail {
@@ -463,6 +513,7 @@ function tokenCss(tokens: Tokens): string {
 }
 
 .screen-spread-prototype .composition-dialog,
+.screen-spread-prototype .note-dialog,
 .screen-spread-prototype .walkthrough-dialog,
 .screen-spread-prototype .achievement-popup {
   background: linear-gradient(145deg, var(--spread-paper-light), var(--spread-paper-deep));
@@ -489,6 +540,7 @@ function tokenCss(tokens: Tokens): string {
 .screen-spread-prototype .stats-back,
 .screen-spread-prototype .back-button,
 .screen-spread-prototype .composition-button,
+.screen-spread-prototype .note-button,
 .screen-spread-prototype .hint-button,
 .screen-spread-prototype .bed-cleanliness {
   color: var(--spread-chrome);
@@ -679,6 +731,7 @@ export function ScreenSpreadPrototype() {
     garden: <GardenMock />,
     battle: <BattleWritingMock backdrop={backdrop} keyword={sample.keyword.ru} primitive={sample.structure.primitive} hanzi={sample.hanzi} toast />,
     composition: <BattleCompositionMock backdrop={backdrop} keyword={sample.keyword.ru} primitive={sample.structure.primitive} hanzi={sample.hanzi} components={sample.structure.components} />,
+    note: <BattleNoteMock backdrop={backdrop} keyword={sample.keyword.ru} primitive={sample.structure.primitive} hanzi={sample.hanzi} />,
     walkthrough: <BattleWalkthroughMock backdrop={backdrop} />,
     cleared: <BattleClearedMock backdrop={cleanBackdrop} />,
     stats: <StatsMemoryMock />,

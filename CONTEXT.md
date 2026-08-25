@@ -19,3 +19,7 @@ _Avoid_: Plot, field, cell, area, section
 **Battle**:
 The encounter entered by selecting a bed, in which the player clears that bed's due or new Hanzi by writing them.
 _Avoid_: Lesson, level
+
+**Character note**:
+A player-written reminder attached to one Hanzi and available during battle.
+_Avoid_: Mnemonic, comment, annotation, hint

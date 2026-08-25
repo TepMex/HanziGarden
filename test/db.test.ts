@@ -75,14 +75,15 @@ describe('v4 progression migration', () => {
     const migrated = migrateV4Save(v4)
     expect(migrated.version).toBe(7)
     expect(migrated.completedWalkthroughIds).toEqual([])
+    expect(migrated.characterNotes).toEqual({})
     expect(migrated.playerProgress.lifetimeCompletedKanji).toBe(1)
     expect(migrated.playerProgress.lifetimeErrors).toBe(1)
     expect(migrated.playerProgress.totalXp).toBeGreaterThanOrEqual(1)
   })
 })
 
-describe('v6 walkthrough migration', () => {
-  test('adds an empty completed-walkthrough list without touching learning progress', () => {
+describe('v6 save migration', () => {
+  test('adds empty walkthrough completions and character notes without touching learning progress', () => {
     const v6: SaveGameV6 = {
       id: 'main',
       version: 6,
@@ -92,15 +93,32 @@ describe('v6 walkthrough migration', () => {
       seenCharacterIds: ['rsh-0001'],
       cards: {},
       reviewEvents: [],
-      playerProgress: { totalXp: 3, lifetimeCorrectStrokes: 2, lifetimeErrors: 0, lifetimeCompletedKanji: 1, lifetimeCompletedBeds: 0, bestComboEver: 1, perfectComplexKanjiCount: 0, completedBiomeIds: [] },
-      achievements: { unlockedAchievements: [], currentDailyStreak: 0, bestDailyStreak: 0, perfectBedsToday: { count: 0 } },
+      playerProgress: {
+        totalXp: 12,
+        lifetimeCorrectStrokes: 8,
+        lifetimeErrors: 1,
+        lifetimeCompletedKanji: 2,
+        lifetimeCompletedBeds: 0,
+        bestComboEver: 2,
+        perfectComplexKanjiCount: 0,
+        completedBiomeIds: [],
+      },
+      achievements: {
+        unlockedAchievements: [{ id: 'combo_5', unlockedAt: '2026-08-20T00:00:00.000Z' }],
+        currentDailyStreak: 1,
+        bestDailyStreak: 1,
+        perfectBedsToday: { count: 0 },
+      },
       updatedAt: 42,
     }
+
     expect(migrateV6Save(v6)).toMatchObject({
       version: 7,
       seenCharacterIds: ['rsh-0001'],
       completedWalkthroughIds: [],
+      characterNotes: {},
       playerProgress: v6.playerProgress,
+      achievements: { unlockedAchievements: [{ id: 'combo_5' }] },
     })
   })
 })

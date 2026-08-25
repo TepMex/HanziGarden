@@ -21,10 +21,11 @@ export type SaveGame = {
   reviewEvents: ReviewEvent[]
   playerProgress: PlayerProgress
   achievements: AchievementPersistence
+  characterNotes: Record<string, string>
   updatedAt: number
 }
 
-export type SaveGameV6 = Omit<SaveGame, 'version' | 'completedWalkthroughIds'> & { version: 6 }
+export type SaveGameV6 = Omit<SaveGame, 'version' | 'completedWalkthroughIds' | 'characterNotes'> & { version: 6 }
 export type SaveGameV5 = Omit<SaveGameV6, 'version' | 'achievements'> & { version: 5 }
 export type SaveGameV4 = Omit<SaveGameV5, 'version' | 'playerProgress'> & { version: 4 }
 
@@ -151,10 +152,10 @@ export function migrateV4Save(save: SaveGameV4): SaveGame {
   player.completedBiomeIds = biomes
     .filter((biome) => beds.filter((bed) => bed.biomeId === biome.id).every((bed) => mastered.has(bed.id)))
     .map((biome) => biome.id)
-  return migrateV6Save(migrateV5Save({ ...save, version: 5, playerProgress: player }))
+  return migrateV5Save({ ...save, version: 5, playerProgress: player })
 }
 
-export function migrateV5Save(save: SaveGameV5): SaveGameV6 {
+export function migrateV5Save(save: SaveGameV5): SaveGame {
   let achievements = structuredClone(initialAchievementPersistence)
   let replayPlayer = structuredClone(initialPlayerProgress)
   let replaySession = structuredClone(initialSessionProgress)
@@ -183,11 +184,11 @@ export function migrateV5Save(save: SaveGameV5): SaveGameV6 {
   achievements = processAchievementEvents(achievements, save.playerProgress, replaySession, [{
     type: 'player.migrated', timestamp: save.updatedAt,
   }]).state
-  return { ...save, version: 6, achievements }
+  return migrateV6Save({ ...save, version: 6, achievements })
 }
 
 export function migrateV6Save(save: SaveGameV6): SaveGame {
-  return { ...save, version: 7, completedWalkthroughIds: [] }
+  return { ...save, version: 7, completedWalkthroughIds: [], characterNotes: {} }
 }
 
 function isV6Save(save: StoredSave): save is SaveGameV6 {
@@ -199,7 +200,7 @@ function migrateStoredSave(save: StoredSave): SaveGame {
   if (isV2Save(save)) return migrateV4Save(migrateV2Save(save))
   if (isV3Save(save)) return migrateV4Save(migrateV3Save(save))
   if (isV4Save(save)) return migrateV4Save(save)
-  if (save.version === 5) return migrateV6Save(migrateV5Save(save))
+  if (save.version === 5) return migrateV5Save(save)
   if (isV6Save(save)) return migrateV6Save(save)
   return save
 }
@@ -276,14 +277,23 @@ export const initialSave: SaveGame = {
   reviewEvents: [],
   playerProgress: structuredClone(initialPlayerProgress),
   achievements: structuredClone(initialAchievementPersistence),
+  characterNotes: {},
   updatedAt: Date.now(),
+}
+
+function completeV7Save(save: SaveGame): SaveGame {
+  return {
+    ...save,
+    completedWalkthroughIds: Array.isArray(save.completedWalkthroughIds) ? save.completedWalkthroughIds : [],
+    characterNotes: save.characterNotes && typeof save.characterNotes === 'object' ? save.characterNotes : {},
+  }
 }
 
 export async function loadSave(): Promise<SaveGame> {
   await pendingSaveOperation
   const stored = await database.saves.get('main')
   if (!stored) return structuredClone(initialSave)
-  if (stored.version === 7) return stored
+  if (stored.version === 7) return completeV7Save(stored)
   const migrated = migrateStoredSave(stored)
   await database.saves.put(migrated)
   return migrated

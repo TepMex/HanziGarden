@@ -122,6 +122,13 @@ function reviewEventAt(value: unknown, path: string): ReviewEvent {
   }
 }
 
+function stringRecordAt(value: unknown, path: string): Record<string, string> {
+  const record = recordAt(value, path)
+  return Object.fromEntries(
+    Object.entries(record).map(([id, text]) => [id, stringAt(text, `${path}.${id}`)]),
+  )
+}
+
 /** Parse a current save while deliberately leaving cross-property/domain consistency unchecked. */
 export function parseSaveDump(dump: string | SaveGame): SaveGame {
   let value: unknown = dump
@@ -185,6 +192,7 @@ export function parseSaveDump(dump: string | SaveGame): SaveGame {
         count: integerAt(perfectBedsToday.count, 'save.achievements.perfectBedsToday.count'),
       },
     },
+    characterNotes: stringRecordAt(save.characterNotes, 'save.characterNotes'),
     updatedAt: numberAt(save.updatedAt, 'save.updatedAt'),
   }
 }
