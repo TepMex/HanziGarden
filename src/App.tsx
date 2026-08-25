@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import HanziWriter from 'hanzi-writer'
-import { ArrowLeft, BarChart3, BookOpen, Flower2, Grid3X3, HandHeart, HelpCircle, Layers, Leaf, LogOut, Plus, Sparkles, Trophy, X } from 'lucide-react'
+import { ArrowLeft, BarChart3, BookOpen, Flower2, Grid3X3, HandHeart, HelpCircle, Layers, Leaf, LogOut, Plus, Sparkles, StickyNote, Trophy, X } from 'lucide-react'
 import { type BedDefinition, type CharacterDefinition } from './data/model'
 import { battleArtworkForBiome, battleBackdropStage } from './data/battleBiomeArt'
 import { initialSave, loadSave, persistSave, type SaveGame } from './db'
@@ -22,6 +22,12 @@ import { isFirstEncounter } from './stats/srsStages'
 import { streakHighlightColor, streakHighlightOpacity, streakIntensity } from './streak'
 import { StrokeFeedbackAudioPlayer } from './strokeFeedbackAudio'
 import { assetUrl } from './assetUrl'
+import {
+  CHARACTER_NOTE_MAX_LENGTH,
+  characterNoteFor,
+  viewingCharacterNoteCostsXp,
+  withCharacterNote,
+} from './characterNotes'
 import { FIRST_ENCOUNTER_OUTLINE_OPACITY, inkWithOpacity, writingInkForBackdrop } from './battleInk'
 import { dispatchQuizStroke, installGameCheats, registerBattleCheatDriver } from './gameCheats'
 import {
@@ -211,6 +217,8 @@ function BattleScreen({
   const strokeFeedbackPlayerRef = useRef<StrokeFeedbackAudioPlayer | null>(null)
   const [correctStrokes, setCorrectStrokes] = useState(0)
   const [isCompositionOpen, setCompositionOpen] = useState(false)
+  const [isNoteOpen, setNoteOpen] = useState(false)
+  const [noteDraft, setNoteDraft] = useState('')
   const [lastReward, setLastReward] = useState<KanjiReward | null>(null)
   const [rewardSequence, setRewardSequence] = useState(0)
   const [bedSummary, setBedSummary] = useState({ correctStrokes: 0, errors: 0, comboBonusXp: 0, earnedXp: 0 })
@@ -309,18 +317,40 @@ function BattleScreen({
     return () => window.clearTimeout(timeout)
   }, [activeCharacter, bedSummary.earnedXp, gainedLevels.length])
 
+  const persistOpenNote = useCallback(() => {
+    if (!activeCharacter) return
+    const current = saveRef.current
+    const nextNotes = withCharacterNote(current.characterNotes, activeCharacter.id, noteDraft)
+    if (characterNoteFor(current.characterNotes, activeCharacter.id) === characterNoteFor(nextNotes, activeCharacter.id)) return
+    const nextSave: SaveGame = {
+      ...current,
+      characterNotes: nextNotes,
+      updatedAt: Date.now(),
+    }
+    saveRef.current = nextSave
+    onSave(nextSave, sessionRef.current, [])
+  }, [activeCharacter, noteDraft, onSave])
+
+  const closeNote = useCallback(() => {
+    persistOpenNote()
+    setNoteOpen(false)
+  }, [persistOpenNote])
+
   useEffect(() => {
     setCompositionOpen(false)
+    setNoteOpen(false)
   }, [activeCharacter?.id])
 
   useEffect(() => {
-    if (!isCompositionOpen) return
+    if (!isCompositionOpen && !isNoteOpen) return
     const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setCompositionOpen(false)
+      if (event.key !== 'Escape') return
+      if (isNoteOpen) closeNote()
+      else setCompositionOpen(false)
     }
     window.addEventListener('keydown', closeOnEscape)
     return () => window.removeEventListener('keydown', closeOnEscape)
-  }, [isCompositionOpen])
+  }, [closeNote, isCompositionOpen, isNoteOpen])
 
   const finishCharacter = useCallback((character: CharacterDefinition, totalMistakes: number) => {
     if (completingRef.current) return
@@ -622,9 +652,22 @@ function BattleScreen({
 
   const showComposition = () => {
     if (!activeCharacter) return
+    if (isNoteOpen) closeNote()
     assistanceMistakesRef.current += 1
     mistakesRef.current += 1
     setCompositionOpen(true)
+  }
+
+  const showNote = () => {
+    if (!activeCharacter) return
+    setCompositionOpen(false)
+    const existing = characterNoteFor(saveRef.current.characterNotes, activeCharacter.id)
+    if (viewingCharacterNoteCostsXp(existing)) {
+      assistanceMistakesRef.current += 1
+      mistakesRef.current += 1
+    }
+    setNoteDraft(existing)
+    setNoteOpen(true)
   }
 
   const infection = bedInfection(bed, save.cards)
@@ -663,10 +706,21 @@ function BattleScreen({
         )}
       </header>
 
-      {activeCharacter && activeCharacter.structure.components.length > 0 && (
-        <button className="composition-button" onClick={showComposition} aria-label="Показать состав иероглифа">
-          <Layers size={18} /> <span>Состав</span>
-        </button>
+      {activeCharacter && (
+        <div className="battle-assist-buttons">
+          {activeCharacter.structure.components.length > 0 && (
+            <button className="composition-button" onClick={showComposition} aria-label="Показать состав иероглифа">
+              <Layers size={18} /> <span>Состав</span>
+            </button>
+          )}
+          <button
+            className={`note-button ${characterNoteFor(save.characterNotes, activeCharacter.id) ? 'has-note' : ''}`}
+            onClick={showNote}
+            aria-label="Открыть заметку"
+          >
+            <StickyNote size={18} /> <span>Заметка</span>
+          </button>
+        </div>
       )}
 
       {activeCharacter ? (
@@ -738,6 +792,28 @@ function BattleScreen({
                 </li>
               ))}
             </ol>
+          </section>
+        </div>
+      )}
+
+      {activeCharacter && isNoteOpen && (
+        <div className="composition-backdrop" onClick={(event) => {
+          if (event.target === event.currentTarget) closeNote()
+        }}>
+          <section className="composition-dialog note-dialog" role="dialog" aria-modal="true" aria-labelledby="note-title">
+            <button className="composition-close" onClick={closeNote} aria-label="Закрыть заметку"><X /></button>
+            <p className="composition-eyebrow">Заметка</p>
+            <h1 id="note-title">{activeCharacter.keyword.ru}</h1>
+            <textarea
+              className="note-editor"
+              value={noteDraft}
+              maxLength={CHARACTER_NOTE_MAX_LENGTH}
+              placeholder="Напишите подсказку, которая поможет вспомнить иероглиф"
+              onChange={(event) => setNoteDraft(event.target.value)}
+              autoFocus
+              aria-label="Текст заметки"
+            />
+            <button className="primary-button note-save" type="button" onClick={closeNote}>Сохранить</button>
           </section>
         </div>
       )}

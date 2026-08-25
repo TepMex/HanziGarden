@@ -8,7 +8,7 @@ import { initialAchievementPersistence } from '../src/achievements'
 function saveFixture(): SaveGame {
   return {
     id: 'main',
-    version: 6,
+    version: 7,
     unlockedBedIds: ['bed-unknown'],
     masteredBedIds: ['bed-locked-but-mastered'],
     lastActiveBedId: 'bed-not-unlocked',
@@ -39,6 +39,7 @@ function saveFixture(): SaveGame {
     }],
     playerProgress: { ...initialPlayerProgress, totalXp: 123, lifetimeCompletedKanji: 1 },
     achievements: structuredClone(initialAchievementPersistence),
+    characterNotes: { 'character-unknown': 'огонь сверху' },
     updatedAt: 789,
   }
 }
@@ -53,6 +54,8 @@ describe('game cheat save dumps', () => {
     expect(card.last_review).toBeInstanceOf(Date)
     expect(card.last_review?.toISOString()).toBe('2026-08-19T10:00:00.000Z')
     expect(restored.reviewEvents).toEqual(saveFixture().reviewEvents)
+    expect(restored.characterNotes).toEqual({ 'character-unknown': 'огонь сверху' })
+    expect(restored.version).toBe(7)
   })
 
   test('clones object input instead of sharing mutable values', () => {
@@ -68,8 +71,12 @@ describe('game cheat save dumps', () => {
   test('rejects a structurally damaged or obsolete dump', () => {
     expect(() => parseSaveDump(JSON.stringify({ ...saveFixture(), version: 2 }) as SaveGame))
       .toThrow('save.version')
+    expect(() => parseSaveDump(JSON.stringify({ ...saveFixture(), version: 6 }) as SaveGame))
+      .toThrow('save.version')
     expect(() => parseSaveDump({ ...saveFixture(), cards: { broken: {} } } as SaveGame))
       .toThrow('save.cards.broken.state')
+    expect(() => parseSaveDump({ ...saveFixture(), characterNotes: { broken: 1 } } as unknown as SaveGame))
+      .toThrow('save.characterNotes.broken')
   })
 
   test('preserves semantically inconsistent debug state', () => {

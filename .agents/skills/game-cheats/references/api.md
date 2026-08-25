@@ -15,12 +15,12 @@ await cheats.loadDb(jsonOrSave)
 
 ## Save shape
 
-`loadDb` accepts formatted JSON or an object with the current v6 shape:
+`loadDb` accepts formatted JSON or an object with the current v7 shape:
 
 ```ts
 type SaveGame = {
   id: 'main'
-  version: 6
+  version: 7
   unlockedBedIds: string[]
   masteredBedIds: string[]
   lastActiveBedId: string | null
@@ -44,6 +44,7 @@ type SaveGame = {
     lastActiveDate?: string
     perfectBedsToday: { date?: string; count: number }
   }
+  characterNotes: Record<string, string>
   updatedAt: number
 }
 ```

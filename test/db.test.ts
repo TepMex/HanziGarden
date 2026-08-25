@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import { migrateV1Save, migrateV2Save, migrateV3Save, migrateV4Save, type SaveGameV1, type SaveGameV2, type SaveGameV3, type SaveGameV4 } from '../src/db'
+import { migrateV1Save, migrateV2Save, migrateV3Save, migrateV4Save, migrateV6Save, type SaveGameV1, type SaveGameV2, type SaveGameV3, type SaveGameV4, type SaveGameV6 } from '../src/db'
 import type { CardState } from '../src/learning'
 
 describe('v1 save migration', () => {
@@ -73,9 +73,49 @@ describe('v4 progression migration', () => {
       ], updatedAt: 42,
     }
     const migrated = migrateV4Save(v4)
-    expect(migrated.version).toBe(6)
+    expect(migrated.version).toBe(7)
+    expect(migrated.characterNotes).toEqual({})
     expect(migrated.playerProgress.lifetimeCompletedKanji).toBe(1)
     expect(migrated.playerProgress.lifetimeErrors).toBe(1)
     expect(migrated.playerProgress.totalXp).toBeGreaterThanOrEqual(1)
+  })
+})
+
+describe('v6 character note migration', () => {
+  test('adds empty character notes without touching achievements or XP', () => {
+    const v6: SaveGameV6 = {
+      id: 'main',
+      version: 6,
+      unlockedBedIds: ['bed-001'],
+      masteredBedIds: [],
+      lastActiveBedId: 'bed-001',
+      seenCharacterIds: ['rsh-0001'],
+      cards: {},
+      reviewEvents: [],
+      playerProgress: {
+        totalXp: 12,
+        lifetimeCorrectStrokes: 8,
+        lifetimeErrors: 1,
+        lifetimeCompletedKanji: 2,
+        lifetimeCompletedBeds: 0,
+        bestComboEver: 2,
+        perfectComplexKanjiCount: 0,
+        completedBiomeIds: [],
+      },
+      achievements: {
+        unlockedAchievements: [{ id: 'combo_5', unlockedAt: '2026-08-20T00:00:00.000Z' }],
+        currentDailyStreak: 1,
+        bestDailyStreak: 1,
+        perfectBedsToday: { count: 0 },
+      },
+      updatedAt: 42,
+    }
+
+    expect(migrateV6Save(v6)).toMatchObject({
+      version: 7,
+      characterNotes: {},
+      playerProgress: { totalXp: 12 },
+      achievements: { unlockedAchievements: [{ id: 'combo_5' }] },
+    })
   })
 })
