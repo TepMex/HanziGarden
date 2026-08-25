@@ -760,6 +760,34 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
   stroke-opacity: var(--streak-ink-opacity) !important;
 }
 .hint-button { position: absolute; z-index: 14; right: 26px; bottom: 28px; display: flex; align-items: center; gap: 7px; padding: 9px 12px; color: #e5d4b0; border: 1px solid rgba(205, 181, 130, .32); background: rgba(26, 32, 27, .75); cursor: pointer; }
+
+.stroke-error-hint {
+  position: absolute;
+  z-index: 16;
+  left: 50%;
+  bottom: 86px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: min(360px, calc(100vw - 48px));
+  padding: 10px 14px;
+  color: #f4e9cc;
+  border: 1px solid rgba(226, 205, 150, .48);
+  background: rgba(16, 22, 18, .94);
+  box-shadow: 0 8px 22px rgba(10, 14, 12, .5);
+  text-shadow: 0 1px 2px #101410;
+  pointer-events: none;
+  transform: translateX(-50%);
+  animation: stroke-error-hint .45s ease both;
+}
+.stroke-error-hint svg { flex: none; margin-top: 2px; color: #e7c467; }
+.stroke-error-hint div { display: grid; gap: 2px; min-width: 0; }
+.stroke-error-hint strong { font-size: .92rem; letter-spacing: .02em; }
+.stroke-error-hint span { color: #d8c9a6; font-size: .78rem; line-height: 1.35; }
+@keyframes stroke-error-hint {
+  from { opacity: 0; transform: translate(-50%, 10px); }
+  to { opacity: 1; transform: translateX(-50%); }
+}
 .bed-cleanliness { position: absolute; z-index: 14; left: 27px; bottom: 29px; display: flex; align-items: center; gap: 9px; color: #e8d8b6; }
 .bed-cleanliness > span { width: 110px; height: 5px; overflow: hidden; border: 1px solid rgba(226, 207, 165, .42); background: rgba(37, 27, 40, .8); }
 .bed-cleanliness i { display: block; height: 100%; background: #88996c; transition: width .6s; }
@@ -865,6 +893,10 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
     justify-content: center;
     font-size: .78rem;
   }
+  .stroke-error-hint {
+    bottom: max(68px, calc(env(safe-area-inset-bottom, 0px) + 52px));
+    width: min(360px, calc(100vw - 24px));
+  }
   /* Keep leaf meter out of the hint row (Android screenshot showed them colliding). */
   .bed-cleanliness {
     top: max(92px, calc(env(safe-area-inset-top, 0px) + 78px));
@@ -902,6 +934,9 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
     left: 12px;
     justify-content: center;
   }
+  .stroke-error-hint {
+    bottom: max(64px, calc(env(safe-area-inset-bottom, 0px) + 48px));
+  }
   .bed-cleanliness {
     top: max(92px, calc(env(safe-area-inset-top, 0px) + 78px));
     bottom: auto;
@@ -931,6 +966,7 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
   .xp-toast { animation: xp-toast-reduced 1.05s step-end both !important; }
+  .stroke-error-hint { animation: none !important; }
 }
 
 /* V2 continuous garden map ------------------------------------------------ */

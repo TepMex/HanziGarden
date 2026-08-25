@@ -592,17 +592,34 @@ Normalize both paths and compare their curve shapes. A Fréchet-distance-style c
 
 ### 16.6 Stroke Order
 
-When stroke `N` is expected, optionally compare the gesture against later strokes. If it strongly matches stroke `N+1` or `N+2`, classify it as a probable stroke-order error.
+When stroke `N` is expected, compare the finished gesture against later strokes of the same character. If a later stroke is a clearly better geometric match than the expected one, classify the miss as a stroke-order error. Similar neighbouring strokes (for example the horizontals in 三, 王, and 丰) must not produce an aggressive false positive: if distances are close or confidence is low, fall back to a shape miss. A player-facing order hint is shown only when the classifier is confident which later stroke the player attempted; otherwise show no hint.
 
 ### 16.7 Reverse Direction
 
-Reject geometrically correct strokes performed backwards when correct direction is part of the learning goal.
+Reject geometrically correct strokes performed backwards when correct direction is part of the learning goal. Classify a miss as reverse direction only when the path still belongs to the expected stroke; a random line that happens to start near the wrong end is a shape miss.
 
 Recommended:
 
 ```ts
 acceptBackwardsStrokes = false;
 ```
+
+### 16.8 Implemented mistake classification
+
+Hanzi Writer remains the sole authority for accepting a stroke and for `mistakesOnStroke` / `totalMistakes`. After `onMistake`, a dedicated `strokeErrorClassifier` module explains the rejected gesture. It never marks the stroke correct, never changes canonical order, and never runs on pointer move.
+
+Inputs are the public quiz payload (`strokeNum`, `drawnPath.points`, optional `isBackwards`) plus the character `medians` already loaded through `charDataLoader` / `loadHanziCharData`. Character JSON is cached per Hanzi so classification does not issue another network request.
+
+Result types:
+
+- `wrong-order` — the drawing matches a later stroke much better than the expected one;
+- `wrong-direction` — the drawing matches the expected stroke but start and end are reversed;
+- `bad-shape` — fallback for position, length, or form errors;
+- `unknown` — empty, tiny, or malformed paths.
+
+Check order first, then reverse direction, then shape. Player-facing copy is instructional Russian and must never show the internal type names. A wrong-order hint does not name stroke numbers or which later stroke was attempted; it only says the player jumped ahead. Show that hint only when confidence is high enough that a later stroke is a clear match; `bad-shape` and `unknown` misses show no copy. Repeated identical hints replace in place rather than stacking. A confident order miss briefly highlights the expected stroke with the existing `highlightStroke` API; it does not play a full-character animation and does not set `hintUsed`.
+
+Development-only debug logging can be enabled with `localStorage.hanziGarden.debugStrokeErrors = '1'`, `?debugStrokes=1`, or `window.hanziGardenDebugStrokeErrors = true`. Production builds must not write this trace to the console.
 
 ## 17. MVP Integration with Hanzi Writer
 
@@ -629,6 +646,12 @@ writer.quiz({
     battleSystem.rejectStroke({
       strokeIndex: data.strokeNum
     });
+    battleSystem.explainStrokeError(classifyStrokeError({
+      expectedStrokeIndex: data.strokeNum,
+      drawnPath: data.drawnPath,
+      characterData,
+      isBackwards: data.isBackwards
+    }));
   },
 
   onComplete() {
@@ -770,7 +793,11 @@ Suggested progression:
 - second mistake: same;
 - after ~3 failed attempts on the same stroke: briefly show only the next expected stroke as a faint ink ghost for ~500–700 ms.
 
+A confident classified order miss (when the attempted later stroke is identified) may also briefly highlight that expected stroke immediately. Direction misses show instructional copy without revealing extra strokes. Shape and unknown misses show no player-facing hint.
+
 Do not reveal the full character unless the player explicitly asks for a stronger hint or reaches a failure state. The first-encounter tracing outline in section 11 is the one exception: it is shown automatically for **Новый** characters and is not graded as a hint.
+
+Battle shows at most one current handwriting hint at a time. Repeating the same miss replaces that hint rather than stacking toasts.
 
 ## 25. Review Grading
 
@@ -1147,6 +1174,8 @@ loadDb(dump: string | SaveGame): Promise<void>;
 ```
 
 Stroke cheats must pass canonical Hanzi medians through the same Hanzi Writer quiz input path as real mouse input. A wrong stroke uses the current median in reverse, so ordinary mistake counts, hints, animations, and review grading remain authoritative. The promises resolve only after the corresponding quiz callback.
+
+Development builds can log stroke-error classification with `localStorage.hanziGarden.debugStrokeErrors = '1'`, `?debugStrokes=1`, or `window.hanziGardenDebugStrokeErrors = true`. Production consoles stay quiet.
 
 `dumpDb()` waits for pending Dexie writes and defaults to formatted JSON suitable for a backup; object mode returns a deep clone. `loadDb()` accepts either form, validates the current v7 save structure, restores FSRS dates, persists the exact snapshot, synchronizes live application state, and returns to the garden. It intentionally does not enforce domain consistency between IDs or progression properties so tests can load impossible states.
 

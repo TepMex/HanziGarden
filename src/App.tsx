@@ -5,7 +5,15 @@ import { type BedDefinition, type CharacterDefinition } from './data/model'
 import { battleArtworkForBiome, battleBackdropStage } from './data/battleBiomeArt'
 import { initialSave, loadSave, persistSave, type SaveGame } from './db'
 import { battleBedCleanliness, bedInfection } from './garden'
-import { loadHanziCharData } from './hanziData'
+import { loadHanziCharData, type HanziCharacterJson } from './hanziData'
+import { classifyStrokeError } from './strokeErrorClassifier'
+import {
+  isSameStrokeErrorHint,
+  STROKE_ERROR_HINT_DURATION_MS,
+  strokeErrorCopy,
+  type StrokeErrorHintCopy,
+} from './strokeErrorFeedback'
+import { StrokeErrorHint } from './StrokeErrorHint'
 import { isCardDue, reviewCard, type ReviewEvent } from './learning'
 import { GardenMap } from './map/GardenMap'
 import { initialCamera, type CameraState } from './map/cameraMath'
@@ -189,6 +197,9 @@ function BattleScreen({
   const writerTarget = useRef<HTMLDivElement>(null)
   const promptTextRef = useRef<HTMLElement>(null)
   const writerRef = useRef<HanziWriter | null>(null)
+  const characterDataRef = useRef<HanziCharacterJson | null>(null)
+  const strokeHintTimerRef = useRef(0)
+  const [strokeHint, setStrokeHint] = useState<StrokeErrorHintCopy | null>(null)
   const saveRef = useRef(save)
   const sessionRef = useRef(session)
   const bedStartXpRef = useRef(save.playerProgress.totalXp)
@@ -441,6 +452,9 @@ function BattleScreen({
     clearStreakGradientRef.current = null
     startedAtRef.current = Date.now()
     completingRef.current = false
+    characterDataRef.current = null
+    window.clearTimeout(strokeHintTimerRef.current)
+    setStrokeHint(null)
     setCorrectStrokes(0)
     writerTarget.current.replaceChildren()
 
@@ -463,7 +477,10 @@ function BattleScreen({
       acceptBackwardsStrokes: false,
       // XHR: Fetch is blocked for file:// in Android WebView / Chromium.
       charDataLoader: (char, onComplete, onError) => {
-        loadHanziCharData(char).then(onComplete).catch(onError)
+        loadHanziCharData(char).then((data) => {
+          characterDataRef.current = data
+          onComplete(data)
+        }).catch(onError)
       },
     })
     writerRef.current = writer
@@ -474,6 +491,8 @@ function BattleScreen({
       highlightOnComplete: false,
       onCorrectStroke: (data) => {
         settleCheatStroke('correct')
+        window.clearTimeout(strokeHintTimerRef.current)
+        setStrokeHint(null)
         strokeFeedbackPlayerRef.current?.playCorrect()
         const completedStrokes = data.strokeNum + 1
         const nextBackdropStage = battleBackdropStage(activeCharacter.strokeCount, completedStrokes)
@@ -516,6 +535,27 @@ function BattleScreen({
         const totalMistakes = data.totalMistakes + assistanceMistakesRef.current
         mistakesRef.current = totalMistakes
         if (correctStrokesRef.current === activeCharacter.strokeCount - 1) finalStrokeErrorRef.current = true
+        const characterData = characterDataRef.current
+        if (!characterData) return
+        try {
+          const error = classifyStrokeError({
+            expectedStrokeIndex: data.strokeNum,
+            drawnPath: data.drawnPath,
+            characterData,
+            isBackwards: data.isBackwards,
+          })
+          const hint = strokeErrorCopy(error)
+          if (!hint) return
+          setStrokeHint((current) => (isSameStrokeErrorHint(current, hint) ? current : hint))
+          window.clearTimeout(strokeHintTimerRef.current)
+          strokeHintTimerRef.current = window.setTimeout(() => setStrokeHint(null), STROKE_ERROR_HINT_DURATION_MS)
+          if (error.type === 'wrong-order') {
+            writer.updateColor('highlightColor', NORMAL_HINT_COLOR, { duration: 0 })
+            writer.highlightStroke(data.strokeNum)
+          }
+        } catch {
+          // Classification is explanatory only and must never break quiz scoring.
+        }
       },
       onComplete: (summary) => {
         const totalMistakes = summary.totalMistakes + assistanceMistakesRef.current
@@ -590,6 +630,7 @@ function BattleScreen({
       resizeObserver?.disconnect()
       window.removeEventListener('resize', syncWriterSize)
       window.visualViewport?.removeEventListener('resize', syncWriterSize)
+      window.clearTimeout(strokeHintTimerRef.current)
       writer.cancelQuiz()
       writerTarget.current?.replaceChildren()
       if (writerTarget.current) delete writerTarget.current.dataset.traceOutline
@@ -696,6 +737,7 @@ function BattleScreen({
             />
           </div>
           <button className="hint-button" onClick={useHint}><HelpCircle size={16} /> Показать следующий штрих</button>
+          {strokeHint && <StrokeErrorHint hint={strokeHint} />}
         </>
       ) : (
         <section className="cleared-state">
