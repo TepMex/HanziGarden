@@ -25,6 +25,7 @@ type SaveGame = {
   masteredBedIds: string[]
   lastActiveBedId: string | null
   seenCharacterIds: string[]
+  completedWalkthroughIds: string[]
   cards: Record<string, CardState>
   reviewEvents: ReviewEvent[]
   playerProgress: {

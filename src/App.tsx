@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import HanziWriter from 'hanzi-writer'
 import { ArrowLeft, BarChart3, BookOpen, Flower2, Grid3X3, HandHeart, HelpCircle, Layers, Leaf, LogOut, Plus, Sparkles, StickyNote, Trophy, X } from 'lucide-react'
+import { WalkthroughDialog } from './walkthrough/WalkthroughDialog'
+import { nextEligibleWalkthrough, withCompletedWalkthroughId } from './walkthrough'
 import { type BedDefinition, type CharacterDefinition } from './data/model'
 import { battleArtworkForBiome, battleBackdropStage } from './data/battleBiomeArt'
 import { initialSave, loadSave, persistSave, type SaveGame } from './db'
@@ -180,12 +182,14 @@ function BattleScreen({
   save,
   session,
   onSave,
+  onUpdateSave,
   onExit,
 }: {
   bed: BedDefinition
   save: SaveGame
   session: SessionProgress
   onSave: (save: SaveGame, session: SessionProgress, events: AchievementEvent[]) => void
+  onUpdateSave: (save: SaveGame) => void
   onExit: () => void
 }) {
   const dueCharacters = useMemo(
@@ -224,6 +228,27 @@ function BattleScreen({
   const [bedSummary, setBedSummary] = useState({ correctStrokes: 0, errors: 0, comboBonusXp: 0, earnedXp: 0 })
   const bedSummaryRef = useRef(bedSummary)
   const [summaryReady, setSummaryReady] = useState(false)
+  const blockingWalkthrough = activeCharacter
+    ? nextEligibleWalkthrough(activeCharacter.hanzi, {
+      surface: 'battle',
+      isFirstEncounter: isFirstEncounter(save.cards[activeCharacter.id]),
+      completedWalkthroughIds: save.completedWalkthroughIds,
+    })
+    : undefined
+
+  const completeWalkthrough = useCallback(() => {
+    if (!blockingWalkthrough) return
+    const nextSave: SaveGame = {
+      ...saveRef.current,
+      completedWalkthroughIds: withCompletedWalkthroughId(
+        saveRef.current.completedWalkthroughIds,
+        blockingWalkthrough.id,
+      ),
+      updatedAt: Date.now(),
+    }
+    saveRef.current = nextSave
+    onUpdateSave(nextSave)
+  }, [blockingWalkthrough, onUpdateSave])
 
   const settleCheatStroke = useCallback((outcome: 'correct' | 'wrong') => {
     const pending = pendingCheatStrokeRef.current
@@ -440,7 +465,7 @@ function BattleScreen({
   }, [bed, onSave])
 
   useEffect(() => {
-    if (!writerTarget.current || !activeCharacter) return
+    if (!writerTarget.current || !activeCharacter || blockingWalkthrough) return
     const initialInk = writingInkForBackdrop('fullDirty')
     mistakesRef.current = 0
     assistanceMistakesRef.current = 0
@@ -636,10 +661,10 @@ function BattleScreen({
       if (writerTarget.current) delete writerTarget.current.dataset.traceOutline
       writerRef.current = null
     }
-  }, [activeCharacter, finishCharacter, rejectPendingCheatStroke, settleCheatStroke])
+  }, [activeCharacter, blockingWalkthrough, finishCharacter, rejectPendingCheatStroke, settleCheatStroke])
 
   const useHint = () => {
-    if (!activeCharacter || !writerRef.current) return
+    if (!activeCharacter || !writerRef.current || blockingWalkthrough) return
     hintUsedRef.current = true
     assistanceMistakesRef.current += 1
     mistakesRef.current += 1
@@ -651,7 +676,7 @@ function BattleScreen({
   }
 
   const showComposition = () => {
-    if (!activeCharacter) return
+    if (!activeCharacter || blockingWalkthrough) return
     if (isNoteOpen) closeNote()
     assistanceMistakesRef.current += 1
     mistakesRef.current += 1
@@ -659,7 +684,7 @@ function BattleScreen({
   }
 
   const showNote = () => {
-    if (!activeCharacter) return
+    if (!activeCharacter || blockingWalkthrough) return
     setCompositionOpen(false)
     const existing = characterNoteFor(saveRef.current.characterNotes, activeCharacter.id)
     if (viewingCharacterNoteCostsXp(existing)) {
@@ -689,6 +714,7 @@ function BattleScreen({
 
   return (
     <main className={`battle-screen ${activeCharacter?.structure.primitive ? 'has-primitive' : ''}`}>
+      <div className="battle-playfield" {...(blockingWalkthrough ? { inert: true } : {})}>
       <div
         className="battle-backdrop"
         style={{ backgroundImage: `url(${JSON.stringify(backdropUrl)})` }}
@@ -795,7 +821,6 @@ function BattleScreen({
           </section>
         </div>
       )}
-
       {activeCharacter && isNoteOpen && (
         <div className="composition-backdrop" onClick={(event) => {
           if (event.target === event.currentTarget) closeNote()
@@ -816,6 +841,11 @@ function BattleScreen({
             <button className="primary-button note-save" type="button" onClick={closeNote}>Сохранить</button>
           </section>
         </div>
+      )}
+      </div>
+
+      {blockingWalkthrough && (
+        <WalkthroughDialog walkthrough={blockingWalkthrough} onContinue={completeWalkthrough} />
       )}
     </main>
   )
@@ -923,6 +953,7 @@ export default function App() {
   useEffect(() => { appSessionRef.current = session }, [session])
 
   const applyLoadedSave = useCallback((loadedSave: SaveGame) => {
+    appSaveRef.current = loadedSave
     setSave(loadedSave)
     setActiveBed(null)
     setScreen('garden')
@@ -981,24 +1012,25 @@ export default function App() {
   }, [loaded])
 
   const enterBed = (bed: BedDefinition) => {
-    if (!save.unlockedBedIds.includes(bed.id)) return
+    const current = appSaveRef.current
+    if (!current.unlockedBedIds.includes(bed.id)) return
     // The source data contains one one-character list. Its second half is an
     // intentional empty bed under the required midpoint split, so it is
     // immediately mastered when reached and cannot block garden progression.
     if (bed.characterIds.length === 0) {
-      const mastered = new Set(save.masteredBedIds)
-      const unlocked = new Set(save.unlockedBedIds)
+      const mastered = new Set(current.masteredBedIds)
+      const unlocked = new Set(current.unlockedBedIds)
       mastered.add(bed.id)
       bed.neighbors.forEach((id) => unlocked.add(id))
       updateSave({
-        ...save,
+        ...current,
         masteredBedIds: [...mastered],
         unlockedBedIds: [...unlocked],
         updatedAt: Date.now(),
       })
       return
     }
-    const nextSave = { ...save, lastActiveBedId: bed.id, updatedAt: Date.now() }
+    const nextSave = { ...current, lastActiveBedId: bed.id, updatedAt: Date.now() }
     updateSave(nextSave)
     setActiveBed(bed)
     setScreen('battle')
@@ -1011,7 +1043,7 @@ export default function App() {
   } else if (screen === 'about' || screen === 'support') {
     content = <MenuInfoScreen kind={screen} onBack={() => setScreen('menu')} />
   } else if (screen === 'battle' && activeBed) {
-    content = <BattleScreen bed={activeBed} save={save} session={session} onSave={updateProgress} onExit={() => setScreen('garden')} />
+    content = <BattleScreen bed={activeBed} save={save} session={session} onSave={updateProgress} onUpdateSave={updateSave} onExit={() => setScreen('garden')} />
   } else if (screen === 'stats') {
     content = <StatisticsScreen save={save} session={session} onBack={() => setScreen('garden')} />
   } else {

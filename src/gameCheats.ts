@@ -163,6 +163,7 @@ export function parseSaveDump(dump: string | SaveGame): SaveGame {
     masteredBedIds: stringArrayAt(save.masteredBedIds, 'save.masteredBedIds'),
     lastActiveBedId,
     seenCharacterIds: stringArrayAt(save.seenCharacterIds, 'save.seenCharacterIds'),
+    completedWalkthroughIds: stringArrayAt(save.completedWalkthroughIds, 'save.completedWalkthroughIds'),
     cards,
     reviewEvents: save.reviewEvents.map((event, index) => reviewEventAt(event, `save.reviewEvents[${index}]`)),
     playerProgress: {

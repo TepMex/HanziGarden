@@ -16,6 +16,7 @@ export type SaveGame = {
   masteredBedIds: string[]
   lastActiveBedId: string | null
   seenCharacterIds: string[]
+  completedWalkthroughIds: string[]
   cards: Record<string, CardState>
   reviewEvents: ReviewEvent[]
   playerProgress: PlayerProgress
@@ -24,7 +25,7 @@ export type SaveGame = {
   updatedAt: number
 }
 
-export type SaveGameV6 = Omit<SaveGame, 'version' | 'characterNotes'> & { version: 6 }
+export type SaveGameV6 = Omit<SaveGame, 'version' | 'completedWalkthroughIds' | 'characterNotes'> & { version: 6 }
 export type SaveGameV5 = Omit<SaveGameV6, 'version' | 'achievements'> & { version: 5 }
 export type SaveGameV4 = Omit<SaveGameV5, 'version' | 'playerProgress'> & { version: 4 }
 
@@ -187,7 +188,11 @@ export function migrateV5Save(save: SaveGameV5): SaveGame {
 }
 
 export function migrateV6Save(save: SaveGameV6): SaveGame {
-  return { ...save, version: 7, characterNotes: {} }
+  return { ...save, version: 7, completedWalkthroughIds: [], characterNotes: {} }
+}
+
+function isV6Save(save: StoredSave): save is SaveGameV6 {
+  return save.version === 6
 }
 
 function migrateStoredSave(save: StoredSave): SaveGame {
@@ -196,7 +201,7 @@ function migrateStoredSave(save: StoredSave): SaveGame {
   if (isV3Save(save)) return migrateV4Save(migrateV3Save(save))
   if (isV4Save(save)) return migrateV4Save(save)
   if (save.version === 5) return migrateV5Save(save)
-  if (save.version === 6) return migrateV6Save(save)
+  if (isV6Save(save)) return migrateV6Save(save)
   return save
 }
 
@@ -250,12 +255,12 @@ database.version(5).stores({ saves: 'id, version, updatedAt' }).upgrade((transac
 database.version(6).stores({ saves: 'id, version, updatedAt' }).upgrade((transaction) => {
   return transaction.table('saves').toCollection().modify((stored: StoredSave) => {
     if (stored.version !== 5) return
-    Object.assign(stored, migrateV5Save(stored))
+    Object.assign(stored, migrateV5Save(stored as SaveGameV5))
   })
 })
 database.version(7).stores({ saves: 'id, version, updatedAt' }).upgrade((transaction) => {
   return transaction.table('saves').toCollection().modify((stored: StoredSave) => {
-    if (stored.version !== 6) return
+    if (!isV6Save(stored)) return
     Object.assign(stored, migrateV6Save(stored))
   })
 })
@@ -267,6 +272,7 @@ export const initialSave: SaveGame = {
   masteredBedIds: [],
   lastActiveBedId: null,
   seenCharacterIds: [],
+  completedWalkthroughIds: [],
   cards: {},
   reviewEvents: [],
   playerProgress: structuredClone(initialPlayerProgress),
@@ -275,11 +281,19 @@ export const initialSave: SaveGame = {
   updatedAt: Date.now(),
 }
 
+function completeV7Save(save: SaveGame): SaveGame {
+  return {
+    ...save,
+    completedWalkthroughIds: Array.isArray(save.completedWalkthroughIds) ? save.completedWalkthroughIds : [],
+    characterNotes: save.characterNotes && typeof save.characterNotes === 'object' ? save.characterNotes : {},
+  }
+}
+
 export async function loadSave(): Promise<SaveGame> {
   await pendingSaveOperation
   const stored = await database.saves.get('main')
   if (!stored) return structuredClone(initialSave)
-  if (stored.version === 7) return stored
+  if (stored.version === 7) return completeV7Save(stored)
   const migrated = migrateStoredSave(stored)
   await database.saves.put(migrated)
   return migrated

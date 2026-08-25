@@ -454,6 +454,58 @@ On a **Новый** character (no FSRS card), the battle shows the canonical Han
 
 The scene should preserve the established subdued ink-on-fabric Chinese fantasy aesthetic.
 
+### 11.1 Stroke-order walkthroughs
+
+The first teaching appearance of a character may open a data-driven walkthrough
+that introduces **one** stroke-order principle. Walkthroughs are not a quiz and
+do not replace the handwriting battle: the player acknowledges the rule, then
+writes the character as usual.
+
+Definitions live in a declarative registry keyed by Hanzi, with an array of
+walkthroughs per character so later teaching beats can be added without changing
+battle logic. Game flow must not contain special-cases such as `if (hanzi === '二')`.
+
+```ts
+type HanziWalkthrough = {
+  id: string
+  hanzi: string
+  trigger: { type: 'first-appearance' }
+  title: string
+  chineseTitle?: string
+  description: string
+  demo?: {
+    type: 'hanzi-writer-animation' | 'hanzi-writer-quiz'
+    character?: string
+    options?: Record<string, unknown>
+  }
+}
+```
+
+`first-appearance` means the character is the active battle target and is still
+SRS **Новый** (no FSRS card). Lists, statistics, debug previews, and later
+reviews must not open or complete a walkthrough.
+
+The window uses the existing parchment dialog language: rule title, optional
+Chinese name, short explanation, a large Hanzi Writer animation of that
+character, **Показать ещё раз**, and **Понятно**. Animation starts automatically
+via `animateCharacter()`. Completion is stored by walkthrough `id` only after
+**Понятно** / Continue (Escape is the keyboard equivalent). Reopening the same
+battle before acknowledgement shows the walkthrough again.
+
+Current introductory rules, each bound to the Hanzi that first demonstrates it
+in RTH order:
+
+- 二 — сверху вниз (`从上到下`)
+- 四 — снаружи внутрь (`先外后内`); do not explain the closing stroke here
+- 八 — 丿 then ㇏ (`先撇后捺`)
+- 十 — horizontal before vertical (`先横后竖`)
+- 日 — close the frame last (`先外后内再封口`); do not repeat the 四 rule
+- 胡 — left to right (`从左到右`)
+- 小 — center then sides (`先中间后两边`)
+
+The architecture must allow a future `hanzi-writer-quiz` demo without changing
+the registry shape or battle integration point.
+
 ## 12. Writing Is Combat
 
 For a character with `N` strokes:
@@ -1129,6 +1181,7 @@ type SaveGame = {
   masteredBedIds: string[];
   lastActiveBedId: string | null;
   seenCharacterIds: string[];
+  completedWalkthroughIds: string[];
   cards: Record<string, CardState>;
   reviewEvents: ReviewEvent[];
   playerProgress: PlayerProgress;
@@ -1235,8 +1288,8 @@ builds, and is intended to grow with additional content kinds later.
 Development builds also expose the throwaway `/prototype/screen-spread`
 workbench. It unfolds every player-facing screen — loading, main menu, About,
 Support, garden map, handwriting battle, composition dialog, character note
-dialog, cleared bed, statistics wall, achievement collection, and achievement
-popup — so a design change can be judged across the whole product at once. The page provides
+dialog, stroke-order walkthrough, cleared bed, statistics wall, achievement
+collection, and achievement popup — so a design change can be judged across the whole product at once. The page provides
 gallery, player-journey, and annotated audit views, switchable via `?variant=`,
 and an in-memory token panel for parchment, jade, gold, seal, and night colors.
 Frame size can be switched between phone, tablet, and desktop. Screens reuse
@@ -1542,10 +1595,10 @@ other error. Writing a new empty note does not.
 Persistence also retains lifetime correct strokes, errors, completed Hanzi,
 completed bed runs, best Combo, perfect complex Hanzi, and permanently completed
 biome IDs. Save version 5 introduced progression and reconstructs provable
-historical progress from retained review events.
-
-Save version 7 introduced per-Hanzi character notes. Migration from version 6
-adds an empty `characterNotes` map and does not alter XP, reviews, or
+historical progress from retained review events. Save version 7 adds
+`completedWalkthroughIds` so each teaching walkthrough is acknowledged once, and
+per-Hanzi `characterNotes`. Migration from version 6 adds an empty walkthrough
+list and an empty `characterNotes` map and does not alter XP, reviews, or
 achievements.
 
 ## 51. Achievements

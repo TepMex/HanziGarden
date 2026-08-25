@@ -74,6 +74,7 @@ describe('v4 progression migration', () => {
     }
     const migrated = migrateV4Save(v4)
     expect(migrated.version).toBe(7)
+    expect(migrated.completedWalkthroughIds).toEqual([])
     expect(migrated.characterNotes).toEqual({})
     expect(migrated.playerProgress.lifetimeCompletedKanji).toBe(1)
     expect(migrated.playerProgress.lifetimeErrors).toBe(1)
@@ -81,8 +82,8 @@ describe('v4 progression migration', () => {
   })
 })
 
-describe('v6 character note migration', () => {
-  test('adds empty character notes without touching achievements or XP', () => {
+describe('v6 save migration', () => {
+  test('adds empty walkthrough completions and character notes without touching learning progress', () => {
     const v6: SaveGameV6 = {
       id: 'main',
       version: 6,
@@ -113,8 +114,10 @@ describe('v6 character note migration', () => {
 
     expect(migrateV6Save(v6)).toMatchObject({
       version: 7,
+      seenCharacterIds: ['rsh-0001'],
+      completedWalkthroughIds: [],
       characterNotes: {},
-      playerProgress: { totalXp: 12 },
+      playerProgress: v6.playerProgress,
       achievements: { unlockedAchievements: [{ id: 'combo_5' }] },
     })
   })

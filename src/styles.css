@@ -792,6 +792,8 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
 .bed-cleanliness > span { width: 110px; height: 5px; overflow: hidden; border: 1px solid rgba(226, 207, 165, .42); background: rgba(37, 27, 40, .8); }
 .bed-cleanliness i { display: block; height: 100%; background: #88996c; transition: width .6s; }
 
+.battle-playfield { position: absolute; inset: 0; }
+
 .composition-backdrop {
   position: absolute;
   inset: 0;
@@ -839,6 +841,53 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
 }
 .note-editor::placeholder { color: rgba(56, 47, 37, .55); }
 .note-dialog .note-save { position: relative; width: 100%; }
+
+.walkthrough-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(11, 16, 13, .72);
+  backdrop-filter: blur(3px);
+}
+
+.walkthrough-dialog {
+  position: relative;
+  width: min(440px, 100%);
+  max-height: min(720px, calc(100dvh - 32px));
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  padding: 28px 32px 26px;
+  color: #382f25;
+  background: linear-gradient(135deg, rgba(231, 217, 184, .98), rgba(195, 178, 140, .97));
+  border: 1px solid rgba(244, 226, 185, .72);
+  clip-path: polygon(5% 0, 95% 0, 100% 7%, 100% 93%, 95% 100%, 5% 100%, 0 93%, 0 7%);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .55), inset 0 0 32px rgba(70, 48, 27, .16);
+}
+.walkthrough-dialog::before { content: ''; position: absolute; inset: 9px; border: 1px solid rgba(75, 59, 37, .22); pointer-events: none; }
+.walkthrough-eyebrow { position: relative; margin: 0 0 4px; font-size: .7rem; letter-spacing: .15em; opacity: .64; text-transform: uppercase; }
+.walkthrough-dialog h1 { position: relative; margin: 0; font-size: clamp(1.55rem, 5vw, 2.1rem); line-height: 1.1; font-weight: 600; overflow-wrap: anywhere; }
+.walkthrough-chinese { position: relative; margin: 6px 0 0; color: #4d653e; font: 1.35rem/1.1 'Songti SC', 'STSong', serif; }
+.walkthrough-description { position: relative; margin: 14px 0 16px; line-height: 1.4; white-space: pre-line; }
+.walkthrough-demo {
+  position: relative;
+  width: min(250px, 68vw, 38dvh);
+  aspect-ratio: 1;
+  flex: none;
+  margin: 0 auto 16px;
+  background: rgba(245, 231, 197, .46);
+  border: 1px solid rgba(75, 59, 37, .22);
+}
+.walkthrough-demo-target, .walkthrough-demo-glyph { width: 100%; height: 100%; }
+.walkthrough-demo-glyph { display: grid; place-items: center; color: #382f25; font: 5.4rem/1 'Songti SC', 'STSong', serif; }
+.walkthrough-demo-status { position: absolute; inset: auto 10px 10px; margin: 0; color: #5a4a38; font-size: .78rem; text-align: center; }
+.walkthrough-demo.is-ready .walkthrough-demo-status { display: none; }
+.walkthrough-actions { position: relative; display: grid; gap: 8px; }
+.walkthrough-actions .menu-button,
+.walkthrough-actions .primary-button { width: 100%; }
 
 .cleared-state {
   position: absolute;
@@ -912,6 +961,10 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
   .composition-backdrop { padding: 18px; }
   .composition-dialog { max-height: calc(100dvh - 36px); padding: 31px 27px 27px; }
   .composition-close { top: 17px; right: 17px; }
+  .walkthrough-backdrop { padding: 12px; }
+  .walkthrough-dialog { max-height: calc(100dvh - 24px); padding: 22px 20px 18px; }
+  .walkthrough-demo { width: min(210px, 58vw, 34dvh); margin-bottom: 12px; }
+  .walkthrough-description { margin: 10px 0 12px; font-size: .95rem; }
   .animation-debug-controls {
     right: 12px;
     bottom: max(12px, env(safe-area-inset-bottom, 0px));
@@ -942,6 +995,11 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
     bottom: auto;
     left: 13px;
   }
+  .walkthrough-dialog { max-height: calc(100dvh - 16px); padding: 16px 16px 14px; }
+  .walkthrough-demo { width: min(150px, 42dvh); }
+  .walkthrough-dialog h1 { font-size: 1.35rem; }
+  .walkthrough-chinese { font-size: 1.1rem; }
+  .walkthrough-description { margin: 8px 0 10px; font-size: .88rem; }
 }
 
 /* Landscape has no vertical room for a three-line prompt above the writer.
