@@ -31,7 +31,8 @@ The primary **Hanzi Garden** edition remains the full game and continues to evol
 **Hanzi Garden HSK 1** is an additional demo edition built from the same UI, mechanics, art, progression, and source code. The only gameplay-content difference is its character set and one-character bed workloads:
 
 - include all 174 unique simplified Hanzi encountered in the 150-word HSK 1 vocabulary list for exam version 2.0;
-- append the first 46 new unique Hanzi encountered in the HSK 2 (2.0) vocabulary list, preserving vocabulary-list order and first occurrence within each word;
+- append the first 46 new unique Hanzi encountered in the HSK 2 (2.0) vocabulary list, taking first occurrence within each word in vocabulary-list order;
+- assign those 220 characters to beds in original RSH frame order;
 - contain exactly 220 unique characters and 220 beds, with exactly one character in every bed;
 - reuse the existing RSH keyword, structure, pinyin/audio, stroke count, and local Hanzi Writer data for each selected character;
 - publish the web build at `/hsk1/` and keep its progress isolated in the `memory-garden-hsk1` IndexedDB database;
@@ -121,7 +122,7 @@ type Biome = {
 
 A **Bed** is the smallest territory unit that the player clears of weeds. The full garden contains **220 beds**. Selecting an unlocked bed starts a battle for that bed.
 
-In the primary edition, each of the 110 unique RTH/RSH lists is split at its midpoint into two ordered bed workloads. In the HSK 1 edition, the 220 selected characters are assigned one per bed. The first five beds occupy two logical cells each so the first biome still presents exactly 10 beds; every later bed occupies one logical cell in both editions.
+In the primary edition, each of the 110 unique RTH/RSH lists is split at its midpoint into two ordered bed workloads. In the HSK 1 edition, the 220 selected characters are assigned one per bed in original RSH frame order. The first five beds occupy two logical cells each so the first biome still presents exactly 10 beds; every later bed occupies one logical cell in both editions.
 
 ### 4.4 Bed Data
 

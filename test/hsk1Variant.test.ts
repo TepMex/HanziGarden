@@ -13,7 +13,26 @@ describe('Hanzi Garden HSK 1 character set', () => {
     expect(HSK_2_2_0_SUPPLEMENT_CHARACTERS).toHaveLength(46)
     expect(HSK1_VARIANT_CHARACTERS).toHaveLength(220)
     expect(new Set(HSK1_VARIANT_CHARACTERS).size).toBe(220)
-    expect(HSK1_VARIANT_CHARACTERS.slice(0, 174)).toEqual(HSK_1_2_0_CHARACTERS)
+    expect(new Set(HSK1_VARIANT_CHARACTERS)).toEqual(
+      new Set([...HSK_1_2_0_CHARACTERS, ...HSK_2_2_0_SUPPLEMENT_CHARACTERS]),
+    )
+  })
+
+  test('assigns HSK characters to beds in ascending RSH frame order', () => {
+    const frameByHanzi = new Map(rawCharacters.map((item) => [item.hanzi, item.frame]))
+    const framesOf = (hanzi: readonly string[]) =>
+      hanzi.map((character) => {
+        const frame = frameByHanzi.get(character)
+        if (frame === undefined) throw new Error(`Missing RSH frame for ${character}`)
+        return frame
+      })
+    const assertAscending = (hanzi: readonly string[]) => {
+      const frames = framesOf(hanzi)
+      expect(frames).toEqual([...frames].sort((left, right) => left - right))
+    }
+    assertAscending(HSK1_VARIANT_CHARACTERS)
+    assertAscending(HSK_1_2_0_CHARACTERS)
+    assertAscending(HSK_2_2_0_SUPPLEMENT_CHARACTERS)
   })
 
   test('reuses complete production character and stroke data', () => {

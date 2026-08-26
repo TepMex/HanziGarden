@@ -1,19 +1,18 @@
 /**
  * Unique simplified Hanzi encountered in the HSK 1 (2.0) vocabulary list,
- * preserving the list's word order and first occurrence within each word.
+ * selected by the list's word order and first occurrence within each word,
+ * stored in ascending RSH frame order.
  */
-export const HSK_1_2_0_CHARACTERS = [...'爱八爸杯子北京本不客气菜茶吃出租车打电话大的点脑视影东西都读对起多少儿二饭店飞机分钟高兴个工作狗汉语好号喝和很后面回会几家叫今天九开看见块来老师了冷里六妈吗买猫没关系有米名字明哪那呢能你年女朋友漂亮苹果七前钱请去热人认识三商上午谁什么十时候是书水睡觉说四岁他她太听同学喂我们五喜欢下雨先生现在想小姐些写谢星期习校一衣服医院椅月再怎样这中国住桌昨坐做']
+export const HSK_1_2_0_CHARACTERS = [...'一二三四五六七八九十月朋明中上下儿几见的工有飞子了女好小少大多名太水时点里同字机本桌狗先个茶现钟车前客高亮京学觉识话语钱是衣师雨天商北些吃说她起家样谁午习国回店想看我打热开在友汉欢对没后菜爱么去会出岁分和米来人认你什做住他坐喝买读年呢视果听怎昨作不杯号谢老写校院系服冷喜很饭脑叫请生星睡今东西漂们候块医影这爸期姐再都书气面兴妈吗能关那哪电椅猫苹租喂']
 
 /**
- * First 46 new unique Hanzi from HSK 2 (2.0), using the same ordering rule.
- * Together with HSK 1 this fills all 220 garden beds one character per bed.
+ * First 46 new unique Hanzi from HSK 2 (2.0), selected by the same vocabulary-list
+ * rule and stored in ascending RSH frame order. Together with HSK 1 this fills all
+ * 220 garden beds one character per bed.
  */
-export const HSK_2_2_0_SUPPLEMENT_CHARACTERS = [...'吧白百帮助报纸比别宾馆长唱歌穿次从错篮球到得等弟第懂房间非常务员告诉哥给公共汽司贵过还孩黑红']
+export const HSK_2_2_0_SUPPLEMENT_CHARACTERS = [...'唱白百员哥黑告球过比歌次到公常别务得等从房诉错还弟第给红报篮馆孩间非懂吧贵助共纸帮司汽穿长宾']
 
-export const HSK1_VARIANT_CHARACTERS = [
-  ...HSK_1_2_0_CHARACTERS,
-  ...HSK_2_2_0_SUPPLEMENT_CHARACTERS,
-]
+export const HSK1_VARIANT_CHARACTERS = [...'一二三四五六七八九十月朋明唱白百中上下员儿几见的工有哥飞子了女好小少大多名太水时点里黑同字机本桌狗告先个茶球现钟过车前客高亮京学觉识话语钱是衣师雨天商北比些吃歌次说她起家样谁午习国回店想看我打热开在友汉欢对没后菜爱么去会到出岁分公常别务得和米来等人认你什做住他从坐喝买读年呢房视果听诉怎昨作错不杯还弟第号谢老写校院给红系服报冷喜篮很饭馆脑叫孩请生星睡今东西漂们间非候块懂医影这爸吧期贵姐助共再纸都帮司书气汽面穿长兴妈吗能关那哪电椅猫宾苹租喂']
 
 if (HSK_1_2_0_CHARACTERS.length !== 174) {
   throw new Error('HSK 1 (2.0) must contain 174 unique Hanzi')
