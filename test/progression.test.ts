@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'bun:test'
 import {
   comboMilestoneBonus,
+  completeInitialTrace,
   completeKanji,
   crossedLevels,
   getLevelProgress,
@@ -14,6 +15,17 @@ import {
 describe('XP', () => {
   test.each([[6, 0, 6], [6, 3, 3], [6, 20, 1]])('%i correct and %i errors gives %i XP', (correct, errors, xp) => {
     expect(xpForCompletedKanji(correct, errors)).toBe(xp)
+  })
+
+  test('initial tracing always grants exactly 1 XP without changing combo or review statistics', () => {
+    const player = { ...initialPlayerProgress, totalXp: 99, lifetimeCorrectStrokes: 12, lifetimeCompletedKanji: 3 }
+    const session = { ...initialSessionProgress, combo: 4, earnedXp: 20 }
+    const traced = completeInitialTrace(player, session)
+
+    expect(traced.reward).toMatchObject({ kanjiXp: 1, comboBonusXp: 0, earnedXp: 1, previousCombo: 4, combo: 4 })
+    expect(traced.player).toMatchObject({ totalXp: 100, lifetimeCorrectStrokes: 12, lifetimeCompletedKanji: 3 })
+    expect(traced.session).toMatchObject({ combo: 4, earnedXp: 21 })
+    expect(traced.reward.levelsGained).toEqual([2])
   })
 })
 

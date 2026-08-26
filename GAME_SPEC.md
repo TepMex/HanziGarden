@@ -60,7 +60,7 @@ Statistics renders every Hanzi in original frame order as a dense colored tile w
 
 ## 2. Core Design Principles
 
-1. **Production recall is primary.** After the first encounter, the player is shown a meaning/keyword and must independently write the Hanzi. The first encounter — SRS stage **Новый**, meaning there is no FSRS card yet — shows a faint full-character outline so the player traces the shape once. Later reviews stay recall-only.
+1. **Production recall is primary.** On the first encounter, the player traces a faint full-character outline once and then immediately receives the same Hanzi again without an outline, to write from memory. Only that recall attempt creates the first FSRS card and advances the character to an FSRS interval. Later reviews stay recall-only.
 2. **Writing is the combat mechanic.** There is no separate “flashcard UI” during play.
 3. **The garden is persistent.** It is one continuous territory, not a sequence of runs.
 4. **Garden progression and memory state are separate.** Unlocking territory is permanent; visual bed health changes according to FSRS.
@@ -466,7 +466,11 @@ Initially do **not** display:
 - answer choices;
 - a visible handwriting grid.
 
-On a **Новый** character (no FSRS card), the battle shows the canonical Hanzi outline immediately at about 0.3 opacity, using the current writing-ink colour. The player traces that ghost. This teaching outline is not a player-requested hint and must not set `hintUsed` or force an FSRS `Again`. After that first completion the card exists, so later due reviews hide the outline again.
+On a **Новый** character (no FSRS card and no pending initial recall), the battle shows the canonical Hanzi outline immediately at about 0.3 opacity, using the current writing-ink colour. The player traces that ghost. This teaching outline is not a player-requested hint and must not set `hintUsed` or force an FSRS `Again`.
+
+Completing the trace always grants exactly **+1 XP**, regardless of stroke count, mistakes, or the current combo. It grants no combo bonus and does not change combo or completed-review statistics. The trace does not create or update an FSRS card. After the normal completion beat, the battle must present the same Hanzi again immediately, this time with no full-character outline. Only successful completion of this recall attempt records the review, creates the first FSRS card, marks the character as seen for bed progression, and lets the battle advance to another Hanzi.
+
+The pending initial recall is persisted. If the player leaves after tracing but before recall, returning to that bed resumes with the outline-free recall and does not award the tracing XP a second time. A pending recall takes priority over other due characters in that bed.
 
 The scene should preserve the established subdued ink-on-fabric Chinese fantasy aesthetic.
 
@@ -497,9 +501,11 @@ type HanziWalkthrough = {
 }
 ```
 
-`first-appearance` means the character is the active battle target and is still
-SRS **Новый** (no FSRS card). Lists, statistics, debug previews, and later
-reviews must not open or complete a walkthrough.
+`first-appearance` means the character is the active battle target and is in
+the initial trace step (no FSRS card and no pending initial recall). The
+outline-free recall immediately after tracing must not reopen the walkthrough.
+Lists, statistics, debug previews, and later reviews must not open or complete
+a walkthrough.
 
 The window uses the existing parchment dialog language: rule title, optional
 Chinese name, short explanation, a large Hanzi Writer animation of that
@@ -694,7 +700,7 @@ Development-only debug logging can be enabled with `localStorage.hanziGarden.deb
 ```ts
 const writer = HanziWriter.create(element, "猫", {
   showCharacter: false,
-  showOutline: isFirstEncounter, // true only for SRS Новый
+  showOutline: isInitialTrace, // no FSRS card and no pending initial recall
 
   acceptBackwardsStrokes: false,
   showHintAfterMisses: false,
@@ -863,7 +869,7 @@ Suggested progression:
 
 A confident classified order miss (when the attempted later stroke is identified) may also briefly highlight that expected stroke immediately. Direction misses show instructional copy without revealing extra strokes. Shape and unknown misses show no player-facing hint.
 
-Do not reveal the full character unless the player explicitly asks for a stronger hint or reaches a failure state. The first-encounter tracing outline in section 11 is the one exception: it is shown automatically for **Новый** characters and is not graded as a hint.
+Do not reveal the full character unless the player explicitly asks for a stronger hint or reaches a failure state. The initial tracing outline in section 11 is the one exception: it is shown automatically only for the trace half of a **Новый** character's two-step introduction and is not graded as a hint. The immediately following recall must hide it.
 
 Battle shows at most one current handwriting hint at a time. Repeating the same miss replaces that hint rather than stacking toasts.
 

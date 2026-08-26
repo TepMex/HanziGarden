@@ -75,6 +75,7 @@ describe('v4 progression migration', () => {
     const migrated = migrateV4Save(v4)
     expect(migrated.version).toBe(7)
     expect(migrated.completedWalkthroughIds).toEqual([])
+    expect(migrated.pendingInitialRecallIds).toEqual([])
     expect(migrated.characterNotes).toEqual({})
     expect(migrated.playerProgress.lifetimeCompletedKanji).toBe(1)
     expect(migrated.playerProgress.lifetimeErrors).toBe(1)
@@ -115,6 +116,7 @@ describe('v6 save migration', () => {
     expect(migrateV6Save(v6)).toMatchObject({
       version: 7,
       seenCharacterIds: ['rsh-0001'],
+      pendingInitialRecallIds: [],
       completedWalkthroughIds: [],
       characterNotes: {},
       playerProgress: v6.playerProgress,

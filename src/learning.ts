@@ -19,6 +19,11 @@ export function isCardDue(card?: CardState, now = new Date()): boolean {
   return !card || new Date(card.due).getTime() <= now.getTime()
 }
 
+/** A new character is traced once, then recalled before its first FSRS review. */
+export function isInitialTrace(card: CardState | undefined, recallPending: boolean): boolean {
+  return !card && !recallPending
+}
+
 export function reviewCard(card: CardState | undefined, mistakes: number, hintUsed: boolean, now = new Date()) {
   const rating = mistakes >= 3 || hintUsed ? Rating.Again : Rating.Good
   const result = scheduler.next((card ?? createEmptyCard()) as CardInput, now, rating)
@@ -27,4 +32,3 @@ export function reviewCard(card: CardState | undefined, mistakes: number, hintUs
     rating: rating === Rating.Again ? 'again' as const : 'good' as const,
   }
 }
-
