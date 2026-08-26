@@ -41,6 +41,7 @@ try {
     save.masteredBedIds = []
     save.lastActiveBedId = null
     save.seenCharacterIds = []
+    save.pendingInitialRecallIds = []
     save.cards = {}
     save.reviewEvents = []
     await window.hanziGardenCheats.loadDb(save)
@@ -55,8 +56,39 @@ try {
   if (!await page.locator('.battle-screen').count()) await firstBed.click()
   await page.waitForSelector('.battle-screen .writing-circle svg')
 
+  const beforeIntroduction = await page.evaluate(async () => {
+    const save = await window.hanziGardenCheats.dumpDb('object')
+    return { totalXp: save.playerProgress.totalXp, reviewCount: save.reviewEvents.length }
+  })
+  const initialTarget = page.locator('.writing-target')
+  if (await initialTarget.getAttribute('data-trace-outline') !== 'true') {
+    throw new Error('new character did not start with the tracing outline')
+  }
+
   await page.evaluate(() => window.hanziGardenCheats.drawWrongStroke())
   await page.evaluate(() => window.hanziGardenCheats.drawCorrectStroke())
+
+  await page.waitForFunction(() => document.querySelector('.writing-target')?.dataset.traceOutline === 'false')
+  const afterTrace = await page.evaluate(async () => {
+    const save = await window.hanziGardenCheats.dumpDb('object')
+    const pendingId = save.pendingInitialRecallIds[0]
+    return {
+      pendingId,
+      totalXp: save.playerProgress.totalXp,
+      reviewCount: save.reviewEvents.length,
+      hasCard: pendingId ? Boolean(save.cards[pendingId]) : false,
+    }
+  })
+  if (!afterTrace.pendingId || afterTrace.totalXp !== beforeIntroduction.totalXp + 1 ||
+      afterTrace.reviewCount !== beforeIntroduction.reviewCount || afterTrace.hasCard) {
+    throw new Error(`trace did not produce a fixed +1 XP pending recall: ${JSON.stringify(afterTrace)}`)
+  }
+
+  await page.evaluate(() => window.hanziGardenCheats.drawCorrectStroke())
+  await page.waitForFunction(async (reviewCount) => {
+    const save = await window.hanziGardenCheats.dumpDb('object')
+    return save.reviewEvents.length === reviewCount + 1
+  }, beforeIntroduction.reviewCount)
 
   const playedAudio = await page.evaluate(() => window.__hanziGardenPlayedAudio)
   if (!playedAudio.some((url) => url.endsWith('/assets/audio/pinyin/cmn-yi1.mp3'))) {
@@ -69,11 +101,13 @@ try {
     const card = event ? save.cards[event.characterId] : undefined
     return {
       event,
+      recallStillPending: event ? save.pendingInitialRecallIds.includes(event.characterId) : undefined,
       dueIsDate: card?.due instanceof Date,
       objectDump: typeof save === 'object',
     }
   })
-  if (!review.objectDump || !review.event || review.event.totalMistakes !== 1 || !review.dueIsDate) {
+  if (!review.objectDump || !review.event || review.event.totalMistakes !== 0 ||
+      review.recallStillPending || !review.dueIsDate) {
     throw new Error(`stroke cheats produced wrong save: ${JSON.stringify(review)}`)
   }
 

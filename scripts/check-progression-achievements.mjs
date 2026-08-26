@@ -39,6 +39,7 @@ try {
     save.masteredBedIds = []
     save.lastActiveBedId = null
     save.seenCharacterIds = [...alreadyStudied]
+    save.pendingInitialRecallIds = []
     save.cards = Object.fromEntries(alreadyStudied.map((id) => [id, structuredClone(futureCard)]))
     save.reviewEvents = []
     save.playerProgress = {
@@ -66,6 +67,8 @@ try {
   if (!await page.locator('.battle-screen').count()) await firstBed.click()
   await page.waitForSelector('.battle-screen .writing-circle svg')
   await page.evaluate(() => window.hanziGardenCheats.drawCorrectStroke())
+  await page.waitForFunction(() => document.querySelector('.writing-target')?.dataset.traceOutline === 'false')
+  await page.evaluate(() => window.hanziGardenCheats.drawCorrectStroke())
 
   await page.getByRole('heading', { name: 'Один XP' }).waitFor()
   if (process.env.SNAPSHOT_PATH) {
@@ -81,10 +84,10 @@ try {
   const summary = await page.locator('.xp-summary').innerText()
   const save = await page.evaluate(() => window.hanziGardenCheats.dumpDb('object'))
   const unlockIds = save.achievements.unlockedAchievements.map((item) => item.id)
-  if (!summary.includes('+1 XP') || !summary.includes('Новый уровень 2')) {
+  if (!summary.includes('+2 XP') || !summary.includes('Новый уровень 2')) {
     throw new Error(`Unexpected completion summary: ${summary}`)
   }
-  if (save.playerProgress.totalXp !== 100 || !unlockIds.includes('one_xp_kanji') || !unlockIds.includes('perfect_bed')) {
+  if (save.playerProgress.totalXp !== 101 || !unlockIds.includes('one_xp_kanji') || !unlockIds.includes('perfect_bed')) {
     throw new Error(`Unexpected persisted progression: ${JSON.stringify({ xp: save.playerProgress.totalXp, unlockIds })}`)
   }
   console.log('OK: level-up summary + achievement popup queue + persistence')
