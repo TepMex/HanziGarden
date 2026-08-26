@@ -167,6 +167,31 @@ export function completeKanji(
   }
 }
 
+/**
+ * The guided first trace is a teaching beat, not a completed memory review.
+ * It grants its fixed reward without changing combo or lifetime handwriting
+ * counters; the immediately following recall attempt owns those statistics.
+ */
+export function completeInitialTrace(
+  player: PlayerProgress,
+  session: SessionProgress,
+): { player: PlayerProgress; session: SessionProgress; reward: KanjiReward } {
+  const earnedXp = 1
+  const nextTotalXp = player.totalXp + earnedXp
+  return {
+    player: { ...player, totalXp: nextTotalXp },
+    session: { ...session, earnedXp: session.earnedXp + earnedXp },
+    reward: {
+      kanjiXp: earnedXp,
+      comboBonusXp: 0,
+      earnedXp,
+      previousCombo: session.combo,
+      combo: session.combo,
+      levelsGained: crossedLevels(player.totalXp, nextTotalXp),
+    },
+  }
+}
+
 export function completeBed(
   player: PlayerProgress,
   session: SessionProgress,

@@ -16,6 +16,7 @@ export type SaveGame = {
   masteredBedIds: string[]
   lastActiveBedId: string | null
   seenCharacterIds: string[]
+  pendingInitialRecallIds: string[]
   completedWalkthroughIds: string[]
   cards: Record<string, CardState>
   reviewEvents: ReviewEvent[]
@@ -25,7 +26,7 @@ export type SaveGame = {
   updatedAt: number
 }
 
-export type SaveGameV6 = Omit<SaveGame, 'version' | 'completedWalkthroughIds' | 'characterNotes'> & { version: 6 }
+export type SaveGameV6 = Omit<SaveGame, 'version' | 'pendingInitialRecallIds' | 'completedWalkthroughIds' | 'characterNotes'> & { version: 6 }
 export type SaveGameV5 = Omit<SaveGameV6, 'version' | 'achievements'> & { version: 5 }
 export type SaveGameV4 = Omit<SaveGameV5, 'version' | 'playerProgress'> & { version: 4 }
 
@@ -188,7 +189,7 @@ export function migrateV5Save(save: SaveGameV5): SaveGame {
 }
 
 export function migrateV6Save(save: SaveGameV6): SaveGame {
-  return { ...save, version: 7, completedWalkthroughIds: [], characterNotes: {} }
+  return { ...save, version: 7, pendingInitialRecallIds: [], completedWalkthroughIds: [], characterNotes: {} }
 }
 
 function isV6Save(save: StoredSave): save is SaveGameV6 {
@@ -272,6 +273,7 @@ export const initialSave: SaveGame = {
   masteredBedIds: [],
   lastActiveBedId: null,
   seenCharacterIds: [],
+  pendingInitialRecallIds: [],
   completedWalkthroughIds: [],
   cards: {},
   reviewEvents: [],
@@ -284,6 +286,7 @@ export const initialSave: SaveGame = {
 function completeV7Save(save: SaveGame): SaveGame {
   return {
     ...save,
+    pendingInitialRecallIds: Array.isArray(save.pendingInitialRecallIds) ? save.pendingInitialRecallIds : [],
     completedWalkthroughIds: Array.isArray(save.completedWalkthroughIds) ? save.completedWalkthroughIds : [],
     characterNotes: save.characterNotes && typeof save.characterNotes === 'object' ? save.characterNotes : {},
   }

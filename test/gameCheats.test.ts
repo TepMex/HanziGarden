@@ -13,6 +13,7 @@ function saveFixture(): SaveGame {
     masteredBedIds: ['bed-locked-but-mastered'],
     lastActiveBedId: 'bed-not-unlocked',
     seenCharacterIds: ['character-unknown'],
+    pendingInitialRecallIds: ['character-awaiting-recall'],
     completedWalkthroughIds: ['stroke-order-top-to-bottom'],
     cards: {
       'character-unknown': {
@@ -56,6 +57,7 @@ describe('game cheat save dumps', () => {
     expect(card.last_review?.toISOString()).toBe('2026-08-19T10:00:00.000Z')
     expect(restored.reviewEvents).toEqual(saveFixture().reviewEvents)
     expect(restored.characterNotes).toEqual({ 'character-unknown': 'огонь сверху' })
+    expect(restored.pendingInitialRecallIds).toEqual(['character-awaiting-recall'])
     expect(restored.version).toBe(7)
   })
 
@@ -87,6 +89,7 @@ describe('game cheat save dumps', () => {
     expect(restored.masteredBedIds).toEqual(['bed-locked-but-mastered'])
     expect(restored.lastActiveBedId).toBe('bed-not-unlocked')
     expect(restored.seenCharacterIds).toEqual(['character-unknown'])
+    expect(restored.pendingInitialRecallIds).toEqual(['character-awaiting-recall'])
     expect(restored.completedWalkthroughIds).toEqual(['stroke-order-top-to-bottom'])
   })
 })

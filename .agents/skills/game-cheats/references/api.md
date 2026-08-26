@@ -25,6 +25,7 @@ type SaveGame = {
   masteredBedIds: string[]
   lastActiveBedId: string | null
   seenCharacterIds: string[]
+  pendingInitialRecallIds: string[]
   completedWalkthroughIds: string[]
   cards: Record<string, CardState>
   reviewEvents: ReviewEvent[]
@@ -76,6 +77,6 @@ save.lastActiveBedId = 'bed-001'
 await cheats.loadDb(save)
 ```
 
-To make a bed unstudied, remove its ID from `masteredBedIds`, remove its character IDs from `seenCharacterIds`, and delete those keys from `cards`. To model all characters as studied, derive the complete bed and character ID lists from `src/data/model.ts`, populate the three progress collections, and give every character a structurally valid FSRS card. Copying an existing card and changing its date is less error-prone than inventing FSRS fields.
+To make a bed unstudied, remove its ID from `masteredBedIds`, remove its character IDs from `seenCharacterIds` and `pendingInitialRecallIds`, and delete those keys from `cards`. To resume between the guided trace and first recall, put the character ID in `pendingInitialRecallIds` without creating a card. To model all characters as studied, derive the complete bed and character ID lists from `src/data/model.ts`, populate the progress collections, and give every character a structurally valid FSRS card. Copying an existing card and changing its date is less error-prone than inventing FSRS fields.
 
 After loading any dump, expect the app to return to the map. Re-enter a battle before invoking stroke cheats.

@@ -16,11 +16,10 @@ import {
   type StrokeErrorHintCopy,
 } from './strokeErrorFeedback'
 import { StrokeErrorHint } from './StrokeErrorHint'
-import { isCardDue, reviewCard, type ReviewEvent } from './learning'
+import { isCardDue, isInitialTrace, reviewCard, type ReviewEvent } from './learning'
 import { GardenMap } from './map/GardenMap'
 import { initialCamera, type CameraState } from './map/cameraMath'
 import { StatisticsScreen } from './stats/StatisticsScreen'
-import { isFirstEncounter } from './stats/srsStages'
 import { streakHighlightColor, streakHighlightOpacity, streakIntensity } from './streak'
 import { StrokeFeedbackAudioPlayer } from './strokeFeedbackAudio'
 import { assetUrl } from './assetUrl'
@@ -46,6 +45,7 @@ import { ThemeMusicPlayer } from './themeMusic'
 import {
   advanceActiveSession,
   completeBed,
+  completeInitialTrace,
   completeKanji,
   crossedLevels,
   getLevelProgress,
@@ -193,7 +193,12 @@ function BattleScreen({
   onExit: () => void
 }) {
   const dueCharacters = useMemo(
-    () => bed.characters.filter((character) => isCardDue(save.cards[character.id])),
+    () => {
+      const recallPending = new Set(save.pendingInitialRecallIds)
+      return bed.characters
+        .filter((character) => isCardDue(save.cards[character.id]))
+        .sort((left, right) => Number(recallPending.has(right.id)) - Number(recallPending.has(left.id)))
+    },
     [bed, save],
   )
   const [activeCharacterId, setActiveCharacterId] = useState<string | null>(dueCharacters[0]?.id ?? null)
@@ -224,14 +229,22 @@ function BattleScreen({
   const [isNoteOpen, setNoteOpen] = useState(false)
   const [noteDraft, setNoteDraft] = useState('')
   const [lastReward, setLastReward] = useState<KanjiReward | null>(null)
+  const [lastRewardIsTrace, setLastRewardIsTrace] = useState(false)
   const [rewardSequence, setRewardSequence] = useState(0)
-  const [bedSummary, setBedSummary] = useState({ correctStrokes: 0, errors: 0, comboBonusXp: 0, earnedXp: 0 })
+  const [roundSequence, setRoundSequence] = useState(0)
+  const [bedSummary, setBedSummary] = useState({ correctStrokes: 0, errors: 0, tracingXp: 0, comboBonusXp: 0, earnedXp: 0 })
   const bedSummaryRef = useRef(bedSummary)
   const [summaryReady, setSummaryReady] = useState(false)
+  const tracingRound = activeCharacter
+    ? isInitialTrace(
+      save.cards[activeCharacter.id],
+      save.pendingInitialRecallIds.includes(activeCharacter.id),
+    )
+    : false
   const blockingWalkthrough = activeCharacter
     ? nextEligibleWalkthrough(activeCharacter.hanzi, {
       surface: 'battle',
-      isFirstEncounter: isFirstEncounter(save.cards[activeCharacter.id]),
+      isFirstEncounter: tracingRound,
       completedWalkthroughIds: save.completedWalkthroughIds,
     })
     : undefined
@@ -381,6 +394,34 @@ function BattleScreen({
     if (completingRef.current) return
     completingRef.current = true
     const current = saveRef.current
+    const isTracing = isInitialTrace(
+      current.cards[character.id],
+      current.pendingInitialRecallIds.includes(character.id),
+    )
+    if (isTracing) {
+      const progression = completeInitialTrace(current.playerProgress, sessionRef.current)
+      const nextSave: SaveGame = {
+        ...current,
+        pendingInitialRecallIds: [...new Set([...current.pendingInitialRecallIds, character.id])],
+        playerProgress: progression.player,
+        updatedAt: Date.now(),
+      }
+      const nextBedSummary = {
+        ...bedSummaryRef.current,
+        tracingXp: bedSummaryRef.current.tracingXp + 1,
+        earnedXp: bedSummaryRef.current.earnedXp + 1,
+      }
+      saveRef.current = nextSave
+      sessionRef.current = progression.session
+      setLastReward(progression.reward)
+      setLastRewardIsTrace(true)
+      setRewardSequence((sequence) => sequence + 1)
+      bedSummaryRef.current = nextBedSummary
+      setBedSummary(nextBedSummary)
+      onSave(nextSave, progression.session, [])
+      window.setTimeout(() => setRoundSequence((sequence) => sequence + 1), 1050)
+      return
+    }
     const progression = completeKanji(current.playerProgress, sessionRef.current, {
       correctStrokeCount: character.strokeCount,
       errorCount: totalMistakes,
@@ -411,14 +452,16 @@ function BattleScreen({
       unlockedBedIds: [...unlocked],
       masteredBedIds: [...mastered],
       seenCharacterIds: [...seen],
+      pendingInitialRecallIds: current.pendingInitialRecallIds.filter((id) => id !== character.id),
       cards: { ...current.cards, [character.id]: result.card },
       reviewEvents: [...current.reviewEvents.slice(-499), event],
       playerProgress: progression.player,
       updatedAt: Date.now(),
     }
-    const nextCharacter = bed.characters.find(
-      (candidate) => candidate.id !== character.id && isCardDue(nextSave.cards[candidate.id]),
-    )
+    const pendingRecalls = new Set(nextSave.pendingInitialRecallIds)
+    const nextCharacter = bed.characters
+      .filter((candidate) => candidate.id !== character.id && isCardDue(nextSave.cards[candidate.id]))
+      .sort((left, right) => Number(pendingRecalls.has(right.id)) - Number(pendingRecalls.has(left.id)))[0]
     let nextSession = progression.session
     const achievementEvents: AchievementEvent[] = [{
       type: 'kanji.completed',
@@ -434,6 +477,7 @@ function BattleScreen({
     const nextBedSummary = {
       correctStrokes: bedSummaryRef.current.correctStrokes + character.strokeCount,
       errors: bedSummaryRef.current.errors + totalMistakes,
+      tracingXp: bedSummaryRef.current.tracingXp,
       comboBonusXp: bedSummaryRef.current.comboBonusXp + progression.reward.comboBonusXp,
       earnedXp: bedSummaryRef.current.earnedXp + progression.reward.earnedXp,
     }
@@ -454,6 +498,7 @@ function BattleScreen({
     saveRef.current = nextSave
     sessionRef.current = nextSession
     setLastReward(progression.reward)
+    setLastRewardIsTrace(false)
     setRewardSequence((sequence) => sequence + 1)
     if (progression.reward.comboBonusXp > 0) playComboMilestoneCue(progression.reward.combo)
     bedSummaryRef.current = nextBedSummary
@@ -483,7 +528,10 @@ function BattleScreen({
     setCorrectStrokes(0)
     writerTarget.current.replaceChildren()
 
-    const tracingOutline = isFirstEncounter(saveRef.current.cards[activeCharacter.id])
+    const tracingOutline = isInitialTrace(
+      saveRef.current.cards[activeCharacter.id],
+      saveRef.current.pendingInitialRecallIds.includes(activeCharacter.id),
+    )
     writerTarget.current.dataset.traceOutline = tracingOutline ? 'true' : 'false'
     const writer = HanziWriter.create(writerTarget.current, activeCharacter.hanzi, {
       width: Math.round(writerTarget.current.clientWidth) || 300,
@@ -661,7 +709,7 @@ function BattleScreen({
       if (writerTarget.current) delete writerTarget.current.dataset.traceOutline
       writerRef.current = null
     }
-  }, [activeCharacter, blockingWalkthrough, finishCharacter, rejectPendingCheatStroke, settleCheatStroke])
+  }, [activeCharacter, blockingWalkthrough, finishCharacter, rejectPendingCheatStroke, roundSequence, settleCheatStroke])
 
   const useHint = () => {
     if (!activeCharacter || !writerRef.current || blockingWalkthrough) return
@@ -756,7 +804,7 @@ function BattleScreen({
               className="writing-target"
               ref={writerTarget}
               aria-label={
-                isFirstEncounter(save.cards[activeCharacter.id])
+                tracingRound
                   ? `Обведите иероглиф со значением ${activeCharacter.keyword.ru}`
                   : `Напишите иероглиф со значением ${activeCharacter.keyword.ru}`
               }
@@ -775,6 +823,7 @@ function BattleScreen({
             <div className="xp-summary">
               <span>Правильные штрихи <b>+{bedSummary.correctStrokes} XP</b></span>
               <span>Ошибки <b className="is-negative">−{bedSummary.errors} XP</b></span>
+              {bedSummary.tracingXp > 0 && <span>Обводка <b>+{bedSummary.tracingXp} XP</b></span>}
               <span>Комбо <b>+{bedSummary.comboBonusXp} XP</b></span>
               <strong>Итого <b>+{bedSummary.earnedXp} XP</b></strong>
               <PlayerLevel totalXp={save.playerProgress.totalXp} />
@@ -792,7 +841,7 @@ function BattleScreen({
       {activeCharacter && lastReward && (
         <XpToast
           earnedXp={lastReward.earnedXp}
-          combo={lastReward.combo}
+          combo={lastRewardIsTrace ? 0 : lastReward.combo}
           comboBonusXp={lastReward.comboBonusXp}
           key={rewardSequence}
         />

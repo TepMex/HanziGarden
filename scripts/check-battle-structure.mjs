@@ -37,6 +37,7 @@ async function seedSave(page, previousIds, characterNotes = {}) {
     save.masteredBedIds = []
     save.lastActiveBedId = nextBedId
     save.seenCharacterIds = precedingIds
+    save.pendingInitialRecallIds = []
     save.cards = Object.fromEntries(precedingIds.map((id) => [id, futureCard]))
     save.reviewEvents = []
     save.completedWalkthroughIds = []
@@ -81,6 +82,26 @@ async function waitForReview(page, characterId) {
   })), characterId)
 }
 
+async function finishInitialTwoStrokeCharacter(page) {
+  await page.evaluate(async () => {
+    await window.hanziGardenCheats.drawCorrectStroke()
+    await window.hanziGardenCheats.drawCorrectStroke()
+  })
+  await page.waitForFunction(() => document.querySelector('.writing-target')?.dataset.traceOutline === 'false')
+  await page.evaluate(async () => {
+    await window.hanziGardenCheats.drawCorrectStroke()
+    await window.hanziGardenCheats.drawCorrectStroke()
+  })
+}
+
+async function finishInitialTrace(page) {
+  await page.evaluate(async () => {
+    await window.hanziGardenCheats.drawCorrectStroke()
+    await window.hanziGardenCheats.drawCorrectStroke()
+  })
+  await page.waitForFunction(() => document.querySelector('.writing-target')?.dataset.traceOutline === 'false')
+}
+
 const browser = await chromium.launch({ headless: true })
 try {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 } })
@@ -120,16 +141,13 @@ try {
   await writeDialog.waitFor()
   await writeDialog.getByLabel('Текст заметки').fill('две черты')
   await writeDialog.getByRole('button', { name: /Сохранить/i }).click()
-  await page.evaluate(async () => {
-    await window.hanziGardenCheats.drawCorrectStroke()
-    await window.hanziGardenCheats.drawCorrectStroke()
-  })
+  await finishInitialTwoStrokeCharacter(page)
   const written = await waitForReview(page, 'rsh-0002')
   await dismissAchievements(page)
   if (written.review?.totalMistakes !== 0) {
     throw new Error(`writing a new note counted as ${written.review?.totalMistakes} errors`)
   }
-  if (written.save.playerProgress.totalXp !== writingXp + 2) {
+  if (written.save.playerProgress.totalXp !== writingXp + 3) {
     throw new Error(`writing a new note changed XP: ${writingXp} -> ${written.save.playerProgress.totalXp}`)
   }
   if (written.save.characterNotes['rsh-0002'] !== 'две черты') {
@@ -169,6 +187,7 @@ try {
   if (await page.getByRole('dialog').count()) throw new Error('composition dialog did not close on its backdrop')
 
   const startingXp = await enterBattle(page, 2)
+  await finishInitialTrace(page)
   await page.getByRole('button', { name: /Показать состав/i }).click()
   await page.keyboard.press('Escape')
   await page.evaluate(async () => {
@@ -179,11 +198,12 @@ try {
   await dismissAchievements(page)
   if (composed.review?.totalMistakes !== 1) throw new Error(`composition click counted as ${composed.review?.totalMistakes} errors instead of 1`)
   if (composed.review.hintUsed) throw new Error('composition click was recorded as a stroke-order hint')
-  if (composed.save.playerProgress.totalXp !== startingXp + 1) {
+  if (composed.save.playerProgress.totalXp !== startingXp + 2) {
     throw new Error(`composition click did not deduct 1 XP: ${startingXp} -> ${composed.save.playerProgress.totalXp}`)
   }
 
   const noteXp = await enterBattle(page, 2, { 'rsh-0002': 'две горизонтальные черты' })
+  await finishInitialTrace(page)
   await page.getByRole('button', { name: /Открыть заметку/i }).click()
   const reviewNote = page.getByRole('dialog', { name: /два/i })
   await reviewNote.waitFor()
@@ -199,7 +219,7 @@ try {
   await dismissAchievements(page)
   if (viewed.review?.totalMistakes !== 1) throw new Error(`viewing a note counted as ${viewed.review?.totalMistakes} errors instead of 1`)
   if (viewed.review.hintUsed) throw new Error('viewing a note was recorded as a stroke-order hint')
-  if (viewed.save.playerProgress.totalXp !== noteXp + 1) {
+  if (viewed.save.playerProgress.totalXp !== noteXp + 2) {
     throw new Error(`viewing a note did not deduct 1 XP: ${noteXp} -> ${viewed.save.playerProgress.totalXp}`)
   }
   if (viewed.save.characterNotes['rsh-0002'] !== 'две горизонтальные черты') {

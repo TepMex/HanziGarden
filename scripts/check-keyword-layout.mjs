@@ -61,6 +61,7 @@ async function seedSave(page, { bedId, precedingCharacterIds }) {
     save.masteredBedIds = []
     save.lastActiveBedId = nextBedId
     save.seenCharacterIds = previousIds
+    save.pendingInitialRecallIds = []
     save.cards = Object.fromEntries(previousIds.map((id) => [id, card]))
     save.reviewEvents = []
     await window.hanziGardenCheats.loadDb(save)
