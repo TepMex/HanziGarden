@@ -1,5 +1,6 @@
 node_modules/
 dist/
+dist-hsk1/
 android/.gradle/
 android/app/build/
 *.tsbuildinfo

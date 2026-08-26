@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:hsk1": "vite --mode hsk1",
     "build": "tsc -b && vite build",
+    "build:hsk1": "tsc -b && vite build --mode hsk1 --outDir dist-hsk1",
     "lint": "eslint .",
     "test": "\"$npm_execpath\" test",
     "preview": "vite preview",

@@ -1,6 +1,6 @@
 # Hanzi Garden · Android
 
-Thin Android (Kotlin) WebView wrapper around the **web game in this same repository** (repo root: React + Vite). The production web build (including WebP map/battle art for all 15 gardens) is bundled into `app/src/main/assets/www/` so the APK plays offline.
+Thin Android (Kotlin) WebView wrapper around the **web game in this same repository** (repo root: React + Vite). Two product flavors bundle the full game and the HSK 1 demo so both APKs play offline and can be installed side by side.
 
 - **Requirements:** Android 14 or newer (min SDK 34), compile SDK 35.
 - **Orientation:** sensor (portrait and landscape).
@@ -17,15 +17,18 @@ See [SPEC.md](./SPEC.md) for requirements and acceptance criteria. Product desig
 ./scripts/sync-web-assets.sh
 ```
 
-3. Assemble a release APK:
+3. Assemble both release APKs:
 
 ```bash
-./gradlew assembleRelease
+./gradlew assembleFullRelease assembleHsk1Release
 ```
 
-Release builds are signed with the committed **sideload keystore** (`sideload.keystore` + `sideload-signing.properties`) so every CI and local build uses the same key. New APKs install **over** the previous version.
+Release builds are signed with the committed **sideload keystore** (`sideload.keystore` + `sideload-signing.properties`) so every CI and local build uses the same key. New APKs install **over** the corresponding previous edition. The HSK 1 flavor uses `com.tepmex.rthagriculture.hsk1`, so it installs alongside the primary `com.tepmex.rthagriculture` app.
 
-APK output: `app/build/outputs/apk/release/app-release.apk`.
+APK outputs:
+
+- `app/build/outputs/apk/full/release/app-full-release.apk`;
+- `app/build/outputs/apk/hsk1/release/app-hsk1-release.apk`.
 
 Optional: override signing via `rthagricultureandroid.signing*` entries in `local.properties`.
 
@@ -36,9 +39,10 @@ Optional: override signing via `rthagricultureandroid.signing*` entries in `loca
 
 ## CI and download
 
-On push to `master`, `.github/workflows/deploy.yml` builds the web game from the repo root, syncs it into `android/` assets, builds the release APK, verifies sideload signing, and publishes:
+On push to `master`, `.github/workflows/deploy.yml` builds both web editions from the repo root, syncs them into `android/` assets, builds both release APKs, verifies sideload signing, and publishes:
 
 - web game at `https://tepmex.github.io/HanziGarden/`;
-- APK landing at `https://tepmex.github.io/HanziGarden/android/` with `hanzi-garden.apk`.
+- HSK 1 web game at `https://tepmex.github.io/HanziGarden/hsk1/`;
+- APK landing at `https://tepmex.github.io/HanziGarden/android/` with `hanzi-garden.apk` and `hanzi-garden-hsk1.apk`.
 
 The APK is rebuilt when either the Android shell (`android/**`) or the web game (repo root sources / public assets) changes so bundled assets stay current.

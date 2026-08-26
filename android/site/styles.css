@@ -73,6 +73,27 @@ body {
   box-shadow: var(--shadow);
 }
 
+.card + .card {
+  margin-top: 1rem;
+}
+
+.edition-card {
+  position: relative;
+  padding-right: 5.5rem;
+}
+
+.edition-card h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+}
+
+.edition-icon {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.35rem;
+  border-radius: 13px;
+}
+
 .card p {
   margin: 0 0 1rem;
 }

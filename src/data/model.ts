@@ -1,6 +1,8 @@
 import rawCharacters from './rth.json'
 import rawPinyinAudio from './pinyinAudio.json'
 import type { PinyinPronunciation } from '../pinyinAudio'
+import { isHsk1Variant } from '../appVariant'
+import { HSK1_VARIANT_CHARACTERS } from './hsk1Variant'
 import { requireCharacterStructure, type CharacterStructure } from './rshStructure'
 import {
   cellsForBedIndex,
@@ -67,26 +69,53 @@ for (const item of source) {
   rawCharactersByList.set(item.rth_list, list)
 }
 
-const drafts: BedDraft[] = []
-for (const [listIndex, listId] of sourceRthListIds.entries()) {
-  const listCharacters = [...(rawCharactersByList.get(listId) ?? [])].sort((left, right) => left.frame - right.frame)
-  const splitIndex = Math.ceil(listCharacters.length / 2)
-  for (const sourceHalf of [0, 1] as const) {
-    const bedIndex = drafts.length
-    const cells = cellsForBedIndex(bedIndex)
-    drafts.push({
-      id: `bed-${String(bedIndex + 1).padStart(3, '0')}`,
-      sourceRthListId: listId,
-      sourceHalf,
-      biomeId: biomeForCell(cells[0]!).id,
-      rawCharacters: sourceHalf === 0 ? listCharacters.slice(0, splitIndex) : listCharacters.slice(splitIndex),
-      cells,
-      seed: (bedIndex + 1) * 2654435761,
-    })
+function draftForCharacters(
+  bedIndex: number,
+  rawCharacters: RawCharacter[],
+  sourceRthListId: string,
+  sourceHalf: 0 | 1,
+): BedDraft {
+  const cells = cellsForBedIndex(bedIndex)
+  return {
+    id: `bed-${String(bedIndex + 1).padStart(3, '0')}`,
+    sourceRthListId,
+    sourceHalf,
+    biomeId: biomeForCell(cells[0]!).id,
+    rawCharacters,
+    cells,
+    seed: (bedIndex + 1) * 2654435761,
   }
-  // This makes an accidental reordering above fail loudly during development.
-  if (drafts.length !== (listIndex + 1) * 2) throw new Error('Each RTH list must create exactly two beds')
 }
+
+function buildMainDrafts(): BedDraft[] {
+  const result: BedDraft[] = []
+  for (const [listIndex, listId] of sourceRthListIds.entries()) {
+    const listCharacters = [...(rawCharactersByList.get(listId) ?? [])].sort((left, right) => left.frame - right.frame)
+    const splitIndex = Math.ceil(listCharacters.length / 2)
+    for (const sourceHalf of [0, 1] as const) {
+      result.push(draftForCharacters(
+        result.length,
+        sourceHalf === 0 ? listCharacters.slice(0, splitIndex) : listCharacters.slice(splitIndex),
+        listId,
+        sourceHalf,
+      ))
+    }
+    // This makes an accidental reordering above fail loudly during development.
+    if (result.length !== (listIndex + 1) * 2) throw new Error('Each RTH list must create exactly two beds')
+  }
+  return result
+}
+
+function buildHsk1Drafts(): BedDraft[] {
+  const rawByHanzi = new Map(source.map((item) => [item.hanzi, item]))
+  return HSK1_VARIANT_CHARACTERS.map((hanzi, bedIndex) => {
+    const item = rawByHanzi.get(hanzi)
+    if (!item) throw new Error(`Missing RSH data for HSK Hanzi ${hanzi}`)
+    return draftForCharacters(bedIndex, [item], item.rth_list, 0)
+  })
+}
+
+const drafts = isHsk1Variant ? buildHsk1Drafts() : buildMainDrafts()
 
 const characterByBedAndFrame = new Map<string, CharacterDefinition>()
 for (const draft of drafts) {
@@ -151,12 +180,13 @@ export const characters = [...beds]
 
 export const bedById = new Map(beds.map((bed) => [bed.id, bed]))
 export const characterById = new Map(characters.map((character) => [character.id, character]))
-export const bedIdsByLegacyFieldId = new Map<string, [string, string]>(
-  sourceRthListIds.map((listId, index) => [
+const legacyBedEntries: Array<[string, [string, string]]> = isHsk1Variant
+  ? []
+  : sourceRthListIds.map((listId, index) => [
     legacyFieldIdBySourceRthListId.get(listId)!,
     [beds[index * 2]!.id, beds[index * 2 + 1]!.id],
-  ]),
-)
+  ])
+export const bedIdsByLegacyFieldId = new Map(legacyBedEntries)
 
 /** The first highest-stroke character, keeping the source-list order for ties. */
 export function mostComplexCharacterForBed(bed: BedDefinition): CharacterDefinition | undefined {

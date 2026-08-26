@@ -1,4 +1,5 @@
 import Dexie, { type EntityTable } from 'dexie'
+import { databaseName } from './appVariant'
 import { bedIdsByLegacyFieldId, beds, biomes, characterById } from './data/model'
 import type { CardState, ReviewEvent } from './learning'
 import { completeKanji, initialPlayerProgress, initialSessionProgress, type PlayerProgress } from './progression'
@@ -205,7 +206,7 @@ function migrateStoredSave(save: StoredSave): SaveGame {
   return save
 }
 
-const database = new Dexie('memory-garden') as Dexie & {
+const database = new Dexie(databaseName) as Dexie & {
   saves: EntityTable<StoredSave, 'id'>
 }
 

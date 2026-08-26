@@ -6,8 +6,9 @@
 
 | Путь | Содержимое |
 | ---- | ---------- |
-| `/` (корень) | Веб-игра (React + Vite + TypeScript) |
-| `android/` | Sideload Android APK — тонкая Kotlin/WebView-оболочка с бандлом той же веб-сборки |
+| `/` (корень) | Основная веб-игра (React + Vite + TypeScript) |
+| `/hsk1/` (Pages) | Дополнительная Hanzi Garden HSK 1: 220 знаков, один знак на грядку |
+| `android/` | Sideload Android APK — два product flavor одной Kotlin/WebView-оболочки |
 
 Это не монорепозиторий с другими проектами: веб и Android живут рядом в одном репо.
 
@@ -26,6 +27,15 @@ Production-сборка:
 bun run build
 ```
 
+Сборка дополнительной HSK 1 версии:
+
+```bash
+bun run dev:hsk1
+bun run build:hsk1
+```
+
+HSK 1 содержит все 174 уникальных упрощённых иероглифа из словаря HSK 1 (экзамен 2.0) и первые 46 новых уникальных знаков из HSK 2 (2.0). Основная версия по-прежнему содержит 2 974 знака и использует прежнюю базу сохранений; у HSK 1 отдельная IndexedDB.
+
 ## Android
 
 Сборка APK из корня репозитория (скрипт берёт веб из `..` относительно `android/` — то есть этот же корень):
@@ -33,7 +43,7 @@ bun run build
 ```bash
 cd android
 ./scripts/sync-web-assets.sh
-./gradlew assembleRelease
+./gradlew assembleFullRelease assembleHsk1Release
 ```
 
 Подробности: [`android/README.md`](./android/README.md).
@@ -43,8 +53,10 @@ cd android
 Workflow [`.github/workflows/deploy.yml`](./.github/workflows/deploy.yml) на push в `master` собирает веб и при необходимости Android из **этого** репозитория.
 
 - Веб-игра: `https://tepmex.github.io/HanziGarden/`
+- Hanzi Garden HSK 1: `https://tepmex.github.io/HanziGarden/hsk1/`
 - Android landing: `https://tepmex.github.io/HanziGarden/android/`
 - APK: `https://tepmex.github.io/HanziGarden/android/hanzi-garden.apk`
+- HSK 1 APK: `https://tepmex.github.io/HanziGarden/android/hanzi-garden-hsk1.apk`
 
 CI может задать `GH_PAGES_PUBLIC_PATH` (например `/<repository>/`), чтобы Vite выставил корректные абсолютные URL ассетов. Для локальной/`file://` сборки и Android-обёртки переменную не задают — `base` остаётся `./`.
 

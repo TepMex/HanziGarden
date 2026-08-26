@@ -155,9 +155,9 @@ jobs:
 
       - name: Build web game
         if: needs.detect.outputs.build_web == 'true'
-        env:
-          GH_PAGES_PUBLIC_PATH: /${{ github.event.repository.name }}/
-        run: bun run build
+        run: |
+          GH_PAGES_PUBLIC_PATH=/${{ github.event.repository.name }}/ bun run build
+          GH_PAGES_PUBLIC_PATH=/${{ github.event.repository.name }}/hsk1/ bun run build:hsk1
 
       - name: Setup Java
         if: needs.detect.outputs.build_android == 'true'
@@ -175,7 +175,7 @@ jobs:
         if: needs.detect.outputs.build_android == 'true'
         run: chmod +x android/scripts/sync-web-assets.sh && android/scripts/sync-web-assets.sh
 
-      - name: Build Hanzi Garden Android APK
+      - name: Build Hanzi Garden Android APKs
         if: needs.detect.outputs.build_android == 'true'
         working-directory: android
         run: |
@@ -187,12 +187,12 @@ jobs:
           max_attempts=3
           attempt=1
           while true; do
-            echo "Gradle assembleRelease attempt ${attempt}/${max_attempts}"
-            if ./gradlew --no-daemon --stacktrace assembleRelease; then
+            echo "Gradle release APK attempt ${attempt}/${max_attempts}"
+            if ./gradlew --no-daemon --stacktrace assembleFullRelease assembleHsk1Release; then
               break
             fi
             if [[ "$attempt" -ge "$max_attempts" ]]; then
-              echo "Gradle assembleRelease failed after ${max_attempts} attempts" >&2
+              echo "Gradle release APK build failed after ${max_attempts} attempts" >&2
               exit 1
             fi
             rm -rf "${GRADLE_USER_HOME:-$HOME/.gradle}/wrapper/dists/gradle-8.9-bin" || true
@@ -205,7 +205,8 @@ jobs:
         run: |
           set -euo pipefail
           chmod +x android/verify-apk-sideload-cert.sh
-          android/verify-apk-sideload-cert.sh android/app/build/outputs/apk/release/app-release.apk
+          android/verify-apk-sideload-cert.sh android/app/build/outputs/apk/full/release/app-full-release.apk
+          android/verify-apk-sideload-cert.sh android/app/build/outputs/apk/hsk1/release/app-hsk1-release.apk
 
       - name: Prepare GitHub Pages site
         env:
@@ -231,11 +232,14 @@ jobs:
 
           if is_true "$BUILD_WEB"; then
             # Web game is the Pages root for this single-product repo.
-            find deploy -mindepth 1 -maxdepth 1 ! -name android ! -name .nojekyll -exec rm -rf {} +
+            find deploy -mindepth 1 -maxdepth 1 ! -name android ! -name hsk1 ! -name .nojekyll -exec rm -rf {} +
             cp -r dist/. deploy/
+            rm -rf deploy/hsk1
+            mkdir -p deploy/hsk1
+            cp -r dist-hsk1/. deploy/hsk1/
           else
-            if [[ ! -f deploy/index.html ]]; then
-              echo "Missing web deploy artifact (not built and no previous gh-pages copy)" >&2
+            if [[ ! -f deploy/index.html || ! -f deploy/hsk1/index.html ]]; then
+              echo "Missing full or HSK 1 web deploy artifact (not built and no previous gh-pages copy)" >&2
               exit 1
             fi
           fi
@@ -247,17 +251,19 @@ jobs:
 
           if is_true "$BUILD_ANDROID"; then
             cp -r android/site/. deploy/android/
-            cp android/app/build/outputs/apk/release/app-release.apk \
+            cp android/app/build/outputs/apk/full/release/app-full-release.apk \
               deploy/android/hanzi-garden.apk
+            cp android/app/build/outputs/apk/hsk1/release/app-hsk1-release.apk \
+              deploy/android/hanzi-garden-hsk1.apk
           elif is_true "$REFRESH_ANDROID_LANDING"; then
             cp -r android/site/. deploy/android/
-            if [[ ! -f deploy/android/hanzi-garden.apk ]]; then
-              echo "Missing APK during android landing refresh" >&2
+            if [[ ! -f deploy/android/hanzi-garden.apk || ! -f deploy/android/hanzi-garden-hsk1.apk ]]; then
+              echo "Missing full or HSK 1 APK during android landing refresh" >&2
               exit 1
             fi
           else
-            if [[ ! -f deploy/android/hanzi-garden.apk ]]; then
-              echo "Missing APK for android/" >&2
+            if [[ ! -f deploy/android/hanzi-garden.apk || ! -f deploy/android/hanzi-garden-hsk1.apk ]]; then
+              echo "Missing full or HSK 1 APK for android/" >&2
               exit 1
             fi
           fi

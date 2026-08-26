@@ -34,6 +34,18 @@ android {
         versionName = "1.0.$autoVersionCode"
     }
 
+    flavorDimensions += "edition"
+    productFlavors {
+        create("full") {
+            dimension = "edition"
+        }
+        create("hsk1") {
+            dimension = "edition"
+            applicationIdSuffix = ".hsk1"
+            versionNameSuffix = "-hsk1"
+        }
+    }
+
     buildTypes {
         debug {
             signingConfig = if (useCustomSigning) {
@@ -86,12 +98,13 @@ dependencies {
     implementation("androidx.activity:activity-ktx:1.9.3")
 }
 
-val wwwIndex = layout.projectDirectory.file("src/main/assets/www/index.html")
+val fullWwwIndex = layout.projectDirectory.file("src/main/assets/www/index.html")
+val hsk1WwwIndex = layout.projectDirectory.file("src/hsk1/assets/www/index.html")
 tasks.register("verifyWebAssets") {
     doLast {
-        if (!wwwIndex.asFile.isFile) {
+        if (!fullWwwIndex.asFile.isFile || !hsk1WwwIndex.asFile.isFile) {
             throw GradleException(
-                "Missing bundled game at ${wwwIndex.asFile}. Run ../scripts/sync-web-assets.sh first.",
+                "Missing full or HSK 1 bundled game. Run ../scripts/sync-web-assets.sh first.",
             )
         }
     }

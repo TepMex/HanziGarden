@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { ArrowLeft, Leaf } from 'lucide-react'
+import { appName } from '../appVariant'
 import { characters, type CharacterDefinition } from '../data/model'
 import type { SaveGame } from '../db'
 import { getSrsStage, SRS_STAGES } from './srsStages'
@@ -32,7 +33,7 @@ export function StatisticsScreen({ save, session, onBack }: { save: SaveGame; se
     <main className="statistics-screen">
       <header className="statistics-header">
         <button className="stats-back" onClick={onBack}><ArrowLeft size={18} /> К карте</button>
-        <div className="brand-mark"><Leaf size={18} /><span>Hanzi Garden</span></div>
+        <div className="brand-mark"><Leaf size={18} /><span>{appName}</span></div>
       </header>
 
       <section className="statistics-content" aria-labelledby="statistics-title">

@@ -6,11 +6,11 @@
 
 **Product name:** Hanzi Garden / Сад иероглифов
 
-**Repository:** single-product repo — web game at the repository root, Android WebView sideload APK under `android/`. Not a multi-project monorepo.
+**Repository:** single-game repo — web builds at the repository root, Android WebView sideload APKs under `android/`. Not a multi-project monorepo.
 
 Hanzi Garden is a single-player educational game for learning to **produce Chinese characters from meaning**.
 
-The public web and Android surfaces use the **Hanzi Garden** name. The downloadable Android artifact is `hanzi-garden.apk`. Legacy storage and Android package identifiers remain unchanged so existing players can update the app without losing access to their progress.
+The primary public web and Android surfaces use the **Hanzi Garden** name. The primary downloadable Android artifact is `hanzi-garden.apk`. Legacy storage and Android package identifiers remain unchanged so existing players can update the primary app without losing access to their progress.
 
 The core tested skill is:
 
@@ -24,9 +24,25 @@ The central metaphor is:
 
 Learning progress, spaced repetition, garden state, and visual restoration are therefore one system rather than separate game and study modes.
 
+## Product Editions
+
+The primary **Hanzi Garden** edition remains the full game and continues to evolve. It retains all 2,974 RSH characters, the existing `memory-garden` IndexedDB database, the `com.tepmex.rthagriculture` Android application ID, the root web address, and the `hanzi-garden.apk` artifact.
+
+**Hanzi Garden HSK 1** is an additional demo edition built from the same UI, mechanics, art, progression, and source code. The only gameplay-content difference is its character set and one-character bed workloads:
+
+- include all 174 unique simplified Hanzi encountered in the 150-word HSK 1 vocabulary list for exam version 2.0;
+- append the first 46 new unique Hanzi encountered in the HSK 2 (2.0) vocabulary list, preserving vocabulary-list order and first occurrence within each word;
+- contain exactly 220 unique characters and 220 beds, with exactly one character in every bed;
+- reuse the existing RSH keyword, structure, pinyin/audio, stroke count, and local Hanzi Writer data for each selected character;
+- publish the web build at `/hsk1/` and keep its progress isolated in the `memory-garden-hsk1` IndexedDB database;
+- publish a separately installable `hanzi-garden-hsk1.apk` with Android application ID `com.tepmex.rthagriculture.hsk1`;
+- display the product name **Hanzi Garden HSK 1** and use edition-specific web and Android icons whose existing Hanzi Garden mark carries a legible `HSK 1` badge.
+
+No HSK 1 edition change may remove, reduce, rename, migrate, or otherwise alter the primary edition's character catalog, saved progress, package identity, public URL, or artifact.
+
 ## Garden Domain Model
 
-The garden replaces the original 110-field presentation. The 110 stable RTH/RSH source lists remain the learning source, but each is split in original frame order into two contiguous halves, creating **220 beds** while retaining the same character IDs and FSRS cards.
+In the primary edition, the garden replaces the original 110-field presentation. The 110 stable RTH/RSH source lists remain the learning source, but each is split in original frame order into two contiguous halves, creating **220 beds** while retaining the same character IDs and FSRS cards. In the HSK 1 edition, the same 220 bed IDs and geometry are retained but each bed contains exactly one selected HSK character.
 
 The garden has 15 visually distinct `Biome`s in a 5 × 3 layout: bamboo, rice, lotus, tea, blossom, peony, chrysanthemum, pine, persimmon, orchid, berries, rapeseed, wheat, wisteria, and medicinal herbs. The first biome contains 10 beds in a 2 × 5 layout; each of the other 14 biomes contains 15 beds in a 3 × 5 layout.
 
@@ -105,7 +121,7 @@ type Biome = {
 
 A **Bed** is the smallest territory unit that the player clears of weeds. The full garden contains **220 beds**. Selecting an unlocked bed starts a battle for that bed.
 
-Each of the 110 unique RTH/RSH lists is split at its midpoint into two ordered bed workloads. The first five beds occupy two logical cells each so the first biome still presents exactly 10 beds; every later bed occupies one logical cell.
+In the primary edition, each of the 110 unique RTH/RSH lists is split at its midpoint into two ordered bed workloads. In the HSK 1 edition, the 220 selected characters are assigned one per bed. The first five beds occupy two logical cells each so the first biome still presents exactly 10 beds; every later bed occupies one logical cell in both editions.
 
 ### 4.4 Bed Data
 

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Ship **Hanzi Garden** (Сад иероглифов) as a sideloadable Android APK by wrapping the React/Vite web game from **this same repository** in a thin native shell. Players get the same meaning→write Hanzi garden game offline on Android 14+, downloadable from this repo’s GitHub Pages `/android/` landing.
+Ship **Hanzi Garden** and the additional **Hanzi Garden HSK 1** demo as separately installable sideload Android APKs by wrapping the React/Vite web editions from **this same repository** in one thin native shell. Players get the same meaning→write Hanzi garden game offline on Android 14+, downloadable from this repo’s GitHub Pages `/android/` landing.
 
 Audience: Mandarin learners who already use the web game and want a home-screen install with local progress.
 
@@ -23,12 +23,12 @@ There is no sibling game or Android checkout. Asset sync builds the web app from
 2. Preserve game behavior: JavaScript, IndexedDB (Dexie), DOM storage, canvas/Hanzi Writer pointer input, and Web Audio must work inside the WebView.
 3. Allow **sensor** orientation (portrait and landscape) to match the web game’s adaptive desktop/mobile UI.
 4. Use immersive system UI (hide status/nav bars) so the game fills the screen.
-5. Keep the legacy application id `com.tepmex.rthagriculture` for in-place upgrades; display name **Hanzi Garden**.
+5. Keep the legacy application id `com.tepmex.rthagriculture` for primary-edition in-place upgrades; display name **Hanzi Garden**. The HSK 1 flavor uses `com.tepmex.rthagriculture.hsk1` and display name **Hanzi Garden HSK 1** so both editions install side by side.
 6. minSdk 34, compile/targetSdk 35; Kotlin + ViewBinding shell.
 7. Sign release (and debug when keystore present) with the committed **sideload** keystore in `android/` so Pages APKs upgrade in place.
-8. Publish a GitHub Pages landing at `/android/` (from `android/site/`) with the `hanzi-garden.apk` download.
+8. Publish a GitHub Pages landing at `/android/` (from `android/site/`) with `hanzi-garden.apk` and `hanzi-garden-hsk1.apk` downloads.
 9. CI rebuilds the APK when `android/**` or the web game sources/assets at the repo root change (bundled assets must stay in sync).
-10. Provide a local/CI script to build the web game with relative `base: ./` and sync output into `app/src/main/assets/www/`.
+10. Provide a local/CI script to build both web editions with relative `base: ./` and sync output into `app/src/main/assets/www/` and `app/src/hsk1/assets/www/`.
 11. Ship map/battle art as **WebP** (including a distinct backdrop set for each of the 15 gardens) so the release APK stays under GitHub’s 100 MB push limit without remote asset downloads or shared-placeholder dedupe.
 
 ## Interfaces
@@ -38,15 +38,15 @@ There is no sibling game or Android checkout. Asset sync builds the web app from
 | Launcher activity | `com.tepmex.rthagriculture.MainActivity` — single WebView host |
 | Bundled URI | `file:///android_asset/www/index.html` |
 | Asset sync CLI | `./scripts/sync-web-assets.sh` (from `android/`) |
-| Gradle | `./gradlew assembleRelease` → `app/build/outputs/apk/release/app-release.apk` |
-| Pages download | `https://<host>/<repo>/android/hanzi-garden.apk` |
+| Gradle | `./gradlew assembleFullRelease assembleHsk1Release` |
+| Pages downloads | `https://<host>/<repo>/android/hanzi-garden.apk` and `hanzi-garden-hsk1.apk` |
 | Upstream game | Same-repo web app at repository root (React + Vite + TypeScript) |
 
 No deep links, no native plugins, no Play Store listing in v1.
 
 ## Data model
 
-- **No native persistence.** Cards, FSRS state, and bed unlocks remain in the WebView’s IndexedDB (Dexie) under the same schema as the web game.
+- **No native persistence.** Cards, FSRS state, and bed unlocks remain in the WebView’s IndexedDB (Dexie) under the same schema as the matching web edition. Android application sandboxing isolates the two editions.
 - Clearing app storage / uninstall wipes progress (same as clearing browser site data).
 - Bundled `www/` is a build artifact of the root web game (not edited by hand).
 
@@ -69,8 +69,8 @@ No deep links, no native plugins, no Play Store listing in v1.
 
 ## Acceptance criteria
 
-1. `./scripts/sync-web-assets.sh` (from `android/`) produces a non-empty `app/src/main/assets/www/index.html` with relative asset URLs and bundled WebP garden/battle art for all 15 biomes.
-2. `./gradlew assembleRelease` produces a sideload-signed APK under 100 MB (signed with the committed `android/sideload.keystore`).
+1. `./scripts/sync-web-assets.sh` (from `android/`) produces non-empty full and HSK 1 `index.html` files with relative asset URLs and bundled WebP garden/battle art for all 15 biomes.
+2. `./gradlew assembleFullRelease assembleHsk1Release` produces two sideload-signed APKs under 100 MB (signed with the committed `android/sideload.keystore`).
 3. Installing the APK on API 34+ opens the welcome screen without a network connection.
 4. Completing a battle persists card/bed state across process death (WebView IndexedDB).
 5. Deploy workflow for this repository rebuilds the APK when the Android wrapper or the root web game changes.
