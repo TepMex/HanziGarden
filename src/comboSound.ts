@@ -15,7 +15,7 @@ export function playComboMilestoneCue(combo: number): void {
       oscillator.type = 'sine'
       oscillator.frequency.value = frequency
       gain.gain.setValueAtTime(.0001, start)
-      gain.gain.exponentialRampToValueAtTime(.055, start + .018)
+      gain.gain.exponentialRampToValueAtTime(.16, start + .018)
       gain.gain.exponentialRampToValueAtTime(.0001, start + .28)
       oscillator.connect(gain).connect(context.destination)
       oscillator.start(start)

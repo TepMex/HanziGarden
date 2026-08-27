@@ -1,6 +1,6 @@
 import { assetUrl } from './assetUrl'
 
-type PlayableAudio = Pick<HTMLAudioElement, 'currentTime' | 'load' | 'pause' | 'play' | 'preload'>
+type PlayableAudio = Pick<HTMLAudioElement, 'currentTime' | 'load' | 'pause' | 'play' | 'preload' | 'volume'>
 
 type StrokeFeedbackAudioPlayerOptions = {
   createAudio?: (url: string) => PlayableAudio
@@ -9,6 +9,8 @@ type StrokeFeedbackAudioPlayerOptions = {
 
 export const CORRECT_STROKE_SOUND_PATH = 'assets/audio/sound/sfx/correct.wav'
 export const MISTAKE_STROKE_SOUND_PATH = 'assets/audio/sound/sfx/mistake.wav'
+/** Linear HTMLMediaElement volume for one-shot stroke cues. */
+export const STROKE_FEEDBACK_VOLUME = 1
 
 export class StrokeFeedbackAudioPlayer {
   private readonly correctAudio: PlayableAudio | null
@@ -38,6 +40,7 @@ export class StrokeFeedbackAudioPlayer {
     try {
       const audio = createAudio(url)
       audio.preload = 'auto'
+      audio.volume = STROKE_FEEDBACK_VOLUME
       audio.load()
       return audio
     } catch {

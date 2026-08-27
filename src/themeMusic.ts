@@ -1,6 +1,6 @@
 import { assetUrl } from './assetUrl'
 
-type PlayableThemeAudio = Pick<HTMLAudioElement, 'load' | 'loop' | 'pause' | 'play' | 'preload'>
+type PlayableThemeAudio = Pick<HTMLAudioElement, 'load' | 'loop' | 'pause' | 'play' | 'preload' | 'volume'>
 
 type ThemeMusicPlayerOptions = {
   createAudio?: (url: string) => PlayableThemeAudio
@@ -8,6 +8,8 @@ type ThemeMusicPlayerOptions = {
 }
 
 export const THEME_MUSIC_PATH = 'assets/audio/sound/theme.mp3'
+/** Linear HTMLMediaElement volume so the mastered theme sits under effect cues. */
+export const THEME_MUSIC_VOLUME = 0.6
 
 /** Owns the single looping theme shared by the menu and garden map. */
 export class ThemeMusicPlayer {
@@ -20,6 +22,7 @@ export class ThemeMusicPlayer {
       const audio = createAudio(resolveUrl(THEME_MUSIC_PATH))
       audio.loop = true
       audio.preload = 'auto'
+      audio.volume = THEME_MUSIC_VOLUME
       audio.load()
       this.audio = audio
     } catch {

@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'bun:test'
-import { THEME_MUSIC_PATH, ThemeMusicPlayer } from '../src/themeMusic'
+import { STROKE_FEEDBACK_VOLUME } from '../src/strokeFeedbackAudio'
+import { THEME_MUSIC_PATH, THEME_MUSIC_VOLUME, ThemeMusicPlayer } from '../src/themeMusic'
 
 function fakeAudio() {
   return {
@@ -8,6 +9,7 @@ function fakeAudio() {
     playCalls: 0,
     loop: false,
     preload: '',
+    volume: 1,
     load() { this.loadCalls += 1 },
     pause() { this.pauseCalls += 1 },
     play() {
@@ -31,8 +33,10 @@ describe('ThemeMusicPlayer', () => {
 
     expect(THEME_MUSIC_PATH).toBe('assets/audio/sound/theme.mp3')
     expect(createdUrl).toBe('file:///android_asset/www/assets/audio/sound/theme.mp3')
+    expect(THEME_MUSIC_VOLUME).toBeLessThan(STROKE_FEEDBACK_VOLUME)
     expect(audio.loop).toBe(true)
     expect(audio.preload).toBe('auto')
+    expect(audio.volume).toBe(THEME_MUSIC_VOLUME)
     expect(audio.loadCalls).toBe(1)
   })
 
