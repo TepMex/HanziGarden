@@ -51,7 +51,7 @@ There is no intermediate garden-selection screen. The player pans and zooms the 
 
 The welcome screen is the main menu. It offers **Войти в сад**, **Об игре**, **Поддержать**, and **Выход**. It is centered within the available viewport and must not scroll or reveal a strip of the garden map beneath it. Its garden backdrop covers the screen without tiling, including during mobile overscroll. The About and Support items open dedicated placeholder text screens with a route back to the main menu. Entering the garden preserves the player's save and current map camera. Exit closes the Android host; browser builds request that the current tab be closed.
 
-`public/assets/audio/sound/theme.mp3` is the looping background theme for the main menu and the garden map. One shared player keeps the track continuous when moving between those two screens. The theme is paused everywhere else, including About, Support, Statistics, and the handwriting battle; drawing characters currently has no background music. Browser autoplay restrictions or playback failures must never block navigation or gameplay, and playback is retried after the first user gesture when necessary.
+`public/assets/audio/sound/theme.mp3` is the looping background theme for the main menu and the garden map. One shared player keeps the track continuous when moving between those two screens. The theme is paused everywhere else, including About, Support, Statistics, and the handwriting battle; drawing characters currently has no background music. Playback uses a reduced background mix so the mastered track sits under stroke and combo cues rather than drowning them. Browser autoplay restrictions or playback failures must never block navigation or gameplay, and playback is retried after the first user gesture when necessary.
 
 The product icon is shared across browser favicons, touch icons, the Android download page, and the Android launcher. It depicts a warm ivory calligraphic sprout and garden mound with the simplified character **忆** (memory / to remember) inside a cinnabar-red circular seal on a deep jade background. The Android adaptive-icon foreground must remain inside the platform safe zone so round, squircle, and rounded-square launcher masks preserve the complete mark.
 
@@ -246,7 +246,9 @@ Every stroke accepted by Hanzi Writer plays
 `public/assets/audio/sound/sfx/correct.wav`. Every rejected stroke plays
 `public/assets/audio/sound/sfx/mistake.wav`. Both effects are preloaded when the
 handwriting battle opens and replay from the beginning on each corresponding
-callback. Missing assets, blocked playback, or audio-device failures must never
+callback. They play at full mix level, and the assets themselves are mixed
+loudly enough that accepted and rejected strokes stay clearly audible relative
+to the looping theme. Missing assets, blocked playback, or audio-device failures must never
 delay or alter stroke grading or any other gameplay state.
 
 ## 6. Persistent Progress Model
@@ -1605,8 +1607,8 @@ Milestones award a small one-time bonus:
 ```
 
 Combo bonuses use short jade/gold glow, particle, pulse, and synthesized sound
-cues. Gameplay shows a transient XP/Combo toast together with the character's
-on-screen pinyin. The map permanently
+cues mixed to stay audible with the stroke effects. Gameplay shows a transient
+XP/Combo toast together with the character's on-screen pinyin. The map permanently
 shows a compact level medallion, thin progress bar, and in-level XP count.
 When the operating system requests reduced motion, the XP/Combo toast remains
 completely static and visible for approximately one second, then disappears
