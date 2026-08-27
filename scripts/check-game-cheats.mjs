@@ -32,6 +32,10 @@ page.on('pageerror', (error) => errors.push(error.message))
 async function expectPinyin(target, syllable) {
   const toast = target.locator('.pinyin-toast')
   await toast.waitFor()
+  await target.waitForFunction(() => {
+    const el = document.querySelector('.pinyin-toast')
+    return Boolean(el) && Number(getComputedStyle(el).opacity) > 0.5
+  })
   const text = (await toast.textContent())?.trim()
   if (text !== syllable) throw new Error(`expected on-screen pinyin ${syllable}, got ${JSON.stringify(text)}`)
 }
