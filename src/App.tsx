@@ -7,7 +7,7 @@ import { type BedDefinition, type CharacterDefinition } from './data/model'
 import { battleArtworkForBiome, battleBackdropStage } from './data/battleBiomeArt'
 import { initialSave, loadSave, persistSave, type SaveGame } from './db'
 import { battleBedCleanliness, bedInfection } from './garden'
-import { appName } from './appVariant'
+import { appName, appVariant, shouldShowClearedBedSummary } from './appVariant'
 import { loadHanziCharData, type HanziCharacterJson } from './hanziData'
 import { classifyStrokeError } from './strokeErrorClassifier'
 import {
@@ -351,6 +351,11 @@ function BattleScreen({
   }, [])
 
   const gainedLevels = crossedLevels(bedStartXpRef.current, save.playerProgress.totalXp)
+  const showClearedBedSummary = shouldShowClearedBedSummary(appVariant, gainedLevels)
+  useLayoutEffect(() => {
+    if (activeCharacter || showClearedBedSummary) return
+    onExit()
+  }, [activeCharacter, onExit, showClearedBedSummary])
   useEffect(() => {
     if (activeCharacter || bedSummary.earnedXp === 0) return
     setSummaryReady(false)
@@ -819,7 +824,7 @@ function BattleScreen({
           <button className="hint-button" onClick={useHint}><HelpCircle size={16} /> Показать следующий штрих</button>
           {strokeHint && <StrokeErrorHint hint={strokeHint} />}
         </>
-      ) : (
+      ) : showClearedBedSummary ? (
         <section className="cleared-state">
           <Flower2 />
           <p className="cleared-eyebrow">Грядка очищена</p>
@@ -842,7 +847,7 @@ function BattleScreen({
           )}
           <button className={`primary-button ${summaryReady ? 'is-ready' : ''}`} onClick={onExit}>Вернуться в сад <Sparkles size={17} /></button>
         </section>
-      )}
+      ) : null}
 
       {activeCharacter && lastReward && (
         <XpToast
@@ -1066,6 +1071,8 @@ export default function App() {
     }
   }, [loaded])
 
+  const exitBattle = useCallback(() => setScreen('garden'), [])
+
   const enterBed = (bed: BedDefinition) => {
     const current = appSaveRef.current
     if (!current.unlockedBedIds.includes(bed.id)) return
@@ -1098,7 +1105,7 @@ export default function App() {
   } else if (screen === 'about' || screen === 'support') {
     content = <MenuInfoScreen kind={screen} onBack={() => setScreen('menu')} />
   } else if (screen === 'battle' && activeBed) {
-    content = <BattleScreen bed={activeBed} save={save} session={session} onSave={updateProgress} onUpdateSave={updateSave} onExit={() => setScreen('garden')} />
+    content = <BattleScreen bed={activeBed} save={save} session={session} onSave={updateProgress} onUpdateSave={updateSave} onExit={exitBattle} />
   } else if (screen === 'stats') {
     content = <StatisticsScreen save={save} session={session} onBack={() => setScreen('garden')} />
   } else {
