@@ -991,6 +991,8 @@ Use explicit adapters between systems.
 
 Web and Android ship from the same repository: sync the production Vite build into the APK; do not treat the Android app as a separate product checkout.
 
+The Android host locks both edition APKs to portrait (`android:screenOrientation="portrait"`). It must not follow the device sensor or the system auto-rotate setting: the game is designed for a single upright screen position. Browser builds may still adapt to landscape viewports.
+
 ## 30. Offline-First Design
 
 Bundle character stroke data locally:

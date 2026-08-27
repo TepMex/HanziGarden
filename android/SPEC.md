@@ -21,7 +21,7 @@ There is no sibling game or Android checkout. Asset sync builds the web app from
 
 1. Package the production build of the root web game into the APK under `assets/www/` and load it in a full-screen WebView (`file:///android_asset/www/index.html`).
 2. Preserve game behavior: JavaScript, IndexedDB (Dexie), DOM storage, canvas/Hanzi Writer pointer input, and Web Audio must work inside the WebView.
-3. Allow **sensor** orientation (portrait and landscape) to match the web game’s adaptive desktop/mobile UI.
+3. Lock the activity to **portrait** orientation. Do not follow the device sensor or the system auto-rotate setting: the game is designed for a single upright screen position.
 4. Use immersive system UI (hide status/nav bars) so the game fills the screen.
 5. Keep the legacy application id `com.tepmex.rthagriculture` for primary-edition in-place upgrades; display name **Hanzi Garden**. The HSK 1 flavor uses `com.tepmex.rthagriculture.hsk1` and display name **Hanzi Garden HSK 1** so both editions install side by side.
 6. minSdk 34, compile/targetSdk 35; Kotlin + ViewBinding shell.
@@ -53,7 +53,7 @@ No deep links, no native plugins, no Play Store listing in v1.
 ## UI / UX
 
 1. Cold start → splash theme → WebView loads bundled `index.html` → main menu. Its **Выход** action closes and removes the Android activity task through the internal `hanzi-garden://exit` command.
-2. Orientation follows the device sensor; the upstream UI adapts to portrait and landscape.
+2. Orientation stays portrait for the lifetime of the activity, including when system auto-rotate is off and when the phone is tilted.
 3. System back: if the WebView history stack has an entry, go back; otherwise finish the activity.
 4. Landing page (`android/site/`): brand **Hanzi Garden**, short tagline, APK download link, update note.
 5. WebView must honor the game’s `width=device-width` viewport at 100% scale (no overview zoom) so mobile battle layout matches Chrome on phones — writer canvas clipped, no stroke SVG bleed over chrome.
@@ -79,3 +79,4 @@ No deep links, no native plugins, no Play Store listing in v1.
 8. The garden map (including its negative layer) and all 60 biome battle backdrops load under bundled `file:///android_asset/` (`base: './'`) — the writing area stays visibly rendered through dirty, half-clean, quarter-clean, and clean states rather than becoming a blank dark void.
 9. Battle quiz works offline: Hanzi stroke JSON loads via XHR (Fetch is blocked on `file://`), so drawing and «Показать следующий штрих» animate.
 10. `scripts/sync-web-assets.sh` fails if the bundled `www/` tree exceeds 95 MB.
+11. The launcher activity declares `android:screenOrientation="portrait"` so the APK stays upright regardless of phone tilt or the system auto-rotate toggle.

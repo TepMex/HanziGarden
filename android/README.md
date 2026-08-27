@@ -3,7 +3,7 @@
 Thin Android (Kotlin) WebView wrapper around the **web game in this same repository** (repo root: React + Vite). Two product flavors bundle the full game and the HSK 1 demo so both APKs play offline and can be installed side by side.
 
 - **Requirements:** Android 14 or newer (min SDK 34), compile SDK 35.
-- **Orientation:** sensor (portrait and landscape).
+- **Orientation:** locked portrait (does not follow the sensor or system auto-rotate).
 - **Upstream:** same garden, 15 biomes, 220 beds, four-stage battles, FSRS, and IndexedDB progress as the web app at the repo root.
 
 See [SPEC.md](./SPEC.md) for requirements and acceptance criteria. Product design lives in the root [`GAME_SPEC.md`](../GAME_SPEC.md) / [`V2_SPEC.md`](../V2_SPEC.md).
