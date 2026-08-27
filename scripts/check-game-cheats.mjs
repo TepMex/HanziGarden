@@ -29,6 +29,17 @@ page.on('console', (message) => {
 })
 page.on('pageerror', (error) => errors.push(error.message))
 
+async function expectPinyin(target, syllable) {
+  const toast = target.locator('.pinyin-toast')
+  await toast.waitFor()
+  await target.waitForFunction(() => {
+    const el = document.querySelector('.pinyin-toast')
+    return Boolean(el) && Number(getComputedStyle(el).opacity) > 0.5
+  })
+  const text = (await toast.textContent())?.trim()
+  if (text !== syllable) throw new Error(`expected on-screen pinyin ${syllable}, got ${JSON.stringify(text)}`)
+}
+
 try {
   await page.goto(`file://${indexPath}`, { waitUntil: 'domcontentloaded' })
   await page.waitForFunction(() => Boolean(window.hanziGardenCheats))
@@ -67,6 +78,7 @@ try {
 
   await page.evaluate(() => window.hanziGardenCheats.drawWrongStroke())
   await page.evaluate(() => window.hanziGardenCheats.drawCorrectStroke())
+  await expectPinyin(page, 'yī')
 
   await page.waitForFunction(() => document.querySelector('.writing-target')?.dataset.traceOutline === 'false')
   const afterTrace = await page.evaluate(async () => {
@@ -85,6 +97,7 @@ try {
   }
 
   await page.evaluate(() => window.hanziGardenCheats.drawCorrectStroke())
+  await expectPinyin(page, 'yī')
   await page.waitForFunction(async (reviewCount) => {
     const save = await window.hanziGardenCheats.dumpDb('object')
     return save.reviewEvents.length === reviewCount + 1
@@ -144,7 +157,7 @@ try {
 
   await page.evaluate((json) => window.hanziGardenCheats.loadDb(json), backup)
   if (errors.length) throw new Error(`browser errors: ${errors.slice(0, 5).join(' | ')}`)
-  console.log('OK: production cheat API strokes + pinyin audio + dump round-trip')
+  console.log('OK: production cheat API strokes + pinyin audio/text + dump round-trip')
 } finally {
   await browser.close()
 }

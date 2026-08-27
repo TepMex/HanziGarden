@@ -206,13 +206,24 @@ Example:
 }
 ```
 
-### 5.1 Pinyin Pronunciation Audio
+### 5.1 Pinyin Pronunciation Feedback
 
 Completing the final accepted stroke of a character immediately plays that
-character's Mandarin pinyin syllable. Pronunciation is optional feedback: a
-blocked, unavailable, or failed audio playback must never delay or alter review
-grading, XP, combo, achievements, save persistence, or progression to the next
-character.
+character's Mandarin pinyin syllable and shows the same stored diacritic
+spelling on screen (for example `māo`) for the duration of the completion beat.
+The visible pinyin appears with the audio, not instead of it, and uses the same
+transient timing as the XP toast. It belongs to the Hanzi that just completed
+and must not remain after the battle advances to a different Hanzi. Both the
+primary Hanzi Garden edition and Hanzi Garden HSK 1 share this feedback. When
+the operating system requests reduced motion, the on-screen pinyin remains
+completely static and visible for approximately one second, then disappears
+immediately.
+
+Pronunciation is optional feedback: a blocked, unavailable, or failed audio
+playback must never delay or alter review grading, XP, combo, achievements,
+save persistence, or progression to the next character. The on-screen pinyin
+still appears when audio is skipped, including for `哟`, which retains pinyin
+metadata but has no correct upstream MP3.
 
 The source of truth is `rsh_audio_cmn_syllables.xlsx`. For characters with more
 than one dictionary reading, the game uses the row whose `reading_rank` is `1`.
@@ -1594,7 +1605,8 @@ Milestones award a small one-time bonus:
 ```
 
 Combo bonuses use short jade/gold glow, particle, pulse, and synthesized sound
-cues. Gameplay shows only a transient XP/Combo toast. The map permanently
+cues. Gameplay shows a transient XP/Combo toast together with the character's
+on-screen pinyin. The map permanently
 shows a compact level medallion, thin progress bar, and in-level XP count.
 When the operating system requests reduced motion, the XP/Combo toast remains
 completely static and visible for approximately one second, then disappears

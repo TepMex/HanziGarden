@@ -545,6 +545,28 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
 .xp-toast.has-milestone::before { content: ''; position: absolute; inset: -35px -70px; z-index: -1; border-radius: 50%; background: radial-gradient(circle, rgba(232, 198, 108, .42), transparent 66%); animation: combo-pulse .75s ease-out both; }
 @keyframes xp-toast { 0% { opacity: 0; transform: translate(-50%, 18px) scale(.8); } 25%, 72% { opacity: 1; transform: translate(-50%, 0) scale(1); } 100% { opacity: 0; transform: translate(-50%, -18px) scale(1.06); } }
 @keyframes xp-toast-reduced { from, 99% { opacity: 1; transform: translate(-50%, 0) scale(1); } to { opacity: 0; transform: translate(-50%, 0) scale(1); } }
+
+.writing-circle .pinyin-toast {
+  position: absolute;
+  z-index: 16;
+  left: 50%;
+  top: 76%;
+  margin: 0;
+  padding: .12em .55em .18em;
+  color: #2c2418;
+  background: linear-gradient(rgba(236, 223, 191, .96), rgba(214, 196, 154, .94));
+  border: 1px solid rgba(104, 82, 46, .5);
+  box-shadow: 0 8px 22px rgba(24, 24, 18, .32), inset 0 0 12px rgba(96, 66, 29, .1);
+  font-size: clamp(1.65rem, 4.4vw, 2.55rem);
+  font-weight: 700;
+  letter-spacing: .045em;
+  line-height: 1.05;
+  pointer-events: none;
+  transform: translateX(-50%);
+  animation: pinyin-toast 1.05s ease both;
+}
+@keyframes pinyin-toast { 0% { opacity: 0; transform: translate(-50%, 10px) scale(.88); } 18%, 72% { opacity: 1; transform: translate(-50%, 0) scale(1); } 100% { opacity: 0; transform: translate(-50%, -8px) scale(1.04); } }
+@keyframes pinyin-toast-reduced { from, 99% { opacity: 1; transform: translate(-50%, 0) scale(1); } to { opacity: 0; transform: translate(-50%, 0) scale(1); } }
 @keyframes combo-pulse { from { opacity: 0; transform: scale(.6); } 45% { opacity: 1; } to { opacity: 0; transform: scale(1.4); } }
 
 .animation-debug-screen { background: #17231f; }
@@ -980,6 +1002,7 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
   .prompt-scroll { min-height: 62px; }
   .prompt-scroll strong { font-size: 1.6rem; }
   .writing-circle { top: 48%; width: min(calc(100vw - 32px), 90dvh); }
+  .writing-circle .pinyin-toast { top: 58%; }
   .battle-screen.has-primitive .writing-circle { top: 51%; }
   .hint-button {
     right: 12px;
@@ -1024,6 +1047,7 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
   .xp-toast { animation: xp-toast-reduced 1.05s step-end both !important; }
+  .pinyin-toast { animation: pinyin-toast-reduced 1.05s step-end both !important; }
   .stroke-error-hint { animation: none !important; }
 }
 
