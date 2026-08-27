@@ -41,7 +41,7 @@ import {
 import { AchievementPopup } from './achievements/AchievementUi'
 import { playComboMilestoneCue } from './comboSound'
 import { PinyinAudioPlayer } from './pinyinAudio'
-import { PinyinToast } from './PinyinToast'
+import { completionPinyinToShow, PinyinToast } from './PinyinToast'
 import { XpToast } from './XpToast'
 import { ThemeMusicPlayer } from './themeMusic'
 import {
@@ -231,7 +231,7 @@ function BattleScreen({
   const [isNoteOpen, setNoteOpen] = useState(false)
   const [noteDraft, setNoteDraft] = useState('')
   const [lastReward, setLastReward] = useState<KanjiReward | null>(null)
-  const [lastPinyin, setLastPinyin] = useState<string | null>(null)
+  const [lastPinyin, setLastPinyin] = useState<{ characterId: string; pinyin: string } | null>(null)
   const [lastRewardIsTrace, setLastRewardIsTrace] = useState(false)
   const [rewardSequence, setRewardSequence] = useState(0)
   const [roundSequence, setRoundSequence] = useState(0)
@@ -396,7 +396,7 @@ function BattleScreen({
   const finishCharacter = useCallback((character: CharacterDefinition, totalMistakes: number) => {
     if (completingRef.current) return
     completingRef.current = true
-    setLastPinyin(character.pronunciation.pinyin)
+    setLastPinyin({ characterId: character.id, pinyin: character.pronunciation.pinyin })
     const current = saveRef.current
     const isTracing = isInitialTrace(
       current.cards[character.id],
@@ -754,6 +754,7 @@ function BattleScreen({
     ? battleBackdropStage(activeCharacter.strokeCount, correctStrokes)
     : 'clean'
   const backdropUrl = assetUrl(artwork.backgrounds[backdropStage])
+  const shownPinyin = completionPinyinToShow(lastPinyin, activeCharacter?.id)
 
   useEffect(() => {
     // All four variants are ready before the first successful stroke, avoiding
@@ -813,7 +814,7 @@ function BattleScreen({
                   : `Напишите иероглиф со значением ${activeCharacter.keyword.ru}`
               }
             />
-            {lastPinyin && <PinyinToast pinyin={lastPinyin} key={rewardSequence} />}
+            {shownPinyin && <PinyinToast pinyin={shownPinyin} key={rewardSequence} />}
           </div>
           <button className="hint-button" onClick={useHint}><HelpCircle size={16} /> Показать следующий штрих</button>
           {strokeHint && <StrokeErrorHint hint={strokeHint} />}

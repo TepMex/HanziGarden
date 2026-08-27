@@ -212,10 +212,12 @@ Completing the final accepted stroke of a character immediately plays that
 character's Mandarin pinyin syllable and shows the same stored diacritic
 spelling on screen (for example `māo`) for the duration of the completion beat.
 The visible pinyin appears with the audio, not instead of it, and uses the same
-transient timing as the XP toast. Both the primary Hanzi Garden edition and
-Hanzi Garden HSK 1 share this feedback. When the operating system requests
-reduced motion, the on-screen pinyin remains completely static and visible for
-approximately one second, then disappears immediately.
+transient timing as the XP toast. It belongs to the Hanzi that just completed
+and must not remain after the battle advances to a different Hanzi. Both the
+primary Hanzi Garden edition and Hanzi Garden HSK 1 share this feedback. When
+the operating system requests reduced motion, the on-screen pinyin remains
+completely static and visible for approximately one second, then disappears
+immediately.
 
 Pronunciation is optional feedback: a blocked, unavailable, or failed audio
 playback must never delay or alter review grading, XP, combo, achievements,
