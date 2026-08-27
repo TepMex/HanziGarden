@@ -28,7 +28,7 @@ Learning progress, spaced repetition, garden state, and visual restoration are t
 
 The primary **Hanzi Garden** edition remains the full game and continues to evolve. It retains all 2,974 RSH characters, the existing `memory-garden` IndexedDB database, the `com.tepmex.rthagriculture` Android application ID, the root web address, and the `hanzi-garden.apk` artifact.
 
-**Hanzi Garden HSK 1** is an additional demo edition built from the same UI, mechanics, art, progression, and source code. The only gameplay-content difference is its character set and one-character bed workloads:
+**Hanzi Garden HSK 1** is an additional demo edition built from the same UI, mechanics, art, progression, and source code. Its gameplay-content differences are the character set and one-character bed workloads:
 
 - include all 174 unique simplified Hanzi encountered in the 150-word HSK 1 vocabulary list for exam version 2.0;
 - append the first 46 new unique Hanzi encountered in the HSK 2 (2.0) vocabulary list, taking first occurrence within each word in vocabulary-list order;
@@ -37,7 +37,8 @@ The primary **Hanzi Garden** edition remains the full game and continues to evol
 - reuse the existing RSH keyword, structure, pinyin/audio, stroke count, and local Hanzi Writer data for each selected character;
 - publish the web build at `/hsk1/` and keep its progress isolated in the `memory-garden-hsk1` IndexedDB database;
 - publish a separately installable `hanzi-garden-hsk1.apk` with Android application ID `com.tepmex.rthagriculture.hsk1`;
-- display the product name **Hanzi Garden HSK 1** and use edition-specific web and Android icons whose existing Hanzi Garden mark carries a legible `HSK 1` badge.
+- display the product name **Hanzi Garden HSK 1** and use edition-specific web and Android icons whose existing Hanzi Garden mark carries a legible `HSK 1` badge;
+- after a bed is cleared, show the cleared-bed results screen only when that battle granted a new level; otherwise return directly to the garden map. One-character beds make the full XP breakdown redundant when no level-up occurred. The primary edition still always shows the cleared-bed screen.
 
 No HSK 1 edition change may remove, reduce, rename, migrate, or otherwise alter the primary edition's character catalog, saved progress, package identity, public URL, or artifact.
 
@@ -1609,7 +1610,9 @@ totalXpForLevel(L) = 10n² + 90n, where n = L - 1
 derived. A single reward may cross multiple level thresholds, and every crossed
 level is presented as its own reward beat. The cleared-bed screen shows correct
 strokes, errors, Combo bonus, total XP, in-level progress, and sequential
-level-up beats.
+level-up beats. In the HSK 1 edition that screen appears only when the just-finished
+bed granted a new level; otherwise the player returns to the garden map after the
+transient XP toast. The primary edition always shows the cleared-bed screen.
 
 Opening composition or a saved character note during battle counts as a
 handwriting error for that Hanzi's XP, with the same `max(1, …)` floor as any
