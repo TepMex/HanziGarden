@@ -148,7 +148,7 @@ The player may zoom out only to the viewport's **cover** scale: the rendered gar
 
 When the map automatically focuses the last active (or initial unlocked) bed on a viewport where auto-focus is enabled, it frames the bed's containing biome rather than the individual bed. This keeps the opening view oriented around the relevant biome without an excessively close zoom.
 
-At camera zoom 5 and above, each non-empty unlocked bed and each non-empty bed directly adjacent to an unlocked bed shows the first character with the greatest `strokeCount` in that bed (source-list order breaks ties). More distant locked beds do not reveal a character. The character is rendered as a small, semi-transparent calligraphic Chinese label whose screen size stays stable as the map zoom changes. Labels have no background panel, do not capture pointer input, and must not materially obscure the garden artwork.
+Beds do not display character labels on the map at any zoom level. Garden artwork and infection visuals remain the only map-level indicators of bed state.
 
 ## 5. Character Data
 

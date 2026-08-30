@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'bun:test'
 import { readdirSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
-import { beds, biomes, characters, mostComplexCharacterForBed, sourceRthListIds, type BedDefinition, type CharacterDefinition } from '../src/data/model'
+import { beds, biomes, characters, sourceRthListIds } from '../src/data/model'
 
 describe('garden model', () => {
   test('splits all 110 source lists into 220 ordered beds without losing characters', () => {
@@ -40,19 +40,6 @@ describe('garden model', () => {
     beds.forEach((bed) => bed.neighbors.forEach((neighborId) => {
       expect(byId.get(neighborId)?.neighbors).toContain(bed.id)
     }))
-  })
-
-  test('selects the first highest-stroke character in each bed', () => {
-    const character = (hanzi: string, strokeCount: number) => ({ hanzi, strokeCount }) as CharacterDefinition
-    const bed = {
-      characters: [character('甲', 5), character('乙', 9), character('丙', 9)],
-    } as BedDefinition
-
-    expect(mostComplexCharacterForBed(bed)?.hanzi).toBe('乙')
-    expect(beds.every((candidate) => {
-      const mostComplex = mostComplexCharacterForBed(candidate)
-      return !mostComplex || candidate.characters.every((item) => item.strokeCount <= mostComplex.strokeCount)
-    })).toBe(true)
   })
 
   test('maps every character to pinyin and every available pronunciation to a local MP3', () => {

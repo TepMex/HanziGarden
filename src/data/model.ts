@@ -188,14 +188,5 @@ const legacyBedEntries: Array<[string, [string, string]]> = isHsk1Variant
   ])
 export const bedIdsByLegacyFieldId = new Map(legacyBedEntries)
 
-/** The first highest-stroke character, keeping the source-list order for ties. */
-export function mostComplexCharacterForBed(bed: BedDefinition): CharacterDefinition | undefined {
-  let mostComplex: CharacterDefinition | undefined
-  for (const character of bed.characters) {
-    if (!mostComplex || character.strokeCount > mostComplex.strokeCount) mostComplex = character
-  }
-  return mostComplex
-}
-
 export { biomes }
 export type { Biome }
