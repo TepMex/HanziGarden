@@ -28,13 +28,14 @@ Learning progress, spaced repetition, garden state, and visual restoration are t
 
 The primary **Hanzi Garden** edition remains the full game and continues to evolve. It retains all 2,974 RSH characters, the existing `memory-garden` IndexedDB database, the `com.tepmex.rthagriculture` Android application ID, the root web address, and the `hanzi-garden.apk` artifact.
 
-**Hanzi Garden HSK 1** is an additional demo edition built from the same UI, mechanics, art, progression, and source code. Its gameplay-content differences are the character set and one-character bed workloads:
+**Hanzi Garden HSK 1** is an additional demo edition built from the same UI, mechanics, art, progression, and source code. Its gameplay-content differences are the character set, displayed meanings, and one-character bed workloads:
 
 - include all 174 unique simplified Hanzi encountered in the 150-word HSK 1 vocabulary list for exam version 2.0;
 - append the first 46 new unique Hanzi encountered in the HSK 2 (2.0) vocabulary list, taking first occurrence within each word in vocabulary-list order;
 - assign those 220 characters to beds in original RSH frame order;
 - contain exactly 220 unique characters and 220 beds, with exactly one character in every bed;
-- reuse the existing RSH keyword, structure, pinyin/audio, stroke count, and local Hanzi Writer data for each selected character;
+- display HSK-oriented Russian keywords and additional meanings from the HSK 1 meaning catalog instead of the primary edition's RSH keywords and primitives;
+- reuse the existing RSH composition, pinyin/audio, stroke count, and local Hanzi Writer data for each selected character;
 - publish the web build at `/hsk1/` and keep its progress isolated in the `memory-garden-hsk1` IndexedDB database;
 - publish a separately installable `hanzi-garden-hsk1.apk` with Android application ID `com.tepmex.rthagriculture.hsk1`;
 - display the product name **Hanzi Garden HSK 1** and use edition-specific web and Android icons whose existing Hanzi Garden mark carries a legible `HSK 1` badge;
@@ -185,6 +186,12 @@ The displayed Russian keyword is `structure.keyword` from
 `src/data/rsh_structure_ru.json`. That catalog also stores the additional
 primitive meaning and the direct composition shown in battle. Editing the
 catalog and replacing the asset updates those three fields.
+
+In Hanzi Garden HSK 1, the displayed Russian keyword and additional meaning
+come from `src/data/hsk1Meanings.ts`. That overlay replaces `structure.keyword`
+and `structure.primitive` for the 220 selected characters and, when a composition
+component is itself one of those characters, that component's displayed keyword.
+The primary edition continues to use `rsh_structure_ru.json` unchanged.
 
 Example:
 
