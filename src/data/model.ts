@@ -2,6 +2,7 @@ import rawCharacters from './rth.json'
 import rawPinyinAudio from './pinyinAudio.json'
 import type { PinyinPronunciation } from '../pinyinAudio'
 import { isHsk1Variant } from '../appVariant'
+import { withHsk1Meanings } from './hsk1Meanings'
 import { HSK1_VARIANT_CHARACTERS } from './hsk1Variant'
 import { requireCharacterStructure, type CharacterStructure } from './rshStructure'
 import {
@@ -122,7 +123,9 @@ for (const draft of drafts) {
   for (const item of draft.rawCharacters) {
     const pronunciation = pronunciationByFrame[item.frame - 1]
     if (!pronunciation) throw new Error(`Нет пиньиня для ${item.hanzi}`)
-    const structure = requireCharacterStructure(item.hanzi)
+    const structure = isHsk1Variant
+      ? withHsk1Meanings(requireCharacterStructure(item.hanzi))
+      : requireCharacterStructure(item.hanzi)
     const character: CharacterDefinition = {
       id: `rsh-${String(item.frame).padStart(4, '0')}`,
       hanzi: item.hanzi,
