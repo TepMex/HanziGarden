@@ -1,0 +1,212 @@
+[
+  {
+    "glyph": "{⿸𢀳丶}",
+    "label": "боковая часть иероглифа «即»",
+    "fileName": "ids-ji-side",
+    "sourceHanzi": "即",
+    "strokeIndexes": [0, 1, 2, 3, 4]
+  },
+  {
+    "glyph": "{⿰二丨}",
+    "label": "боковая часть иероглифа «北»",
+    "fileName": "ids-bei-side",
+    "sourceHanzi": "北",
+    "strokeIndexes": [0, 1, 2]
+  },
+  {
+    "glyph": "{⿰𠄌丶}",
+    "label": "боковая часть иероглифа «以»",
+    "fileName": "ids-yi-side",
+    "sourceHanzi": "以",
+    "strokeIndexes": [0, 1]
+  },
+  {
+    "glyph": "{⿱丿⿴#(-𠃌㇉)丶}",
+    "label": "птица",
+    "fileName": "ids-bird-abbreviated",
+    "sourceHanzi": "岛",
+    "strokeIndexes": [0, 1, 2, 3]
+  },
+  {
+    "glyph": "{⿱䒑夫}",
+    "label": "верх иероглифа «养»",
+    "fileName": "ids-yang-top",
+    "sourceHanzi": "养",
+    "strokeIndexes": [0, 1, 2, 3, 4, 5, 6]
+  },
+  {
+    "glyph": "{⿰丿丨}",
+    "label": "низ иероглифа «乔»",
+    "fileName": "ids-qiao-bottom",
+    "sourceHanzi": "养",
+    "strokeIndexes": [7, 8]
+  },
+  {
+    "glyph": "{⿻土丷}",
+    "label": "верх иероглифа «丧»",
+    "fileName": "ids-sang-top",
+    "sourceHanzi": "丧",
+    "strokeIndexes": [0, 1, 2, 3, 4]
+  },
+  {
+    "glyph": "{⿻口一}",
+    "label": "средняя часть иероглифа «衰»",
+    "fileName": "ids-shuai-middle",
+    "sourceHanzi": "衰",
+    "strokeIndexes": [2, 3, 4, 5]
+  },
+  {
+    "glyph": "{⿱丿𭁨}",
+    "label": "верх иероглифа «奥»",
+    "fileName": "ids-ao-top",
+    "sourceHanzi": "懊",
+    "strokeIndexes": [3, 4, 5, 6, 7, 8, 9, 10, 11]
+  },
+  {
+    "glyph": "{⿱一丰}",
+    "label": "боковая часть иероглифа «拜»",
+    "fileName": "ids-bai-side",
+    "sourceHanzi": "拜",
+    "strokeIndexes": [4, 5, 6, 7, 8]
+  },
+  {
+    "glyph": "𠃌",
+    "label": "горизонталь-сгиб-крюк",
+    "fileName": "rare-200cc",
+    "sourceHanzi": "刀",
+    "strokeIndexes": [0]
+  },
+  {
+    "glyph": "𠃊",
+    "label": "вертикаль-сгиб",
+    "fileName": "rare-200ca",
+    "sourceHanzi": "女",
+    "strokeIndexes": [0]
+  },
+  {
+    "glyph": "𭠍",
+    "label": "верх иероглифа «尧»",
+    "fileName": "rare-2d80d",
+    "sourceHanzi": "烧",
+    "strokeIndexes": [4, 5, 6, 7]
+  },
+  {
+    "glyph": "𠂛",
+    "label": "середина иероглифа «延»",
+    "fileName": "rare-2009b",
+    "sourceHanzi": "延",
+    "strokeIndexes": [0, 1, 2]
+  },
+  {
+    "glyph": "𧘇",
+    "label": "одежда",
+    "fileName": "rare-27607",
+    "sourceHanzi": "衣",
+    "strokeIndexes": [2, 3, 4, 5]
+  },
+  {
+    "glyph": "𠂉",
+    "label": "лежащий человек",
+    "fileName": "rare-20089",
+    "sourceHanzi": "每",
+    "strokeIndexes": [0, 1]
+  },
+  {
+    "glyph": "𠃓",
+    "label": "боковая часть иероглифа «杨»",
+    "fileName": "rare-200d3",
+    "sourceHanzi": "场",
+    "strokeIndexes": [3, 4, 5]
+  },
+  {
+    "glyph": "𠃍",
+    "label": "горизонталь-сгиб",
+    "fileName": "rare-200cd",
+    "sourceHanzi": "敢",
+    "strokeIndexes": [0]
+  },
+  {
+    "glyph": "𱼀",
+    "label": "левый угол иероглифа «然»",
+    "fileName": "rare-31f00",
+    "sourceHanzi": "祭",
+    "strokeIndexes": [0, 1, 2, 3, 4, 5]
+  },
+  {
+    "glyph": "𰆊",
+    "label": "низ иероглифа «节»",
+    "fileName": "rare-3018a",
+    "sourceHanzi": "节",
+    "strokeIndexes": [3, 4]
+  },
+  {
+    "glyph": "𦍌",
+    "label": "верх иероглифа «美»",
+    "fileName": "rare-2634c",
+    "sourceHanzi": "盖",
+    "strokeIndexes": [0, 1, 2, 3, 4, 5]
+  },
+  {
+    "glyph": "𡗗",
+    "label": "верх иероглифа «春»",
+    "fileName": "rare-215d7",
+    "sourceHanzi": "春",
+    "strokeIndexes": [0, 1, 2, 3, 4]
+  },
+  {
+    "glyph": "𰀁",
+    "label": "низ иероглифа «举»",
+    "fileName": "rare-30001",
+    "sourceHanzi": "奉",
+    "strokeIndexes": [5, 6, 7]
+  },
+  {
+    "glyph": "𠕁",
+    "label": "середина иероглифа «扁»",
+    "fileName": "rare-20541",
+    "sourceHanzi": "扁",
+    "strokeIndexes": [4, 5, 6, 7, 8]
+  },
+  {
+    "glyph": "𰀠",
+    "label": "низ иероглифа «畏»",
+    "fileName": "rare-30020",
+    "sourceHanzi": "展",
+    "strokeIndexes": [7, 8, 9]
+  },
+  {
+    "glyph": "𫠤",
+    "label": "боковая часть иероглифа «敖»",
+    "fileName": "rare-2b824",
+    "sourceHanzi": "熬",
+    "strokeIndexes": [0, 1, 2, 3, 4, 5]
+  },
+  {
+    "glyph": "𦣞",
+    "label": "боковая часть иероглифа «颐»",
+    "fileName": "rare-268de",
+    "sourceHanzi": "熙",
+    "strokeIndexes": [0, 1, 2, 3, 4, 5]
+  },
+  {
+    "glyph": "𧰨",
+    "label": "свинья",
+    "fileName": "rare-27c28",
+    "sourceHanzi": "缘",
+    "strokeIndexes": [6, 7, 8, 9, 10, 11]
+  },
+  {
+    "glyph": "𦈢",
+    "label": "боковая часть иероглифа «卸»",
+    "fileName": "rare-26222",
+    "sourceHanzi": "卸",
+    "strokeIndexes": [0, 1, 2, 3, 4, 5, 6]
+  },
+  {
+    "glyph": "𰀂",
+    "label": "низ иероглифа «虐»",
+    "fileName": "rare-30002",
+    "sourceHanzi": "虐",
+    "strokeIndexes": [6, 7, 8]
+  }
+]

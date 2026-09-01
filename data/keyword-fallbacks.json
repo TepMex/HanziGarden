@@ -1,0 +1,16 @@
+{
+  "尹": { "keyword": "надзиратель", "primitive": null },
+  "廿": { "keyword": "двадцать", "primitive": null },
+  "酋": { "keyword": "вождь", "primitive": null },
+  "襄": { "keyword": "помощь", "primitive": "голубятня" },
+  "韦": { "keyword": "дубленая шкура", "primitive": "заросли колючек" },
+  "彦": { "keyword": "эрудированный", "primitive": null },
+  "炯": { "keyword": "сияющий", "primitive": null },
+  "亨": { "keyword": "идти гладко", "primitive": null },
+  "嘎": { "keyword": "каркать", "primitive": null },
+  "稣": { "keyword": "подняться снова", "primitive": null },
+  "黏": { "keyword": "липкий", "primitive": null },
+  "耶": { "keyword": "Иерусалим", "primitive": null },
+  "麟": { "keyword": "Китайский единорог", "primitive": null },
+  "奕": { "keyword": "излучающий жизненную силу", "primitive": null }
+}

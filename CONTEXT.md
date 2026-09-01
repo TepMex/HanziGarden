@@ -23,3 +23,26 @@ _Avoid_: Lesson, level
 **Character note**:
 A player-written reminder attached to one Hanzi and available during battle.
 _Avoid_: Mnemonic, comment, annotation, hint
+
+## Learning Content
+
+**Keyword**:
+The primary Russian meaning shown as the writing prompt for one Hanzi.
+_Avoid_: RSH keyword, primitive
+
+**Additional meaning**:
+An optional secondary Russian meaning shown under the keyword. The current
+implementation stores it in the legacy `primitive` field, but it is ordinary
+dictionary content rather than a Heisig primitive.
+_Avoid_: Primitive meaning, mnemonic
+
+**GF component**:
+One graphical Hanzi component catalogued by GF 0014-2009. A component may be a
+Unicode glyph or a non-encoded shape represented by an IDS description and a
+generated image.
+_Avoid_: Primitive, mnemonic element
+
+**Composition**:
+The ordered direct decomposition of one Hanzi into GF components. Atomic Hanzi
+have no composition.
+_Avoid_: RSH decomposition, mnemonic

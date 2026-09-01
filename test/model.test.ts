@@ -4,6 +4,17 @@ import { fileURLToPath } from 'node:url'
 import { beds, biomes, characters, sourceRthListIds } from '../src/data/model'
 
 describe('garden model', () => {
+  test('keeps the save-addressed character and bed identities stable', () => {
+    expect(characters.map(({ id, hanzi, bedId, frame }) => ({ id, hanzi, bedId, frame })).filter(
+      ({ frame }) => [1, 1000, 1487, 2974].includes(frame),
+    )).toEqual([
+      { id: 'rsh-0001', hanzi: '一', bedId: 'bed-001', frame: 1 },
+      { id: 'rsh-1000', hanzi: '知', bedId: 'bed-063', frame: 1000 },
+      { id: 'rsh-1487', hanzi: '扭', bedId: 'bed-109', frame: 1487 },
+      { id: 'rsh-2974', hanzi: '傻', bedId: 'bed-220', frame: 2974 },
+    ])
+  })
+
   test('splits all 110 source lists into 220 ordered beds without losing characters', () => {
     expect(sourceRthListIds).toHaveLength(110)
     expect(beds).toHaveLength(220)

@@ -1,4 +1,4 @@
-import rawStructure from './rsh_structure_ru.json'
+import rawStructure from './character_structure_ru.json'
 
 export type CharacterComponent = {
   hanzi: string
@@ -8,16 +8,14 @@ export type CharacterComponent = {
 export type CharacterStructure = {
   hanzi: string
   keyword: string
+  /** Legacy field name: this is the optional additional dictionary meaning. */
   primitive: string | null
   components: readonly CharacterComponent[]
 }
 
 const source = rawStructure as CharacterStructure[]
 
-/**
- * The structure data is kept behind this index so callers never need to know
- * about the JSON file or duplicate its lookup rules.
- */
+/** Keep catalog lookup and validation behind one stable domain boundary. */
 export const structureByHanzi = new Map<string, CharacterStructure>()
 for (const structure of source) {
   if (structureByHanzi.has(structure.hanzi)) {

@@ -10,6 +10,7 @@ import { assetUrl } from '../assetUrl'
 import { battleArtworkForBiome } from '../data/battleBiomeArt'
 import { biomes } from '../data/mapLayout'
 import { characters } from '../data/model'
+import { ComponentGlyph } from '../ComponentGlyph'
 import { getLevelProgress, initialPlayerProgress, initialSessionProgress } from '../progression'
 import { SRS_STAGES } from '../stats/srsStages'
 import './screenSpreadPrototype.css'
@@ -277,7 +278,7 @@ function BattleCompositionMock({
           <ol className="composition-list">
             {components.map((component, index) => (
               <li key={`${component.hanzi}:${index}`}>
-                <span className="component-hanzi">{component.hanzi}</span>
+                <ComponentGlyph hanzi={component.hanzi} />
                 <span>{component.keyword}</span>
               </li>
             ))}

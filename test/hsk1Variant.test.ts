@@ -7,7 +7,7 @@ import {
   HSK_2_2_0_SUPPLEMENT_CHARACTERS,
   HSK1_VARIANT_CHARACTERS,
 } from '../src/data/hsk1Variant'
-import { requireCharacterStructure } from '../src/data/rshStructure'
+import { requireCharacterStructure } from '../src/data/characterStructure'
 
 describe('Hanzi Garden HSK 1 character set', () => {
   test('fills 220 beds with unique HSK 1 and HSK 2.0 characters', () => {
@@ -72,27 +72,27 @@ describe('Hanzi Garden HSK 1 meanings', () => {
     expect(requireHsk1Meaning('喂')).toEqual({ keyword: 'алло!; эй!', primitive: 'кормить' })
   })
 
-  test('overlays keyword and additional meaning without mutating the RSH catalog', () => {
+  test('overlays keyword and additional meaning without mutating the primary catalog', () => {
     const original = requireCharacterStructure('一')
-    expect(original).toMatchObject({ keyword: 'один', primitive: 'пол' })
+    expect(original).toMatchObject({ keyword: 'один, единица', primitive: null })
 
     const overlaid = withHsk1Meanings(original)
     expect(overlaid).toMatchObject({ hanzi: '一', keyword: 'один', primitive: null, components: [] })
-    expect(original.primitive).toBe('пол')
-    expect(requireCharacterStructure('一').primitive).toBe('пол')
+    expect(original.keyword).toBe('один, единица')
+    expect(requireCharacterStructure('一').keyword).toBe('один, единица')
   })
 
   test('replaces HSK component keywords and leaves other components unchanged', () => {
     const original = requireCharacterStructure('四')
     expect(original.components).toEqual([
-      { hanzi: '口', keyword: 'рот' },
-      { hanzi: '儿', keyword: 'человеческие ноги' },
+      { hanzi: '囗', keyword: 'ограда' },
+      { hanzi: '儿', keyword: 'ребёнок, дитя; малыш' },
     ])
 
     expect(withHsk1Meanings(original).components).toEqual([
-      { hanzi: '口', keyword: 'рот' },
+      { hanzi: '囗', keyword: 'ограда' },
       { hanzi: '儿', keyword: 'ребёнок; сын' },
     ])
-    expect(original.components[1]).toEqual({ hanzi: '儿', keyword: 'человеческие ноги' })
+    expect(original.components[1]).toEqual({ hanzi: '儿', keyword: 'ребёнок, дитя; малыш' })
   })
 })

@@ -26,7 +26,7 @@ Learning progress, spaced repetition, garden state, and visual restoration are t
 
 ## Product Editions
 
-The primary **Hanzi Garden** edition remains the full game and continues to evolve. It retains all 2,974 RSH characters, the existing `memory-garden` IndexedDB database, the `com.tepmex.rthagriculture` Android application ID, the root web address, and the `hanzi-garden.apk` artifact.
+The primary **Hanzi Garden** edition remains the full game and continues to evolve. It retains the same 2,974 characters in historical RSH frame order, the existing `memory-garden` IndexedDB database, the `com.tepmex.rthagriculture` Android application ID, the root web address, and the `hanzi-garden.apk` artifact.
 
 **Hanzi Garden HSK 1** is an additional demo edition built from the same UI, mechanics, art, progression, and source code. Its gameplay-content differences are the character set, displayed meanings, and one-character bed workloads:
 
@@ -34,8 +34,8 @@ The primary **Hanzi Garden** edition remains the full game and continues to evol
 - append the first 46 new unique Hanzi encountered in the HSK 2 (2.0) vocabulary list, taking first occurrence within each word in vocabulary-list order;
 - assign those 220 characters to beds in original RSH frame order;
 - contain exactly 220 unique characters and 220 beds, with exactly one character in every bed;
-- display HSK-oriented Russian keywords and additional meanings from the HSK 1 meaning catalog instead of the primary edition's RSH keywords and primitives;
-- reuse the existing RSH composition, pinyin/audio, stroke count, and local Hanzi Writer data for each selected character;
+- display HSK-oriented Russian keywords and additional meanings from the HSK 1 meaning catalog instead of the primary edition's dictionary meanings;
+- reuse the GF 0014-2009 composition, pinyin/audio, stroke count, and local Hanzi Writer data for each selected character;
 - publish the web build at `/hsk1/` and keep its progress isolated in the `memory-garden-hsk1` IndexedDB database;
 - publish a separately installable `hanzi-garden-hsk1.apk` with Android application ID `com.tepmex.rthagriculture.hsk1`;
 - display the product name **Hanzi Garden HSK 1** and use edition-specific web and Android icons whose existing Hanzi Garden mark carries a legible `HSK 1` badge;
@@ -45,7 +45,7 @@ No HSK 1 edition change may remove, reduce, rename, migrate, or otherwise alter 
 
 ## Garden Domain Model
 
-In the primary edition, the garden replaces the original 110-field presentation. The 110 stable RTH/RSH source lists remain the learning source, but each is split in original frame order into two contiguous halves, creating **220 beds** while retaining the same character IDs and FSRS cards. In the HSK 1 edition, the same 220 bed IDs and geometry are retained but each bed contains exactly one selected HSK character.
+In the primary edition, the garden replaces the original 110-field presentation. The 110 stable RTH/RSH source lists remain the source of character order and bed membership, but no longer supply displayed meanings or composition. Each list is split in original frame order into two contiguous halves, creating **220 beds** while retaining the same character IDs and FSRS cards. In the HSK 1 edition, the same 220 bed IDs and geometry are retained but each bed contains exactly one selected HSK character.
 
 The garden has 15 visually distinct `Biome`s in a 5 × 3 layout: bamboo, rice, lotus, tea, blossom, peony, chrysanthemum, pine, persimmon, orchid, berries, rapeseed, wheat, wisteria, and medicinal herbs. The first biome contains 10 beds in a 2 × 5 layout; each of the other 14 biomes contains 15 beds in a 3 × 5 layout.
 
@@ -72,7 +72,8 @@ Statistics renders every Hanzi in original frame order as a dense colored tile w
 
 ## 3. Source Learning Structure
 
-The game uses the RTH/RSH knowledge base as a structural source.
+The game uses the historical RTH/RSH catalog only for stable frame order, list
+membership, stroke count, Hanzi, and legacy identity.
 
 ```ts
 type RawRthEntry = {
@@ -93,12 +94,13 @@ Use:
 - RTH/RSH ordering;
 - grouping into lists;
 - frame number;
-- keyword;
 - Hanzi;
 - stroke count;
 - lesson/list structure.
 
-Do not use the book mnemonic stories as part of the core learning mechanic. Long mnemonic prose should not be included in the production bundle.
+Do not use RTH/RSH keywords, primitives, decompositions, or book mnemonic
+stories as learning content. Long mnemonic prose must not be included in the
+production bundle.
 
 ## 4. Garden Structure
 
@@ -182,16 +184,49 @@ type CharacterStructure = {
 };
 ```
 
-The displayed Russian keyword is `structure.keyword` from
-`src/data/rsh_structure_ru.json`. That catalog also stores the additional
-primitive meaning and the direct composition shown in battle. Editing the
-catalog and replacing the asset updates those three fields.
+The generated `src/data/character_structure_ru.json` catalog is the runtime
+source of the displayed Russian keyword, optional additional meaning, and
+direct composition shown in battle:
+
+- `keyword` comes from `Основное значение` in
+  `3500 одни иероглифы - 3500 иероглифов.csv`;
+- the legacy field `primitive` stores `Дополнительное значение` from that CSV
+  and is `null` when the source cell is empty;
+- `components` follows the ordered `部件1`…`部件9` columns in
+  `greedy_components.csv`;
+- component names use the 3500-catalog primary meaning when available and
+  otherwise the Russian name from `GF0014-2009_Мои_правки.csv`;
+- a decomposition containing only the target Hanzi denotes an atomic Hanzi and
+  is stored as an empty component list.
+
+Thirty-four playable Hanzi have no greedy decomposition and are treated as
+atomic rather than falling back to an RSH decomposition: 吾, 哇, 尧, 尹, 廿, 荫,
+酋, 襄, 韦, 彦, 馨, 寅, 曰, 炯, 亨, 嘎, 黯, 嘛, 愣, 惟, 啪, 怡, 稣, 黏, 佐, 弘,
+禅, 嘻, 尴, 尬, 耶, 藉, 麟, 魅.
+
+Fourteen playable Hanzi have no row in the 3500 meaning catalog and retain
+their previous displayed keyword and additional meaning from a small explicit
+fallback catalog: 尹, 廿, 酋, 襄, 韦, 彦, 炯, 亨, 嘎, 稣, 黏, 耶, 麟, 奕. This
+exception does not restore RSH decomposition; 奕 still uses its greedy
+composition and the other thirteen are atomic.
+
+Non-Unicode IDS component shapes and rare Unicode shapes that are unreliable
+in Android fonts use committed SVG images generated from selected strokes in
+the local Hanzi Writer data. Ordinary Unicode components remain text. The
+production application consumes generated JSON and SVG assets and does not
+parse the source CSV files at runtime.
 
 In Hanzi Garden HSK 1, the displayed Russian keyword and additional meaning
 come from `src/data/hsk1Meanings.ts`. That overlay replaces `structure.keyword`
 and `structure.primitive` for the 220 selected characters and, when a composition
 component is itself one of those characters, that component's displayed keyword.
-The primary edition continues to use `rsh_structure_ru.json` unchanged.
+Both editions use the same generated GF composition.
+
+The content replacement is not a save migration. Character IDs remain
+`rsh-{frame}`, bed IDs and membership remain unchanged, and save version 7 is
+retained. Existing FSRS cards, due dates, review events, seen characters,
+unlocked/mastered beds, active bed, notes, XP, and achievements therefore
+continue to address exactly the same characters and beds.
 
 Example:
 
@@ -1323,8 +1358,9 @@ for editing game content files. The user opens a JSON asset (or a bundled
 catalog shortcut), edits the document in the browser, and downloads the result
 to replace the original file. The first supported documents are:
 
-- the character structure catalog (`rsh_structure_ru.json`): keyword, additional
-  primitive meaning, and composition components;
+- the generated character structure catalog (`character_structure_ru.json`):
+  keyword, additional meaning (stored in the legacy `primitive` field), and
+  composition components;
 - the achievement catalog (`achievements.json`): the award formula (`on` events
   and `when` expression).
 
@@ -1443,7 +1479,8 @@ Explicitly out of MVP:
 
 ### Phase 0 — Data Validation
 
-- normalize all RTH/RSH records;
+- normalize RTH/RSH identity/order records and the dictionary/GF composition
+  source catalogs;
 - verify 110 unique lists;
 - assign stable `bed-*` IDs;
 - verify every required Hanzi has stroke data;

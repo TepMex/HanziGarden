@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * Regression: primitive information, composition, and character notes stay
+ * Regression: additional meanings, composition, and character notes stay
  * available in the battle UI without allowing clicks through the dialogs.
  * Usage: bun scripts/check-battle-structure.mjs [baseUrl]
  */
@@ -8,15 +8,19 @@ import { chromium } from 'playwright'
 import { beds } from '../src/data/model.ts'
 
 const baseUrl = (process.argv[2] ?? 'http://127.0.0.1:8765').replace(/\/$/, '')
-const bed = beds.find((candidate) => candidate.id === 'bed-001')
-if (!bed) throw new Error('missing bed-001')
 
-function saveForFrame(frame) {
+function bedForFrame(frame) {
+  const bed = beds.find((candidate) => candidate.characters.some((character) => character.frame === frame))
+  if (!bed) throw new Error(`missing bed for frame ${frame}`)
+  return bed
+}
+
+function saveForFrame(bed, frame) {
   const index = bed.characters.findIndex((character) => character.frame === frame)
   return bed.characters.slice(0, index).map((character) => character.id)
 }
 
-async function seedSave(page, previousIds, characterNotes = {}) {
+async function seedSave(page, bed, previousIds, characterNotes = {}) {
   await page.waitForFunction(() => Boolean(window.hanziGardenCheats))
   return page.evaluate(async ({ nextBedId, precedingIds, notes }) => {
     sessionStorage.setItem('memory-garden-welcomed', 'yes')
@@ -48,9 +52,10 @@ async function seedSave(page, previousIds, characterNotes = {}) {
 }
 
 async function enterBattle(page, frame, characterNotes = {}) {
-  const startingXp = await seedSave(page, saveForFrame(frame), characterNotes)
+  const bed = bedForFrame(frame)
+  const startingXp = await seedSave(page, bed, saveForFrame(bed, frame), characterNotes)
   await page.waitForSelector('.garden-map-content.is-ready')
-  await page.locator('[data-bed-id="bed-001"]').click({ force: true })
+  await page.locator(`[data-bed-id="${bed.id}"]`).click({ force: true })
   await page.waitForSelector('.battle-screen .writing-circle')
   if (frame === 2) {
     const walkthrough = page.locator('.walkthrough-dialog')
@@ -114,10 +119,7 @@ try {
   await enterBattle(page, 1)
   if (await page.getByRole('button', { name: /Показать состав/i }).count()) throw new Error('composition button shown for 一')
   if (!await page.getByRole('button', { name: /Открыть заметку/i }).count()) throw new Error('note button missing for 一')
-  if ((await page.locator('.primitive-prompt').innerText()).replace(/\s+/g, ' ').trim().toLocaleLowerCase('ru') !== 'пол') {
-    throw new Error('primitive for 一 is missing')
-  }
-  if (await page.getByText('Примитив', { exact: true }).count()) throw new Error('removed primitive label is visible')
+  if (await page.locator('.primitive-prompt').count()) throw new Error('additional meaning shown for 一')
 
   await page.getByRole('button', { name: /Открыть заметку/i }).click()
   const noteDialog = page.getByRole('dialog', { name: /один/i })
@@ -132,6 +134,13 @@ try {
   })
   if (savedNote !== 'горизонтальная черта') throw new Error(`note was not persisted: ${savedNote}`)
 
+  await page.locator('.back-button').click()
+  await page.waitForSelector('.map-screen')
+
+  await enterBattle(page, 12)
+  if ((await page.locator('.primitive-prompt').innerText()).replace(/\s+/g, ' ').trim().toLocaleLowerCase('ru') !== 'солнце') {
+    throw new Error('additional meaning for 日 is missing')
+  }
   await page.locator('.back-button').click()
   await page.waitForSelector('.map-screen')
 
@@ -165,9 +174,9 @@ try {
   const dialog = page.getByRole('dialog', { name: /два/i })
   await dialog.waitFor()
   if (await dialog.getByText('二', { exact: true }).count()) throw new Error('composition reveals the target Hanzi')
-  if ((await dialog.locator('#composition-title').innerText()).trim() !== 'два') throw new Error('composition title does not contain only the keyword')
+  if ((await dialog.locator('#composition-title').innerText()).trim() !== 'два, 2; второй') throw new Error('composition title does not contain only the keyword')
   const component = await page.locator('.composition-list li').allInnerTexts()
-  if (component.length !== 1 || !/一\s*один/.test(component[0])) throw new Error(`unexpected composition: ${component}`)
+  if (component.length !== 2 || component.some((item) => !/один, единица/.test(item))) throw new Error(`unexpected composition: ${component}`)
   let writingBlocked = false
   try {
     await page.locator('.writing-target').click({ timeout: 500 })
@@ -226,8 +235,23 @@ try {
     throw new Error('viewing a note did not keep the saved text')
   }
 
+  await enterBattle(page, 5)
+  await page.getByRole('button', { name: /Показать состав/i }).click()
+  const rareGraphic = page.locator('.component-hanzi img[src$="rare-200cc.svg"]')
+  if (!await rareGraphic.count() || !await rareGraphic.evaluate((image) => image.complete && image.naturalWidth > 0)) {
+    throw new Error('rare Unicode component graphic did not load')
+  }
+  await page.keyboard.press('Escape')
+
+  await enterBattle(page, 454)
+  await page.getByRole('button', { name: /Показать состав/i }).click()
+  const idsGraphic = page.locator('.component-hanzi img[src$="ids-bei-side.svg"]')
+  if (!await idsGraphic.count() || !await idsGraphic.evaluate((image) => image.complete && image.naturalWidth > 0)) {
+    throw new Error('IDS component graphic did not load')
+  }
+
   await context.close()
-  console.log('OK: battle primitive, composition penalty, and character notes')
+  console.log('OK: battle additional meaning, composition graphics and penalty, and character notes')
 } finally {
   await browser.close()
 }

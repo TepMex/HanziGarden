@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Download, FileJson, FolderOpen, Plus, Search, Trash2 } from 'lucide-react'
 import rawAchievementCatalog from '../data/achievements.json'
-import rawStructureCatalog from '../data/rsh_structure_ru.json'
+import rawStructureCatalog from '../data/character_structure_ru.json'
 import {
   openContentDocument,
   serializeContentDocument,
@@ -26,7 +26,7 @@ const EVENT_OPTIONS: Array<{ value: AchievementEventType; label: string }> = [
 ]
 
 const bundledAssets = [
-  { fileName: 'rsh_structure_ru.json', label: 'Каталог иероглифов', source: rawStructureCatalog, pretty: false },
+  { fileName: 'character_structure_ru.json', label: 'Каталог иероглифов', source: rawStructureCatalog, pretty: false },
   { fileName: 'achievements.json', label: 'Каталог достижений', source: rawAchievementCatalog, pretty: true },
 ]
 

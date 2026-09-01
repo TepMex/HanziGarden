@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "dev:hsk1": "vite --mode hsk1",
+    "build:content": "bun scripts/build-character-structure.mjs",
+    "check:content": "bun scripts/build-character-structure.mjs --check",
     "build": "tsc -b && vite build",
     "build:hsk1": "tsc -b && vite build --mode hsk1 --outDir dist-hsk1",
     "lint": "eslint .",

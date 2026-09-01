@@ -44,6 +44,7 @@ import { PinyinAudioPlayer } from './pinyinAudio'
 import { completionPinyinToShow, PinyinToast } from './PinyinToast'
 import { XpToast } from './XpToast'
 import { ThemeMusicPlayer } from './themeMusic'
+import { ComponentGlyph } from './ComponentGlyph'
 import {
   advanceActiveSession,
   completeBed,
@@ -873,7 +874,7 @@ function BattleScreen({
             <ol className="composition-list">
               {activeCharacter.structure.components.map((component, index) => (
                 <li key={`${component.hanzi}:${component.keyword}:${index}`}>
-                  <span className="component-hanzi">{component.hanzi}</span>
+                  <ComponentGlyph hanzi={component.hanzi} />
                   <span>{component.keyword}</span>
                 </li>
               ))}

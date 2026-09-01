@@ -4,7 +4,7 @@ import type { PinyinPronunciation } from '../pinyinAudio'
 import { isHsk1Variant } from '../appVariant'
 import { withHsk1Meanings } from './hsk1Meanings'
 import { HSK1_VARIANT_CHARACTERS } from './hsk1Variant'
-import { requireCharacterStructure, type CharacterStructure } from './rshStructure'
+import { requireCharacterStructure, type CharacterStructure } from './characterStructure'
 import {
   cellsForBedIndex,
   biomes,

@@ -1,5 +1,5 @@
 import { HSK1_VARIANT_CHARACTERS } from './hsk1Variant'
-import type { CharacterStructure } from './rshStructure'
+import type { CharacterStructure } from './characterStructure'
 
 export type Hsk1Meaning = {
   keyword: string
@@ -8,7 +8,7 @@ export type Hsk1Meaning = {
 
 /**
  * HSK-oriented Russian keyword and additional meaning for each Hanzi
- * in the HSK 1 edition. The primary edition keeps the RSH catalog.
+ * in the HSK 1 edition. The primary edition keeps the generated dictionary catalog.
  */
 export const HSK1_MEANINGS: Readonly<Record<string, Hsk1Meaning>> = {
   '一': { keyword: 'один', primitive: null },
