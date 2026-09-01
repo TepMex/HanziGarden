@@ -188,8 +188,10 @@ The generated `src/data/character_structure_ru.json` catalog is the runtime
 source of the displayed Russian keyword, optional additional meaning, and
 direct composition shown in battle:
 
-- `keyword` comes from `Основное значение` in
-  `3500 одни иероглифы - 3500 иероглифов.csv`;
+- `keyword` is a single compact Russian meaning for a language learner,
+  selected from `Основное значение` in
+  `3500 одни иероглифы - 3500 иероглифов.csv`; when that cell lists several
+  senses or synonyms, the most useful one is kept;
 - the legacy field `primitive` stores `Дополнительное значение` from that CSV
   and is `null` when the source cell is empty;
 - `components` follows the ordered `部件1`…`部件9` columns in

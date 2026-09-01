@@ -11,10 +11,10 @@ import { beds } from '../src/data/model.ts'
 
 const baseUrl = (process.argv[2] ?? 'http://127.0.0.1:8765').replace(/\/$/, '')
 const cases = [
-  { keyword: 'выдающийся', bedId: 'bed-006', fontScale: 2 },
-  { keyword: 'несовершеннолетний', bedId: 'bed-036' },
-  { keyword: 'принять меры предосторожности против', bedId: 'bed-153' },
-  { keyword: 'специальность', bedId: 'bed-078', primitive: 'трубка из кукурузного початка' },
+  { keyword: 'высокий', bedId: 'bed-006', fontScale: 2 },
+  { keyword: 'беззвучно плакать', bedId: 'bed-036' },
+  { keyword: 'большой палец ноги', bedId: 'bed-153' },
+  { keyword: 'дубленая шкура', bedId: 'bed-078', primitive: 'заросли колючек' },
 ]
 const viewports = [
   { width: 390, height: 844 },

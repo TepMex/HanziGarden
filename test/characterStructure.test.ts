@@ -30,10 +30,20 @@ describe('generated character structure data', () => {
     })
   })
 
+  test('keeps a single learner-facing keyword without sense lists', () => {
+    for (const structure of structureByHanzi.values()) {
+      expect(structure.keyword).not.toMatch(/[,;]/)
+      expect(structure.keyword.trim().length).toBeGreaterThan(0)
+      for (const component of structure.components) {
+        expect(component.keyword).not.toMatch(/[,;]/)
+      }
+    }
+  })
+
   test('uses dictionary meanings and direct greedy components', () => {
     expect(requireCharacterStructure('一')).toEqual({
       hanzi: '一',
-      keyword: 'один, единица',
+      keyword: 'один',
       primitive: null,
       components: [],
     })

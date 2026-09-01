@@ -74,25 +74,25 @@ describe('Hanzi Garden HSK 1 meanings', () => {
 
   test('overlays keyword and additional meaning without mutating the primary catalog', () => {
     const original = requireCharacterStructure('一')
-    expect(original).toMatchObject({ keyword: 'один, единица', primitive: null })
+    expect(original).toMatchObject({ keyword: 'один', primitive: null })
 
     const overlaid = withHsk1Meanings(original)
     expect(overlaid).toMatchObject({ hanzi: '一', keyword: 'один', primitive: null, components: [] })
-    expect(original.keyword).toBe('один, единица')
-    expect(requireCharacterStructure('一').keyword).toBe('один, единица')
+    expect(original.keyword).toBe('один')
+    expect(requireCharacterStructure('一').keyword).toBe('один')
   })
 
   test('replaces HSK component keywords and leaves other components unchanged', () => {
     const original = requireCharacterStructure('四')
     expect(original.components).toEqual([
       { hanzi: '囗', keyword: 'ограда' },
-      { hanzi: '儿', keyword: 'ребёнок, дитя; малыш' },
+      { hanzi: '儿', keyword: 'ребёнок' },
     ])
 
     expect(withHsk1Meanings(original).components).toEqual([
       { hanzi: '囗', keyword: 'ограда' },
       { hanzi: '儿', keyword: 'ребёнок; сын' },
     ])
-    expect(original.components[1]).toEqual({ hanzi: '儿', keyword: 'ребёнок, дитя; малыш' })
+    expect(original.components[1]).toEqual({ hanzi: '儿', keyword: 'ребёнок' })
   })
 })

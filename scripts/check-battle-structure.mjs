@@ -174,9 +174,9 @@ try {
   const dialog = page.getByRole('dialog', { name: /два/i })
   await dialog.waitFor()
   if (await dialog.getByText('二', { exact: true }).count()) throw new Error('composition reveals the target Hanzi')
-  if ((await dialog.locator('#composition-title').innerText()).trim() !== 'два, 2; второй') throw new Error('composition title does not contain only the keyword')
+  if ((await dialog.locator('#composition-title').innerText()).trim() !== 'два') throw new Error('composition title does not contain only the keyword')
   const component = await page.locator('.composition-list li').allInnerTexts()
-  if (component.length !== 2 || component.some((item) => !/один, единица/.test(item))) throw new Error(`unexpected composition: ${component}`)
+  if (component.length !== 2 || component.some((item) => !/один/.test(item))) throw new Error(`unexpected composition: ${component}`)
   let writingBlocked = false
   try {
     await page.locator('.writing-target').click({ timeout: 500 })
