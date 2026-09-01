@@ -270,9 +270,17 @@ save persistence, or progression to the next character. The on-screen pinyin
 still appears when audio is skipped, including for `哟`, which retains pinyin
 metadata but has no correct upstream MP3.
 
-The source of truth is `rsh_audio_cmn_syllables.xlsx`. For characters with more
-than one dictionary reading, the game uses the row whose `reading_rank` is `1`.
-The workbook's selected 64 kbit/s recordings come from the CC BY-SA
+Both editions share `src/data/pinyinAudio.json`. Each Hanzi stores one Mandarin
+syllable: the reading that matches the displayed Russian keyword in
+`character_structure_ru.json`. When that keyword is a valid but non-default
+dictionary reading (for example `长` `cháng` "длинный", `切` `qiē` "резать",
+`地` `dì` "земля"), that reading is kept. Otherwise the Unihan `kMandarin`
+preferred PRC reading is used, so rare surname, classical, and bound-form
+syllables are not shown as the spoken form. In Hanzi Garden HSK 1, the HSK
+keyword wins when it requires a different syllable from the primary catalog:
+`校` `xiào`, `漂` `piào`, `兴` `xìng`, `吧` `ba`, `得` `de`.
+
+The 64 kbit/s recordings come from the CC BY-SA
 `hugolpz/audio-cmn/64k/syllabs` set and are committed under
 `public/assets/audio/pinyin/`. They remain public assets rather than JavaScript
 imports, so only the active character's MP3 is preloaded and audio works with
