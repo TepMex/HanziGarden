@@ -47,7 +47,7 @@ No HSK 1 edition change may remove, reduce, rename, migrate, or otherwise alter 
 
 In the primary edition, the garden replaces the original 110-field presentation. The 110 stable RTH/RSH source lists remain the source of character order and bed membership, but no longer supply displayed meanings or composition. Each list is split in original frame order into two contiguous halves, creating **220 beds** while retaining the same character IDs and FSRS cards. In the HSK 1 edition, the same 220 bed IDs and geometry are retained but each bed contains exactly one selected HSK character.
 
-The garden has 15 visually distinct `Biome`s in a 5 × 3 layout: bamboo, rice, lotus, tea, blossom, peony, chrysanthemum, pine, persimmon, orchid, berries, rapeseed, wheat, wisteria, and medicinal herbs. The first biome contains 10 beds in a 2 × 5 layout; each of the other 14 biomes contains 15 beds in a 3 × 5 layout.
+The hexagonal garden has 15 visually distinct connected `Biome`s: bamboo, rice, lotus, tea, blossom, peony, chrysanthemum, pine, persimmon, orchid, berries, rapeseed, wheat, wisteria, and medicinal herbs. The first biome contains 10 hexagonal beds; each of the other 14 contains 15. The original logical cells and unlock graph remain intact beneath the new graphics.
 
 There is no intermediate garden-selection screen. The player pans and zooms the continuous clean/overgrown map, then enters a close, unlocked bed directly into the existing handwriting battle. Bed unlocking is permanent and propagates through base-cell adjacency; infection remains a live, stroke-weighted projection of due/new FSRS cards.
 
@@ -106,11 +106,11 @@ production bundle.
 
 ### 4.1 Garden
 
-The **Garden** is the single main map and contains all playable territory. It is divided into a fixed 5 × 3 grid of 15 biomes.
+The **Garden** is the single main map and contains all playable territory. Its visible field is a continuous hexagonal island with **220 hexes in 15 connected biomes**. Each hex represents exactly one existing bed. The presentation is based on the living-garden Site at https://hanzi-living-garden-19.light-owlet-9049.chatgpt.site/ (version 5), not the repository’s hex-garden prototype. The reference’s 271 cells and 8 biomes are adapted to the existing game counts.
 
 ### 4.2 Biomes
 
-A **Biome** is one of the 15 large, visually distinct areas of the garden. The first biome has a 2 × 5 layout of 10 beds. Every other biome has a 3 × 5 layout of 15 beds.
+A **Biome** is one of the 15 large, visually distinct, connected regions of the hexagonal garden. The first biome contains 10 hexagonal beds; each of the other 14 contains 15. Existing biome IDs, order, cultures and battle artwork remain unchanged. The checked-in axial layout is deterministic and never reshuffles when loading a save. `mapQuad` and `mapRect` below are retained legacy logical-layout data; the active map uses `hexGardenLayout.json` and hex-derived bounds.
 
 ```ts
 type Biome = {
@@ -126,7 +126,7 @@ type Biome = {
 
 A **Bed** is the smallest territory unit that the player clears of weeds. The full garden contains **220 beds**. Selecting an unlocked bed starts a battle for that bed.
 
-In the primary edition, each of the 110 unique RTH/RSH lists is split at its midpoint into two ordered bed workloads. In the HSK 1 edition, the 220 selected characters are assigned one per bed in original RSH frame order. The first five beds occupy two logical cells each so the first biome still presents exactly 10 beds; every later bed occupies one logical cell in both editions.
+In the primary edition, each of the 110 unique RTH/RSH lists is split at its midpoint into two ordered bed workloads. In the HSK 1 edition, the 220 selected characters are assigned one per bed in original RSH frame order. The first five beds retain two legacy logical cells each and every later bed retains one. These logical cells continue to define the original progression and neighbor rules; they are not screen geometry. Every bed renders as one hex in both editions. Bed IDs, character assignments, FSRS cards, saves, workloads and unlock rules are unchanged; no save migration is needed.
 
 ### 4.4 Bed Data
 
@@ -383,46 +383,42 @@ Desired properties:
 
 The clean-bed layer and weed layer should remain technically separable.
 
-### 8.1 Authoritative Map Mask and Exterior Edge Reveal
+### 8.1 Hexagonal Field Rendering
 
-`garden-map.webp` and `garden-map_negative.webp` are two full-map states of the
-same artwork. They must be scaled once to the same garden coordinate system and
-composited through one global `1600 × 1200` mask. The negative artwork must
-never be cropped and enlarged independently per bed: doing so breaks the 1:1
-registration and exposes bed boundaries as a tile grid.
+The active renderer uses the supplied living-garden Site’s pointy axial hexes
+with a vertically compressed projection (`SY = 0.76`), softly blended ground,
+connected lotus ponds, illustrated transparent plant sprites, and bamboo,
+wooden or stone boundaries between biomes. Its 24 plant sprites are reused;
+cultures outside that catalog have their own crop silhouettes. All 15 original
+cultures remain represented. There are no editor controls, random reseeding,
+discovery fog, or click-to-reveal mechanics from the reference in the game.
 
-Bed interiors use the due/new coverage formula from section 7 and stable
-organic masks derived from `bed.seed`. Completely overgrown adjacent beds
-must be added to the global mask as one compound shape so antialiasing cannot
-create clean seams between them.
+The map is generated once with a fixed seed and exact quotas (10 + 14 × 15),
+using the reference’s connected geometric partition approach. The checked-in
+layout has no duplicate hexes or isolated biome cells. `hexGardenLayout` is the
+single source for terrain, grid, HTML hit areas, debug geometry and automatic
+biome focus; legacy rectangular artwork and its raster mask are not used by
+the active map. Optional grid lines follow the six sides of every hex.
 
-The territory outside the 5 × 3 biome contour is part of progression;
-it is **not an always-clean background**. Its reveal rules are:
+Plants are painted whole, in depth order with segmented fences, after terrain
+and weed masking. Crowns must not be clipped by a hex or a neighboring dirty
+bed. No character labels or numeric bed labels appear during normal play.
+The entire island is pannable and zoomable using the existing camera gestures.
+On mobile, automatic focus frames the active hex’s containing biome.
 
-1. Initially every exterior side and corner remains in the negative state.
-2. A `Biome` is complete only while every bed in that biome has zero
-   weed coverage. Locked beds and beds with any due/new characters prevent
-   completion.
-3. Completing a border biome reveals only the exterior side component directly
-   adjacent to that biome. Completing an interior biome reveals no exterior
-   component.
-4. An exterior corner reveals only when both of its adjacent exterior sides are
-   revealed.
-5. Other sides and corners remain negative; revealing one component must not
-   leak into another.
-6. When a biome, side, or corner reveals, the painted boundary pixels touching
-   that component also reveal (using the rasterized `garden-grid.svg` connected
-   components, with an 18-garden-pixel neighborhood). This prevents a dark line
-   from remaining around an otherwise clean component.
+Weed coverage remains a live FSRS projection using section 7’s existing coverage
+formula and stable `bed.seed` organic masks. Locked beds are fully overgrown;
+they do not become empty or fog-covered. Partial beds mix clean and dark,
+weedy ground, with plants losing saturation and brightness as coverage rises.
+Cleared beds show their healthy plants. Exterior boundary segments brighten
+only when their adjacent biome has no remaining weed coverage; they darken
+again when reviews become due. Neither rendering nor asset choice writes to
+the player’s save or changes progression.
 
-These states are a live projection of current FSRS health, like bed infection:
-if reviews become due again and a biome stops being complete, its exterior
-side and dependent corner return to the negative state. Raster labels from the
-painted grid are authoritative for exterior connectivity; rectangular or
-polygon-only approximations are insufficient. Raster-interior perimeter pixels
-that fall outside the straight bed-quad union must inherit the mask alpha of
-the nearest connected bed pixel in the same `Biome`; no clean sliver may
-remain between the painted contour and the gameplay geometry.
+All required sprite assets must load before dismissing the opaque map loader.
+Asset failure shows the existing recoverable error state and Retry button.
+Terrain and decorations are cached; panning and zooming only transform the
+map container rather than repainting the canvas.
 
 ## 9. Bed Art Architecture
 
@@ -1454,8 +1450,8 @@ Licensing review should happen before commercial release.
 
 Required:
 
-- one garden divided into 15 biomes in a 5 × 3 grid;
-- 10 beds in the first biome (2 × 5) and 15 in every other biome (3 × 5);
+- one hexagonal garden with 220 beds in 15 connected biomes (10 + 14 × 15);
+- 10 hexagonal beds in the first biome and 15 in every other biome;
 - 220 beds, with every RTH list split into two ordered bed workloads;
 - bed unlock graph;
 - permanent unlock state;
@@ -1547,7 +1543,7 @@ Implement:
 ```text
 15 biomes
 220 beds
-2 × 5 / 3 × 5 biome layouts
+connected hexagonal biome regions (10 + 14 × 15 beds)
 unlock graph
 visual infection state
 navigation

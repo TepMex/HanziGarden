@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 /**
- * Regression: the clean garden must never be exposed while the negative image
- * layer is still loading.  Also check the recoverable error state.
+ * Regression: the garden must never be exposed while a required plant
+ * sprite is still loading.  Also check the recoverable error state.
  *
  * Usage: bun scripts/check-map-load.mjs [baseUrl]
  */
@@ -27,7 +27,7 @@ try {
   const delayed = await createPage(browser)
   let releaseNegative
   const negativeRelease = new Promise((resolve) => { releaseNegative = resolve })
-  await delayed.page.route(/garden-map_negative\.webp/, async (route) => {
+  await delayed.page.route(/hex-garden\/bamboo-green\.webp/, async (route) => {
     await negativeRelease
     await route.continue()
   })
@@ -45,7 +45,7 @@ try {
     })(),
   }))
   if (!before.loading || before.ready || !before.loaderOpaque) {
-    throw new Error(`clean map was exposed before the negative layer: ${JSON.stringify(before)}`)
+    throw new Error(`clean map was exposed before the plant layer: ${JSON.stringify(before)}`)
   }
   const loadingCopy = await delayed.page.locator('.map-loading-screen').textContent()
   if (!loadingCopy?.includes('Заходим в сад')) {
@@ -59,7 +59,7 @@ try {
       loader: document.querySelector('.map-loading-screen')?.textContent,
       garden: document.querySelector('.garden-map-content')?.className,
     }))
-    throw new Error(`map did not become ready after releasing the negative layer: ${JSON.stringify(state)}`)
+    throw new Error(`map did not become ready after releasing the plant layer: ${JSON.stringify(state)}`)
   }
   const after = await delayed.page.evaluate(() => ({
     loading: Boolean(document.querySelector('.map-loading-screen')),
@@ -72,7 +72,7 @@ try {
 
   const failed = await createPage(browser)
   let failNegative = true
-  await failed.page.route(/garden-map_negative\.webp/, (route) => failNegative ? route.abort('failed') : route.continue())
+  await failed.page.route(/hex-garden\/bamboo-green\.webp/, (route) => failNegative ? route.abort('failed') : route.continue())
   await enterGarden(failed.page)
   await failed.page.waitForSelector('.map-loading-screen.has-error')
   const errorState = await failed.page.evaluate(() => ({
@@ -99,7 +99,7 @@ try {
     throw new Error('retry did not dismiss the map loader')
   }
   await failed.context.close()
-  console.log('OK: map remains hidden until both layers decode and retry recovers')
+  console.log('OK: map remains hidden until all plants decode and retry recovers')
 } finally {
   await browser.close()
 }
