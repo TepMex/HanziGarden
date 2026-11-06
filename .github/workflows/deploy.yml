@@ -170,6 +170,10 @@ jobs:
       - name: Setup Android SDK
         if: needs.detect.outputs.build_android == 'true'
         uses: android-actions/setup-android@v3
+        with:
+          # The action defaults to "tools platform-tools", but the legacy
+          # "tools" package is no longer available from the SDK repository.
+          packages: platform-tools
 
       - name: Sync web game into Android assets
         if: needs.detect.outputs.build_android == 'true'
