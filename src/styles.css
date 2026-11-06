@@ -1083,7 +1083,7 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
   touch-action: none;
   user-select: none;
   cursor: grab;
-  background: #12231f;
+  background: radial-gradient(ellipse at 50% 48%, #b7c9a4, #819d7b 72%, #668675);
 }
 .map-loading-screen {
   position: absolute;
@@ -1151,6 +1151,7 @@ button:focus-visible { outline: 2px solid #f0d59a; outline-offset: 3px; }
 }
 .garden-map-cell-grid { overflow: visible; }
 .garden-map-cell-grid line { stroke: #fff0b0; stroke-width: 2px; stroke-opacity: .9; }
+.garden-map-cell-grid polygon { fill: none; stroke: #fff0b0; stroke-width: 1.5px; stroke-linejoin: round; }
 .garden-map-grid.is-visible { opacity: .48; }
 .garden-map-hotspots { z-index: 2; }
 .bed-hotspot {

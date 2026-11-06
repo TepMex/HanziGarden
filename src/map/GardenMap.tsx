@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Leaf, LockKeyhole } from 'lucide-react'
-import { assetUrl } from '../assetUrl'
 import { beds, type BedDefinition } from '../data/model'
-import { automaticFocusBoundsForCells, bedBounds, bedQuad, biomes, cellQuad, quadPoint, GARDEN_HEIGHT, GARDEN_WIDTH, type NormalizedPoint, type NormalizedQuad } from '../data/mapLayout'
+import { GARDEN_HEIGHT, GARDEN_WIDTH } from '../data/mapLayout'
+import { gardenHexes, hexByBedId, hexBounds, hexBiomeBounds, hexClipPath, hexCorners } from './hexGardenLayout'
 import type { SaveGame } from '../db'
 import { bedInfection } from '../garden'
 import {
@@ -16,7 +16,7 @@ import {
   type Viewport,
   zoomAroundPoint,
 } from './cameraMath'
-import { GardenRevealCanvas } from './GardenRevealCanvas'
+import { HexGardenCanvas } from './HexGardenCanvas'
 
 type GardenMapProps = {
   save: SaveGame
@@ -33,7 +33,6 @@ type MapLoadState = 'loading' | 'ready' | 'error'
 
 const debugMap = new URLSearchParams(window.location.search).get('debugMap') === '1'
 const DRAG_THRESHOLD = 12
-const GRID_URL = assetUrl('assets/garden-grid.svg')
 
 function distance(left: Point, right: Point): number {
   return Math.hypot(left.x - right.x, left.y - right.y)
@@ -51,80 +50,28 @@ function rectToGarden(rect: { x: number; y: number; width: number; height: numbe
   return { x: rect.x * GARDEN_WIDTH, y: rect.y * GARDEN_HEIGHT, width: rect.width * GARDEN_WIDTH, height: rect.height * GARDEN_HEIGHT }
 }
 
-function quadPoints(quad: NormalizedQuad): string {
-  return [
-    quad.tl, quad.tr, quad.br, quad.bl,
-  ].map((point) => `${point.x * GARDEN_WIDTH},${point.y * GARDEN_HEIGHT}`).join(' ')
-}
-
-function gardenPoint(point: NormalizedPoint): { x: number; y: number } {
-  return { x: point.x * GARDEN_WIDTH, y: point.y * GARDEN_HEIGHT }
-}
-
 function FineGridOverlay() {
   return (
     <svg className="garden-map-cell-grid" viewBox={`0 0 ${GARDEN_WIDTH} ${GARDEN_HEIGHT}`} aria-hidden="true">
-      {biomes.flatMap((biome) => {
-        const columns = biome.index === 0 ? 2 : 3
-        const verticalLines = Array.from({ length: columns - 1 }, (_, index) => {
-          const amount = (index + 1) / columns
-          const start = gardenPoint(quadPoint(biome.mapQuad, amount, 0))
-          const end = gardenPoint(quadPoint(biome.mapQuad, amount, 1))
-          return <line key={`${biome.id}:column:${index}`} x1={start.x} y1={start.y} x2={end.x} y2={end.y} />
-        })
-        const horizontalLines = Array.from({ length: 4 }, (_, index) => {
-          const amount = (index + 1) / 5
-          const start = gardenPoint(quadPoint(biome.mapQuad, 0, amount))
-          const end = gardenPoint(quadPoint(biome.mapQuad, 1, amount))
-          return <line key={`${biome.id}:row:${index}`} x1={start.x} y1={start.y} x2={end.x} y2={end.y} />
-        })
-        return [...verticalLines, ...horizontalLines]
-      })}
+      {gardenHexes.map((hex) => <polygon key={hex.id} points={hexCorners(hex).map((point) => `${point.x},${point.y}`).join(' ')} />)}
     </svg>
   )
-}
-
-function bedClipPath(quad: NormalizedQuad): string {
-  const bounds = bedBoundsFromQuad(quad)
-  const points = [quad.tl, quad.tr, quad.br, quad.bl].map((point) => {
-    const x = (point.x - bounds.x) / bounds.width * 100
-    const y = (point.y - bounds.y) / bounds.height * 100
-    return `${x}% ${y}%`
-  })
-  return `polygon(${points.join(', ')})`
-}
-
-function bedBoundsFromQuad(quad: NormalizedQuad) {
-  const xs = [quad.tl.x, quad.tr.x, quad.bl.x, quad.br.x]
-  const ys = [quad.tl.y, quad.tr.y, quad.bl.y, quad.br.y]
-  const x = Math.min(...xs)
-  const y = Math.min(...ys)
-  return { x, y, width: Math.max(...xs) - x, height: Math.max(...ys) - y }
 }
 
 function MapDebugOverlay() {
   return (
     <svg className="map-debug-overlay" viewBox={`0 0 ${GARDEN_WIDTH} ${GARDEN_HEIGHT}`} aria-hidden="true">
-      {biomes.map((biome) => (
-        <polygon key={biome.id} points={quadPoints(biome.mapQuad)} className="debug-biome" />
+      {gardenHexes.map((hex) => (
+        <g key={hex.id}>
+          <polygon points={hexCorners(hex).map((point) => `${point.x},${point.y}`).join(' ')} className="debug-bed" />
+          <text x={hex.x} y={hex.y} textAnchor="middle">{hex.id}</text>
+        </g>
       ))}
-      {beds.flatMap((bed) => bed.cells.map((cell) => (
-        <polygon key={`${bed.id}:${cell.x}:${cell.y}`} points={quadPoints(cellQuad(cell))} className="debug-cell" />
-      )))}
-      {beds.map((bed) => {
-        const rect = rectToGarden(bedBounds(bed.cells))
-        return (
-          <g key={bed.id}>
-            <polygon points={quadPoints(bedQuad(bed.cells))} className="debug-bed" />
-            <text x={rect.x + 5} y={rect.y + 15}>{bed.id}</text>
-          </g>
-        )
-      })}
     </svg>
   )
 }
 
-/** A transformed garden. Weed mask re-renders only for save changes, never for camera movement. */
+/** Camera transforms do not repaint terrain, plants or FSRS weed coverage. */
 export function GardenMap({ save, camera, focusBedId, gridVisible, onCameraChange, onEnterBed }: GardenMapProps) {
   const viewportRef = useRef<HTMLElement>(null)
   const gardenRef = useRef<HTMLDivElement>(null)
@@ -168,7 +115,7 @@ export function GardenMap({ save, camera, focusBedId, gridVisible, onCameraChang
     const viewport = getViewport()
     const bed = beds.find((candidate) => candidate.id === focusBedId)
     if (!viewport || !bed) return
-    const bounds = rectToGarden(automaticFocusBoundsForCells(bed.cells))
+    const bounds = rectToGarden(hexBiomeBounds(bed.biomeId))
     const focused = mobileCameraForGardenBounds(bounds, viewport, 0.1)
     if (!focused) return
     const painted = paintCamera(focused, true)
@@ -308,15 +255,13 @@ export function GardenMap({ save, camera, focusBedId, gridVisible, onCameraChang
       onPointerCancel={finishPointer}
     >
       <div className={`garden-map-content ${loadState === 'ready' ? 'is-ready' : ''}`} ref={gardenRef} aria-hidden={loadState !== 'ready'}>
-        <GardenRevealCanvas save={save} loadAttempt={loadAttempt} onReady={revealReady} onError={revealFailed} />
+        <HexGardenCanvas save={save} loadAttempt={loadAttempt} onReady={revealReady} onError={revealFailed} />
         <div className={`garden-map-grid ${gridVisible ? 'is-visible' : ''}`} aria-hidden="true">
-          <img className="garden-map-grid-source" src={GRID_URL} alt="" draggable={false} />
           <FineGridOverlay />
         </div>
         <div className="garden-map-hotspots">
           {beds.map((bed) => {
-            const rect = bedBounds(bed.cells)
-            const quad = bedQuad(bed.cells)
+            const rect = hexBounds(hexByBedId.get(bed.id)!)
             const unlocked = unlockedBedIds.has(bed.id)
             // Empty second halves can occur for a one-character source list.
             // A locked bed remains visibly overgrown until the player reaches it.
@@ -330,7 +275,7 @@ export function GardenMap({ save, camera, focusBedId, gridVisible, onCameraChang
                   top: `${rect.y * 100}%`,
                   width: `${rect.width * 100}%`,
                   height: `${rect.height * 100}%`,
-                  clipPath: bedClipPath(quad),
+                  clipPath: hexClipPath(),
                 }}
                 data-bed-id={bed.id}
                 onClick={() => activateBed(bed)}
